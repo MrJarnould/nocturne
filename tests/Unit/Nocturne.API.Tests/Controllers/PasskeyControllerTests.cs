@@ -30,6 +30,7 @@ public class PasskeyControllerTests : IDisposable
     private readonly Mock<IRefreshTokenService> _refreshTokenService;
     private readonly Mock<ISubjectService> _subjectService;
     private readonly Mock<ITenantAccessor> _tenantAccessor;
+    private readonly Mock<ITenantService> _tenantService;
     private readonly PasskeyController _controller;
 
     private readonly Guid _tenantId = Guid.CreateVersion7();
@@ -69,7 +70,7 @@ public class PasskeyControllerTests : IDisposable
 
         var auditService = new Mock<IAuthAuditService>();
 
-        var tenantService = new Mock<ITenantService>();
+        _tenantService = new Mock<ITenantService>();
 
         _controller = new PasskeyController(
             _passkeyService.Object,
@@ -79,7 +80,7 @@ public class PasskeyControllerTests : IDisposable
             _subjectService.Object,
             auditService.Object,
             _tenantAccessor.Object,
-            tenantService.Object,
+            _tenantService.Object,
             _dbContext,
             oidcOptions,
             logger.Object);
@@ -466,11 +467,40 @@ public class PasskeyControllerTests : IDisposable
             DisplayName = "Rhys",
             IsDefault = false,
         };
+        var ownerRole = new TenantRoleEntity
+        {
+            Id = Guid.CreateVersion7(),
+            TenantId = _tenantId,
+            Slug = "owner",
+            Name = "Owner",
+            IsSystem = true,
+            SysCreatedAt = DateTime.UtcNow,
+            SysUpdatedAt = DateTime.UtcNow,
+        };
         _dbContext.Tenants.Add(tenant);
+        _dbContext.TenantRoles.Add(ownerRole);
         await _dbContext.SaveChangesAsync();
 
         // IsSetupRequired is false (multi-tenant mode — global flag is never set)
         var state = new RecoveryModeState { IsSetupRequired = false };
+
+        _tenantAccessor.Setup(t => t.IsResolved).Returns(true);
+
+        _tenantService
+            .Setup(s => s.AddMemberAsync(_tenantId, It.IsAny<Guid>(), It.IsAny<List<Guid>>(), null, null, false, default))
+            .Callback<Guid, Guid, List<Guid>, List<string>?, string?, bool, CancellationToken>((tenantId, subjectId, _, _, _, _, _) =>
+            {
+                _dbContext.TenantMembers.Add(new TenantMemberEntity
+                {
+                    Id = Guid.CreateVersion7(),
+                    TenantId = tenantId,
+                    SubjectId = subjectId,
+                    SysCreatedAt = DateTime.UtcNow,
+                    SysUpdatedAt = DateTime.UtcNow,
+                });
+                _dbContext.SaveChanges();
+            })
+            .Returns(Task.CompletedTask);
 
         _passkeyService
             .Setup(s => s.GenerateRegistrationOptionsAsync(
@@ -500,6 +530,16 @@ public class PasskeyControllerTests : IDisposable
             .Where(tm => tm.TenantId == _tenantId)
             .ToListAsync();
         members.Should().HaveCount(1);
+
+        // Assert — subject was persisted with correct properties
+        var subjects = await _dbContext.Subjects
+            .IgnoreQueryFilters()
+            .Where(s => !s.IsSystemSubject)
+            .ToListAsync();
+        subjects.Should().HaveCount(1);
+        subjects[0].Username.Should().Be("rhys");
+        subjects[0].Name.Should().Be("Rhys");
+        subjects[0].IsActive.Should().BeTrue();
     }
 
     [Fact]
@@ -518,6 +558,8 @@ public class PasskeyControllerTests : IDisposable
 
         var state = new RecoveryModeState { IsSetupRequired = false };
         var subjectId = Guid.CreateVersion7();
+
+        _tenantAccessor.Setup(t => t.IsResolved).Returns(true);
 
         _passkeyService
             .Setup(s => s.CompleteRegistrationAsync("{}", "token", _tenantId))
@@ -541,7 +583,10 @@ public class PasskeyControllerTests : IDisposable
 
         _jwtService
             .Setup(s => s.GenerateAccessToken(
-                It.IsAny<SubjectInfo>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>()))
+                It.IsAny<SubjectInfo>(),
+                It.IsAny<IEnumerable<string>>(),
+                It.IsAny<IEnumerable<string>>(),
+                null))
             .Returns("access-token");
 
         _jwtService
@@ -567,6 +612,8 @@ public class PasskeyControllerTests : IDisposable
         var response = Assert.IsType<SetupCompleteResponse>(okResult.Value);
         response.Success.Should().BeTrue();
         response.RecoveryCodes.Should().HaveCount(3);
+        response.AccessToken.Should().Be("access-token");
+        response.RefreshToken.Should().Be("refresh-token");
 
         // Global state is not mutated in multi-tenant mode
         state.IsSetupRequired.Should().BeFalse();
@@ -598,6 +645,10 @@ public class PasskeyControllerTests : IDisposable
 
         var state = new RecoveryModeState { IsSetupRequired = false };
         var request = new SetupOptionsRequest { Username = "admin", DisplayName = "Admin" };
+
+        _tenantAccessor.Setup(t => t.IsResolved).Returns(true);
+        // Set the DbContext tenant so the query filter sees the seeded credential
+        _dbContext.TenantId = _tenantId;
 
         // Act
         var result = await _controller.SetupOptions(request, state);
