@@ -54,6 +54,7 @@ import {
   MigrationClient,
   MyPermissionsClient,
   MyTenantsClient,
+  NightscoutTransitionClient,
   NoteClient,
   NotificationsClient,
   NutritionClient,
@@ -152,6 +153,7 @@ export class ApiClient {
   public readonly migration: MigrationClient;
   public readonly myPermissions: MyPermissionsClient;
   public readonly myTenants: MyTenantsClient;
+  public readonly nightscoutTransition: NightscoutTransitionClient;
   public readonly notes: NoteClient;
   public readonly notifications: NotificationsClient;
   public readonly nutrition: NutritionClient;
@@ -250,6 +252,7 @@ export class ApiClient {
     this.migration = new MigrationClient(apiBaseUrl, http);
     this.myPermissions = new MyPermissionsClient(apiBaseUrl, http);
     this.myTenants = new MyTenantsClient(apiBaseUrl, http);
+    this.nightscoutTransition = new NightscoutTransitionClient(apiBaseUrl, http);
     this.notes = new NoteClient(apiBaseUrl, http);
     this.notifications = new NotificationsClient(apiBaseUrl, http);
     this.nutrition = new NutritionClient(apiBaseUrl, http);

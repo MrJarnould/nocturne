@@ -415,7 +415,10 @@ internal class NSwagStartup
     {
         services.AddControllers()
             .AddApplicationPart(typeof(Nocturne.API.Program).Assembly);
-        services.AddOpenApiDocument();
+        services.AddOpenApiDocument(config =>
+        {
+            config.OperationProcessors.Add(new RemoteFunctionOperationProcessor());
+        });
     }
 
     public void Configure(IApplicationBuilder app)
