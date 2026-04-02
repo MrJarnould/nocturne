@@ -1,13 +1,15 @@
 {
   "name": "@nightscout/glucose-chart",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "exports": {
     ".": {
       "types": "./src/index.ts",
       "svelte": "./src/index.ts",
       "default": "./src/index.ts"
-    }
+    },
+    "./themes/nocturne.css": "./src/themes/nocturne.css",
+    "./themes/trio.css": "./src/themes/trio.css"
   },
   "peerDependencies": {
     "svelte": ">=5.0.0",
