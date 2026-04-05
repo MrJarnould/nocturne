@@ -1184,10 +1184,10 @@ public class OpenApsService : IOpenApsService
 
         return new OpenApsPredBg
         {
-            Iob = predBGs.IOB,
-            Zt = predBGs.ZT,
-            Cob = predBGs.COB,
-            Uam = predBGs.UAM,
+            Iob = predBGs.IOB?.Where(v => v.HasValue).Select(v => v!.Value).ToList(),
+            Zt = predBGs.ZT?.Where(v => v.HasValue).Select(v => v!.Value).ToList(),
+            Cob = predBGs.COB?.Where(v => v.HasValue).Select(v => v!.Value).ToList(),
+            Uam = predBGs.UAM?.Where(v => v.HasValue).Select(v => v!.Value).ToList(),
             Moment = moment,
         };
     }

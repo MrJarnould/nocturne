@@ -65,8 +65,9 @@ public class DeviceStatusPredictionService : IPredictionService
         if (!hasAnyCurve)
             return null;
 
-        // Use IOB curve as default (always present in AAPS/OpenAPS)
-        var defaultCurve = predBGs.IOB ?? predBGs.COB ?? predBGs.ZT ?? predBGs.UAM;
+        // Use IOB curve as default (always present in AAPS/OpenAPS), filtering nulls
+        var defaultCurve = (predBGs.IOB ?? predBGs.COB ?? predBGs.ZT ?? predBGs.UAM)
+            ?.Where(v => v.HasValue).Select(v => v!.Value).ToList();
 
         var timestamp = command.Timestamp != null
             ? DateTimeOffset.Parse(command.Timestamp)
@@ -92,10 +93,10 @@ public class DeviceStatusPredictionService : IPredictionService
             Predictions = new PredictionCurves
             {
                 Default = defaultCurve,
-                IobOnly = predBGs.IOB,
-                ZeroTemp = predBGs.ZT,
-                Cob = predBGs.COB,
-                Uam = predBGs.UAM,
+                IobOnly = predBGs.IOB?.Where(v => v.HasValue).Select(v => v!.Value).ToList(),
+                ZeroTemp = predBGs.ZT?.Where(v => v.HasValue).Select(v => v!.Value).ToList(),
+                Cob = predBGs.COB?.Where(v => v.HasValue).Select(v => v!.Value).ToList(),
+                Uam = predBGs.UAM?.Where(v => v.HasValue).Select(v => v!.Value).ToList(),
             },
         };
     }
