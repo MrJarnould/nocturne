@@ -158,7 +158,7 @@ builder.Services.AddOpenApiDocument(config =>
         document.Info.Contact = new NSwag.OpenApiContact
         {
             Name = "Nocturne API",
-            Url = "https://github.com/ryceg/nocturne",
+            Url = "https://github.com/nightscout/nocturne",
         };
         document.Info.License = new NSwag.OpenApiLicense
         {

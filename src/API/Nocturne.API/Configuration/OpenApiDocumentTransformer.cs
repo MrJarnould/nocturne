@@ -27,7 +27,7 @@ public class OpenApiDocumentTransformer : IOpenApiDocumentTransformer
             Contact = new OpenApiContact
             {
                 Name = "Nocturne Project",
-                Url = new Uri("https://github.com/ryceg/nocturne"),
+                Url = new Uri("https://github.com/nightscout/nocturne"),
             },
             // License = new OpenApiLicense
             // {
