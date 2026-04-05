@@ -14,7 +14,7 @@
     "clean": "pnpm --recursive clean && rm -rf node_modules",
     "generate-api-client": "cd ../API/Nocturne.API && nswag run nswag.json",
     "generate-zod-schemas": "node --experimental-transform-types utils/generateZodSchemas/index.ts",
-    "generate-remote-functions": "node packages/app/node_modules/openapi-remote-codegen/dist/index.js",
+    "generate-remote-functions": "pnpm --filter @nocturne/app exec openapi-remote-codegen",
     "generate-api": "pnpm run generate-api-client && pnpm run generate-zod-schemas && pnpm run generate-remote-functions",
     "translations:stage": "git add -f locales/*.po"
   },
