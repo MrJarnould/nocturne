@@ -150,6 +150,23 @@ public class TenantController : ControllerBase
         return revoked ? NoContent() : NotFound();
     }
 
+    [HttpPost("provision")]
+    [RemoteCommand(Invalidates = ["GetAll"])]
+    [ProducesResponseType(typeof(ProvisionResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> Provision(
+        [FromBody] ProvisionRequest request, CancellationToken ct)
+    {
+        var result = await _tenantService.ProvisionWithOwnerAsync(
+            request.Slug,
+            request.DisplayName,
+            request.OwnerUsername,
+            request.OwnerEmail,
+            request.Credential,
+            ct);
+
+        return StatusCode(StatusCodes.Status201Created, result);
+    }
+
     /// <summary>
     /// Verifies the authenticated caller is a member of the specified tenant
     /// with the Owner role (has superuser permission).
@@ -173,6 +190,13 @@ public class TenantController : ControllerBase
 public record CreateTenantRequest(string Slug, string DisplayName, string? ApiSecret = null);
 public record UpdateTenantRequest(string DisplayName, bool IsActive, bool? AllowAccessRequests = null);
 public record AddMemberRequest(Guid SubjectId, List<Guid> RoleIds, List<string>? DirectPermissions = null);
+
+public record ProvisionRequest(
+    string Slug,
+    string DisplayName,
+    string OwnerUsername,
+    string OwnerEmail,
+    ProvisionCredentialData Credential);
 
 public class CreateMemberInviteRequest
 {

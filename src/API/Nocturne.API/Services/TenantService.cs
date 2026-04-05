@@ -305,6 +305,78 @@ public partial class TenantService : ITenantService
             .FirstOrDefaultAsync(ct);
     }
 
+    public async Task<ProvisionResult> ProvisionWithOwnerAsync(
+        string slug, string displayName, string ownerUsername, string ownerEmail,
+        ProvisionCredentialData credential, CancellationToken ct = default)
+    {
+        await using var context = await _factory.CreateDbContextAsync(ct);
+        await using var transaction = await context.Database.BeginTransactionAsync(ct);
+
+        try
+        {
+            // 1. Create tenant
+            var plaintextSecret = GenerateApiSecret();
+            var tenant = new TenantEntity
+            {
+                Slug = slug.ToLowerInvariant(),
+                DisplayName = displayName,
+                ApiSecretHash = HashUtils.Sha1Hex(plaintextSecret),
+                IsActive = true,
+            };
+
+            context.Tenants.Add(tenant);
+            await context.SaveChangesAsync(ct);
+
+            // Seed default roles for this tenant
+            await _roleService.SeedRolesForTenantAsync(tenant.Id, ct);
+
+            // 2. Find or create subject by email
+            var subject = await context.Subjects.FirstOrDefaultAsync(s => s.Email == ownerEmail, ct);
+            if (subject == null)
+            {
+                subject = new SubjectEntity
+                {
+                    Id = Guid.CreateVersion7(),
+                    Name = ownerUsername,
+                    Username = ownerUsername.ToLowerInvariant(),
+                    Email = ownerEmail,
+                    IsActive = true,
+                    ApprovalStatus = "Approved",
+                };
+                context.Subjects.Add(subject);
+                await context.SaveChangesAsync(ct);
+            }
+
+            // 3. Create passkey credential
+            context.PasskeyCredentials.Add(new PasskeyCredentialEntity
+            {
+                Id = Guid.CreateVersion7(),
+                SubjectId = subject.Id,
+                CredentialId = Convert.FromBase64String(credential.CredentialId),
+                PublicKey = Convert.FromBase64String(credential.PublicKey),
+                SignCount = credential.SignCount,
+                Transports = credential.Transports,
+                AaGuid = credential.AaGuid,
+            });
+            await context.SaveChangesAsync(ct);
+
+            // 4. Add subject as tenant owner
+            var ownerRole = await context.TenantRoles
+                .FirstAsync(r => r.TenantId == tenant.Id && r.Slug == "owner", ct);
+            await AddMemberAsync(tenant.Id, subject.Id, [ownerRole.Id], ct: ct);
+
+            // 5. Commit transaction
+            await transaction.CommitAsync(ct);
+
+            return new ProvisionResult(tenant.Id, subject.Id, tenant.Slug);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(ct);
+            throw;
+        }
+    }
+
     private static string GenerateApiSecret()
     {
         var bytes = new byte[24];
