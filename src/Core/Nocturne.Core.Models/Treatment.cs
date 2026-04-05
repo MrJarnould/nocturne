@@ -502,6 +502,7 @@ public class Treatment : ProcessableDocumentBase
     /// </summary>
     [JsonPropertyName("NSCLIENT_ID")]
     [Sanitizable]
+    [JsonConverter(typeof(FlexibleStringConverter))]
     public string? NsClientId { get; set; }
 
     /// <summary>
@@ -614,6 +615,7 @@ public class Treatment : ProcessableDocumentBase
     /// </summary>
     [JsonPropertyName("amount")]
     [NocturneOnly]
+    [JsonConverter(typeof(FlexibleNullableDoubleConverter))]
     public double? Amount
     {
         get => _amount ?? Insulin;

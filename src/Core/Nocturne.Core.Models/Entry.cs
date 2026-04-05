@@ -144,6 +144,7 @@ public class Entry : ProcessableDocumentBase
     /// Gets or sets the sensor glucose value in mg/dL
     /// </summary>
     [JsonPropertyName("sgv")]
+    [JsonConverter(typeof(FlexibleNullableDoubleConverter))]
     public double? Sgv { get; set; }
 
     /// <summary>

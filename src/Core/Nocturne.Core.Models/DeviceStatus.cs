@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Nocturne.Core.Models.Serializers;
 
 namespace Nocturne.Core.Models;
 
@@ -373,6 +374,7 @@ public class OpenApsSuggested
     public double? Bg { get; set; }
 
     [JsonPropertyName("tick")]
+    [JsonConverter(typeof(FlexibleStringConverter))]
     public string? Tick { get; set; }
 
     [JsonPropertyName("eventualBG")]
@@ -475,16 +477,16 @@ public class OpenApsRequested
 public class OpenApsPredBGs
 {
     [JsonPropertyName("IOB")]
-    public List<double>? IOB { get; set; }
+    public List<double?>? IOB { get; set; }
 
     [JsonPropertyName("ZT")]
-    public List<double>? ZT { get; set; }
+    public List<double?>? ZT { get; set; }
 
     [JsonPropertyName("COB")]
-    public List<double>? COB { get; set; }
+    public List<double?>? COB { get; set; }
 
     [JsonPropertyName("UAM")]
-    public List<double>? UAM { get; set; }
+    public List<double?>? UAM { get; set; }
 }
 
 /// <summary>

@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Nocturne.Core.Models.Serializers;
 
 namespace Nocturne.Core.Models;
 
@@ -213,6 +214,7 @@ public class OpenApsCommand
     /// BG tick direction
     /// </summary>
     [JsonPropertyName("tick")]
+    [JsonConverter(typeof(FlexibleStringConverter))]
     public string? Tick { get; set; }
 
     /// <summary>
