@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using Nocturne.API.Middleware.Handlers;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Models;
+using Nocturne.Core.Models.Authorization;
 using Nocturne.Infrastructure.Cache.Abstractions;
 using Nocturne.Infrastructure.Data;
 
@@ -116,7 +120,12 @@ public class GoldenFileWebAppFactory : WebApplicationFactory<Program>
             RemoveService<ICacheService>(services);
             services.AddSingleton(mockCache.Object);
 
-            // Replace authentication with test scheme
+            // Register test auth handler (middleware-based, not ASP.NET Core auth-based)
+            // This will authenticate all requests with admin permissions for golden file tests
+            // NOTE: We add this IN ADDITION to the existing handlers. It has Priority 0 so it runs first.
+            services.AddSingleton<IAuthHandler, TestAuthHandlerImpl>();
+
+            // Also configure the ASP.NET Core authentication system for completeness
             services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = "Test";
@@ -178,5 +187,31 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
         var principal = new ClaimsPrincipal(identity);
         var ticket = new AuthenticationTicket(principal, "Test");
         return Task.FromResult(AuthenticateResult.Success(ticket));
+    }
+}
+
+/// <summary>
+/// Test auth handler implementation for the middleware pipeline.
+/// Authenticates all requests with full admin permissions for golden file tests.
+/// </summary>
+public class TestAuthHandlerImpl : IAuthHandler
+{
+    public int Priority => 0; // Run first, before all other handlers
+
+    public string Name => "TestAuthHandlerImpl";
+
+    public Task<AuthResult> AuthenticateAsync(HttpContext context)
+    {
+        // Always authenticate with admin permissions for golden file tests
+        return Task.FromResult(AuthResult.Success(new AuthContext
+        {
+            IsAuthenticated = true,
+            AuthType = AuthType.InstanceKey,
+            SubjectId = Guid.Parse("00000000-0000-0000-0000-000000000099"),
+            SubjectName = "test-user",
+            TenantId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Permissions = ["*"],
+            Roles = ["admin"],
+        }));
     }
 }
