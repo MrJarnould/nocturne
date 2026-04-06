@@ -350,6 +350,7 @@ public static class ServiceRegistrationExtensions
                 [sp.GetRequiredService<NightscoutActivityWriteBackSink>()],
                 sp.GetService<ILogger<CompositeDataEventSink<Activity>>>()));
         services.AddScoped<IHeartRateService, HeartRateService>();
+        services.AddScoped<IBodyWeightService, BodyWeightService>();
         services.AddScoped<IStepCountService, StepCountService>();
 
         // Tracker services
