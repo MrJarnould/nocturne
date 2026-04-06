@@ -139,7 +139,6 @@ public class OAuthGrantService : IOAuthGrantService
         var entities = await _dbContext.OAuthGrants
             .AsNoTracking()
             .Include(g => g.Client)
-            .Include(g => g.FollowerSubject)
             .Where(g => g.SubjectId == subjectId && g.RevokedAt == null)
             .OrderByDescending(g => g.CreatedAt)
             .ToListAsync(ct);
@@ -279,11 +278,6 @@ public class OAuthGrantService : IOAuthGrantService
 
             await _dbContext.SaveChangesAsync(ct);
 
-            // Load FollowerSubject navigation for the return DTO
-            await _dbContext.Entry(existingGrant)
-                .Reference(e => e.FollowerSubject)
-                .LoadAsync(ct);
-
             _logger.LogInformation(
                 "OAuthAudit: {Event} grant_id={GrantId} owner_id={OwnerId} follower_id={FollowerId} scopes={Scopes} limit_24h={Limit24Hours}",
                 "follower_grant_updated", existingGrant.Id, dataOwnerSubjectId, followerSubjectId, string.Join(" ", mergedScopes), existingGrant.LimitTo24Hours);
@@ -313,9 +307,6 @@ public class OAuthGrantService : IOAuthGrantService
         // Load navigation properties for the return DTO
         await _dbContext.Entry(entity)
             .Reference(e => e.Client)
-            .LoadAsync(ct);
-        await _dbContext.Entry(entity)
-            .Reference(e => e.FollowerSubject)
             .LoadAsync(ct);
 
         _logger.LogInformation(
@@ -370,7 +361,6 @@ public class OAuthGrantService : IOAuthGrantService
     {
         var grant = await _dbContext.OAuthGrants
             .Include(g => g.Client)
-            .Include(g => g.FollowerSubject)
             .Where(g => g.Id == grantId)
             .FirstOrDefaultAsync(ct);
 

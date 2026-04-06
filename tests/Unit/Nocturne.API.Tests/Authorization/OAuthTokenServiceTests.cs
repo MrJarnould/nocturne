@@ -133,6 +133,19 @@ public class OAuthTokenServiceTests : IDisposable
     }
 
     /// <summary>
+    /// Seed a SubjectEntity so FK constraints are satisfied.
+    /// </summary>
+    private async Task SeedSubjectAsync(NocturneDbContext db, Guid? id = null, string? name = null)
+    {
+        db.Subjects.Add(new SubjectEntity
+        {
+            Id = id ?? _testSubjectId,
+            Name = name ?? "Test User",
+        });
+        await db.SaveChangesAsync();
+    }
+
+    /// <summary>
     /// Seed an OAuthClientEntity into the database and return its entity Id.
     /// </summary>
     private async Task<Guid> SeedClientAsync(NocturneDbContext db, Guid? id = null, string? clientId = null)
@@ -252,7 +265,11 @@ public class OAuthTokenServiceTests : IDisposable
 
         using var db = CreateDbContext();
         await SeedClientAsync(db);
+        await SeedSubjectAsync(db);
         await SeedAuthorizationCodeAsync(db, testCodeHash);
+        // Pre-seed the grant entity so the refresh token FK constraint is satisfied
+        // when MintTokenPairAsync creates a token referencing the mocked grant ID.
+        await SeedGrantAsync(db);
 
         var service = CreateService(db);
 
@@ -299,6 +316,7 @@ public class OAuthTokenServiceTests : IDisposable
 
         using var db = CreateDbContext();
         await SeedClientAsync(db);
+        await SeedSubjectAsync(db);
         await SeedAuthorizationCodeAsync(db, testCodeHash,
             expiresAt: DateTime.UtcNow.AddMinutes(-5));
 
@@ -329,6 +347,7 @@ public class OAuthTokenServiceTests : IDisposable
 
         using var db = CreateDbContext();
         await SeedClientAsync(db);
+        await SeedSubjectAsync(db);
         await SeedAuthorizationCodeAsync(db, testCodeHash,
             redeemedAt: DateTime.UtcNow.AddMinutes(-1));
 
@@ -359,6 +378,7 @@ public class OAuthTokenServiceTests : IDisposable
 
         using var db = CreateDbContext();
         await SeedClientAsync(db);
+        await SeedSubjectAsync(db);
         await SeedAuthorizationCodeAsync(db, testCodeHash);
 
         var service = CreateService(db);
@@ -388,6 +408,7 @@ public class OAuthTokenServiceTests : IDisposable
 
         using var db = CreateDbContext();
         await SeedClientAsync(db);
+        await SeedSubjectAsync(db);
         await SeedAuthorizationCodeAsync(db, testCodeHash);
 
         var service = CreateService(db);
@@ -417,6 +438,7 @@ public class OAuthTokenServiceTests : IDisposable
 
         using var db = CreateDbContext();
         await SeedClientAsync(db);
+        await SeedSubjectAsync(db);
         await SeedAuthorizationCodeAsync(db, testCodeHash);
 
         var service = CreateService(db);
@@ -457,6 +479,7 @@ public class OAuthTokenServiceTests : IDisposable
 
         using var db = CreateDbContext();
         await SeedClientAsync(db);
+        await SeedSubjectAsync(db);
         var grantId = await SeedGrantAsync(db);
         await SeedRefreshTokenAsync(db, oldTokenHash, grantId: grantId);
 
@@ -502,6 +525,7 @@ public class OAuthTokenServiceTests : IDisposable
 
         using var db = CreateDbContext();
         await SeedClientAsync(db);
+        await SeedSubjectAsync(db);
         var grantId = await SeedGrantAsync(db);
         await SeedRefreshTokenAsync(db, expiredTokenHash,
             grantId: grantId,
@@ -530,6 +554,7 @@ public class OAuthTokenServiceTests : IDisposable
 
         using var db = CreateDbContext();
         await SeedClientAsync(db);
+        await SeedSubjectAsync(db);
         var grantId = await SeedGrantAsync(db);
         // Revoked but no replacement: simple revocation, no reuse detection
         await SeedRefreshTokenAsync(db, revokedTokenHash,
@@ -565,6 +590,7 @@ public class OAuthTokenServiceTests : IDisposable
 
         using var db = CreateDbContext();
         await SeedClientAsync(db);
+        await SeedSubjectAsync(db);
         var grantId = await SeedGrantAsync(db);
 
         // Create the replacement token first so we have its ID
