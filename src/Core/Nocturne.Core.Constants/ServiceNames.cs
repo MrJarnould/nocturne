@@ -35,6 +35,7 @@ public static class ServiceNames
     public const string TidepoolConnector = "tidepool-connector";
     public const string TConnectSyncConnector = "tconnectsync-connector";
     public const string MyLifeConnector = "mylife-connector";
+    public const string HomeAssistantConnector = "home-assistant-connector";
 
     // Docker Container Names
     public static class Docker
