@@ -89,6 +89,11 @@ public class NocturneDbContext : DbContext
     public DbSet<HeartRateEntity> HeartRates { get; set; }
 
     /// <summary>
+    /// Gets or sets the BodyWeights table for body weight records
+    /// </summary>
+    public DbSet<BodyWeightEntity> BodyWeights { get; set; }
+
+    /// <summary>
     /// Gets or sets the DiscrepancyAnalyses table for response comparison analysis
     /// </summary>
     public DbSet<DiscrepancyAnalysisEntity> DiscrepancyAnalyses { get; set; }
@@ -749,6 +754,18 @@ public class NocturneDbContext : DbContext
             .Entity<HeartRateEntity>()
             .HasIndex(h => h.SysCreatedAt)
             .HasDatabaseName("ix_heart_rates_sys_created_at");
+
+        // BodyWeight indexes - optimized for time-range graph queries
+        modelBuilder
+            .Entity<BodyWeightEntity>()
+            .HasIndex(b => b.Mills)
+            .HasDatabaseName("ix_body_weights_mills")
+            .IsDescending();
+
+        modelBuilder
+            .Entity<BodyWeightEntity>()
+            .HasIndex(b => b.SysCreatedAt)
+            .HasDatabaseName("ix_body_weights_sys_created_at");
 
         // Discrepancy analysis indexes - optimized for dashboard queries
         modelBuilder
