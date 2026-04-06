@@ -151,6 +151,7 @@ public static class ServiceRegistrationExtensions
         services.AddScoped<IOAuthTokenService, OAuthTokenService>();
         services.AddScoped<IOAuthDeviceCodeService, OAuthDeviceCodeService>();
         services.AddScoped<IMemberInviteService, MemberInviteService>();
+        services.AddScoped<IFollowerInviteService, FollowerInviteService>();
         services.AddSingleton<IOAuthTokenRevocationCache, OAuthTokenRevocationCache>();
         services.AddHostedService<OAuthCodeCleanupService>();
 
@@ -189,6 +190,7 @@ public static class ServiceRegistrationExtensions
         services.AddSingleton<IAuthHandler, SessionCookieHandler>(); // Priority 50
         services.AddSingleton<IAuthHandler, InstanceKeyHandler>(); // Priority 55
         services.AddSingleton<IAuthHandler, OidcTokenHandler>(); // Priority 100
+        services.AddSingleton<IAuthHandler, OAuthAccessTokenHandler>(); // Priority 150
         services.AddSingleton<IAuthHandler, DirectGrantTokenHandler>(); // Priority 150
         services.AddSingleton<IAuthHandler, LegacyJwtHandler>(); // Priority 200
         services.AddSingleton<IAuthHandler, AccessTokenHandler>(); // Priority 300
@@ -380,6 +382,7 @@ public static class ServiceRegistrationExtensions
             MyFitnessPalMatchingSettingsService
         >();
         services.AddScoped<IClockFaceService, ClockFaceService>();
+        services.AddScoped<IWidgetSummaryService, WidgetSummaryService>();
         // Chart data pipeline stages (order matters!)
         services.AddScoped<ProfileLoadStage>();
         services.AddScoped<DataFetchStage>();
