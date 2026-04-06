@@ -8,6 +8,7 @@
         <Product>Nocturne Connectors</Product>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="..\..\Core\Nocturne.Core.Contracts\Nocturne.Core.Contracts.csproj"/>
         <ProjectReference Include="..\..\Core\Nocturne.Core.Models\Nocturne.Core.Models.csproj"/>
         <ProjectReference Include="..\Nocturne.Connectors.Core\Nocturne.Connectors.Core.csproj"/>
     </ItemGroup>
