@@ -314,8 +314,12 @@ jobs:
         working-directory: src/Web/packages/bot
         run: pnpm run build
 
-      - name: Build solution
-        run: dotnet build -c Debug
+      # Only the AppHost project is needed for `aspire publish --no-build`.
+      # Building the whole solution on Ubuntu fails because it includes
+      # Windows-only projects (Desktop.Tray, Widget.Windows11) whose SDK
+      # build tools can't run on Linux.
+      - name: Build Aspire AppHost
+        run: dotnet build -c Debug src/Aspire/Nocturne.Aspire.Host/Nocturne.Aspire.Host.csproj
 
       - name: Determine version tag
         id: version
