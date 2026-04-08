@@ -569,6 +569,7 @@ public static class ServiceRegistrationExtensions
         // Chat identity
         services.AddScoped<Nocturne.API.Services.Chat.ChatIdentityService>();
         services.AddScoped<Nocturne.API.Services.Chat.ChatIdentityDirectoryService>();
+        services.AddScoped<Nocturne.API.Services.Chat.ChatIdentityPendingLinkService>();
 
         // Background sweep
         services.AddHostedService<AlertSweepService>();
