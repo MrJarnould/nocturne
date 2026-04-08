@@ -1,41 +1,105 @@
-// MIGRATION-IN-PROGRESS: This service is being rewritten as part of the
-// Shared Discord Bot Link Flow consolidation (Task 1.9). The body has been
-// stubbed so the solution still compiles after the old chat_identity_links
-// table was dropped. Do not call any of these methods at runtime.
 using Microsoft.EntityFrameworkCore;
 using Nocturne.Infrastructure.Data;
+using Nocturne.Infrastructure.Data.Entities;
 
 namespace Nocturne.API.Services.Chat;
 
 /// <summary>
-/// Manages chat platform identity links for bot-mediated interactions.
-/// MIGRATION-IN-PROGRESS: stubbed pending rewrite against ChatIdentityDirectory.
+/// Tenant-scoped facade over the chat identity directory. Handles claim flows,
+/// direct link creation, and pending-link lookups for the current tenant.
 /// </summary>
 public sealed class ChatIdentityService(
+    ChatIdentityDirectoryService directory,
+    ChatIdentityPendingLinkService pendingLinks,
     IDbContextFactory<NocturneDbContext> contextFactory,
     ILogger<ChatIdentityService> logger)
 {
-    // Reference fields so DI registration and field-suppression analyzers stay happy.
-    private readonly IDbContextFactory<NocturneDbContext> _contextFactory = contextFactory;
-    private readonly ILogger<ChatIdentityService> _logger = logger;
+    public Task<IReadOnlyList<ChatIdentityDirectoryEntry>> GetByTenantAsync(
+        Guid tenantId, CancellationToken ct)
+        => directory.GetByTenantAsync(tenantId, ct);
 
-    public Task<object?> FindByPlatformAsync(
-        Guid tenantId, string platform, string platformUserId, CancellationToken ct) =>
-        throw new NotImplementedException("MIGRATION-IN-PROGRESS: ChatIdentityService will be rewritten in Task 1.9");
+    public async Task<ChatIdentityDirectoryEntry> ClaimPendingLinkAsync(
+        Guid tenantId, Guid userId, string token, CancellationToken ct)
+    {
+        var pending = await pendingLinks.TryConsumeAsync(token, ct)
+            ?? throw new InvalidOperationException("Token expired or already used");
 
-    public Task<IReadOnlyList<object>> GetByUserAsync(
-        Guid tenantId, Guid userId, CancellationToken ct) =>
-        throw new NotImplementedException("MIGRATION-IN-PROGRESS: ChatIdentityService will be rewritten in Task 1.9");
+        await using var db = await contextFactory.CreateDbContextAsync(ct);
+        var tenant = await db.Tenants.AsNoTracking()
+            .Where(t => t.Id == tenantId)
+            .Select(t => new { t.Slug, t.DisplayName })
+            .FirstAsync(ct);
 
-    public Task<IReadOnlyList<object>> GetByTenantAsync(
-        Guid tenantId, CancellationToken ct) =>
-        throw new NotImplementedException("MIGRATION-IN-PROGRESS: ChatIdentityService will be rewritten in Task 1.9");
+        if (pending.TenantSlug is not null &&
+            !string.Equals(pending.TenantSlug, tenant.Slug, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("Token does not belong to this tenant");
+        }
 
-    public Task<object> CreateLinkAsync(
-        Guid tenantId, Guid userId, string platform, string platformUserId,
-        string? platformChannelId, CancellationToken ct) =>
-        throw new NotImplementedException("MIGRATION-IN-PROGRESS: ChatIdentityService will be rewritten in Task 1.9");
+        var entry = await directory.CreateLinkAsync(
+            pending.Platform,
+            pending.PlatformUserId,
+            tenantId,
+            userId,
+            suggestedLabel: tenant.Slug,
+            suggestedDisplayName: tenant.DisplayName,
+            ct);
 
-    public Task RevokeLinkAsync(Guid tenantId, Guid linkId, CancellationToken ct) =>
-        throw new NotImplementedException("MIGRATION-IN-PROGRESS: ChatIdentityService will be rewritten in Task 1.9");
+        logger.LogInformation(
+            "Claimed pending link token -> tenant {TenantId}, label {Label}",
+            tenantId, entry.Label);
+
+        return entry;
+    }
+
+    public async Task<ChatIdentityDirectoryEntry> CreateDirectLinkAsync(
+        Guid tenantId, Guid userId, string platform, string platformUserId, CancellationToken ct)
+    {
+        await using var db = await contextFactory.CreateDbContextAsync(ct);
+        var tenant = await db.Tenants.AsNoTracking()
+            .Where(t => t.Id == tenantId)
+            .Select(t => new { t.Slug, t.DisplayName })
+            .FirstAsync(ct);
+
+        return await directory.CreateLinkAsync(
+            platform, platformUserId, tenantId, userId, tenant.Slug, tenant.DisplayName, ct);
+    }
+
+    public Task SetDefaultAsync(Guid tenantId, Guid linkId, CancellationToken ct)
+        => directory.SetDefaultAsync(linkId, ct);
+
+    public Task RenameLabelAsync(Guid tenantId, Guid linkId, string newLabel, CancellationToken ct)
+        => directory.RenameLabelAsync(linkId, newLabel, ct);
+
+    public Task UpdateDisplayNameAsync(Guid tenantId, Guid linkId, string newDisplayName, CancellationToken ct)
+        => directory.UpdateDisplayNameAsync(linkId, newDisplayName, ct);
+
+    public Task RevokeAsync(Guid tenantId, Guid linkId, CancellationToken ct)
+        => directory.RevokeAsync(linkId, ct);
+
+    /// <summary>
+    /// Read-only lookup for the authorize page. Does NOT consume the token.
+    /// </summary>
+    public async Task<ChatIdentityPendingLinkView?> GetPendingAsync(string token, CancellationToken ct)
+    {
+        await using var db = await contextFactory.CreateDbContextAsync(ct);
+        var row = await db.ChatIdentityPendingLinks.AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Token == token, ct);
+        if (row is null || row.ExpiresAt < DateTime.UtcNow) return null;
+        return new ChatIdentityPendingLinkView
+        {
+            Platform = row.Platform,
+            PlatformUserId = row.PlatformUserId,
+            TenantSlug = row.TenantSlug,
+            Source = row.Source,
+        };
+    }
+}
+
+public class ChatIdentityPendingLinkView
+{
+    public string Platform { get; set; } = string.Empty;
+    public string PlatformUserId { get; set; } = string.Empty;
+    public string? TenantSlug { get; set; }
+    public string Source { get; set; } = string.Empty;
 }
