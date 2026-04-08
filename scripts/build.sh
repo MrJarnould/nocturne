@@ -40,11 +40,6 @@ echo ""
 echo "==> Preparing build environment"
 cd "$REPO_ROOT"
 
-if [[ ! -f appsettings.json ]]; then
-  echo "    Copying appsettings.example.json -> appsettings.json"
-  cp appsettings.example.json appsettings.json
-fi
-
 echo "    Restoring .NET dependencies"
 dotnet restore --verbosity quiet
 
@@ -75,13 +70,6 @@ if [[ ! -f "$GENERATED_DIR/passkeys.generated.remote.ts" ]]; then
 fi
 REMOTE_COUNT=$(find "$GENERATED_DIR" -name "*.generated.remote.ts" | wc -l)
 echo "    Found $REMOTE_COUNT generated remote files"
-
-# Clean up root appsettings.json to avoid NETSDK1152 conflict with
-# src/API/Nocturne.API/appsettings.json during dotnet publish
-if [[ -f "$REPO_ROOT/appsettings.json" && -f "$REPO_ROOT/appsettings.example.json" ]]; then
-  echo "    Removing temporary root appsettings.json"
-  rm "$REPO_ROOT/appsettings.json"
-fi
 
 # ---------------------------------------------------------------------------
 # Step 4: Build API container

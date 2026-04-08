@@ -84,9 +84,6 @@ jobs:
       - name: Restore .NET dependencies
         run: dotnet restore
 
-      - name: Setup appsettings.json for NSwag
-        run: cp appsettings.example.json appsettings.json
-
       # Generate API client, Zod schemas, and remote functions for the web build.
       # IMPORTANT: Must run BEFORE dotnet publish (publish marks outputs as
       # up-to-date, causing post-build generation targets to be skipped).
@@ -293,10 +290,6 @@ jobs:
       - name: Restore .NET dependencies
         run: dotnet restore
 
-      # Copy appsettings.example.json to appsettings.json for NSwag client generation
-      - name: Setup appsettings.json for NSwag
-        run: cp appsettings.example.json appsettings.json
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -321,8 +314,12 @@ jobs:
         working-directory: src/Web/packages/bot
         run: pnpm run build
 
-      - name: Build solution
-        run: dotnet build -c Debug
+      # Only the AppHost project is needed for `aspire publish --no-build`.
+      # Building the whole solution on Ubuntu fails because it includes
+      # Windows-only projects (Desktop.Tray, Widget.Windows11) whose SDK
+      # build tools can't run on Linux.
+      - name: Build Aspire AppHost
+        run: dotnet build -c Debug src/Aspire/Nocturne.Aspire.Host/Nocturne.Aspire.Host.csproj
 
       - name: Determine version tag
         id: version

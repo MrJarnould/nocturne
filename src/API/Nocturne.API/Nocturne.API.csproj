@@ -44,8 +44,6 @@
     <PackageReference Include="MongoDB.Driver" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\..\appsettings.json" Link="appsettings.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\..\appsettings.json')" />
-    <Content Include="..\..\..\appsettings.Development.json" Link="appsettings.Development.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\..\appsettings.Development.json')" />
     <!-- oref.wasm is optional — only needed when Predictions:Source=OrefWasm.
          Download from https://github.com/nightscout/nocturne-heuristics-wasm/releases
          and place in the build output directory. -->
