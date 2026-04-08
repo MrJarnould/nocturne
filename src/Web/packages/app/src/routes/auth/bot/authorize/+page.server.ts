@@ -82,7 +82,10 @@ export const actions: Actions = {
 			return fail(500, { error: "Failed to link account. Please try again." });
 		}
 
-		return { success: true };
+		// Redirect to a dedicated success page. If we returned { success: true }
+		// here, SvelteKit would re-run load() which would try to look up the
+		// pending-link row we just consumed and flip the page into error mode.
+		throw redirect(303, "/auth/bot/authorize/done");
 	},
 
 	/**

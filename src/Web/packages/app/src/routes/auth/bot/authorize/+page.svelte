@@ -8,14 +8,7 @@
 	);
 </script>
 
-{#if form?.success}
-	<div class="flex flex-col items-center justify-center min-h-screen gap-4 p-6 text-center">
-		<h1 class="text-2xl font-bold">Connected</h1>
-		<p class="text-muted-foreground max-w-md">
-			Your chat account is now linked to Nocturne. You can close this tab and head back to your chat app.
-		</p>
-	</div>
-{:else if data.mode === "error"}
+{#if data.mode === "error"}
 	<div class="flex flex-col items-center justify-center min-h-screen gap-4 p-6 text-center">
 		<h1 class="text-2xl font-bold">Can't Complete This Link</h1>
 		<p class="text-destructive max-w-md">{data.message}</p>
@@ -29,7 +22,7 @@
 		{#if form?.error}
 			<p class="text-destructive">{form.error}</p>
 		{/if}
-		<form method="POST" action="?/pick-tenant" class="flex flex-col gap-3 w-full max-w-sm">
+		<form method="POST" action="?/pick-tenant&state={data.stateToken}" class="flex flex-col gap-3 w-full max-w-sm">
 			<input type="hidden" name="state" value={data.stateToken} />
 			<label class="flex flex-col gap-1">
 				<span class="text-sm font-medium">Instance slug</span>
@@ -71,7 +64,7 @@
 			{#if form?.error}
 				<p class="text-destructive">{form.error}</p>
 			{/if}
-			<form method="POST" action="?/claim">
+			<form method="POST" action="?/claim&state={data.stateToken}">
 				<input type="hidden" name="state" value={data.stateToken} />
 				<button
 					type="submit"
