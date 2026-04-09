@@ -330,7 +330,7 @@ public class PasskeyController : ControllerBase
 
         var tenantId = _tenantAccessor.TenantId;
         var credentials = await _passkeyService.GetCredentialsAsync(auth.SubjectId.Value, tenantId);
-        var hasOidc = await _passkeyService.HasOidcLinkAsync(auth.SubjectId.Value);
+        var primaryFactorCount = await _subjectService.CountPrimaryAuthFactorsAsync(auth.SubjectId.Value);
 
         return Ok(new PasskeyCredentialListResponse
         {
@@ -341,7 +341,7 @@ public class PasskeyController : ControllerBase
                 CreatedAt = c.CreatedAt,
                 LastUsedAt = c.LastUsedAt,
             }).ToList(),
-            HasOidcLink = hasOidc,
+            PrimaryAuthFactorCount = primaryFactorCount,
         });
     }
 
@@ -354,6 +354,7 @@ public class PasskeyController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> RemoveCredential(Guid id)
     {
         var auth = HttpContext.GetAuthContext();
@@ -364,13 +365,16 @@ public class PasskeyController : ControllerBase
 
         var tenantId = _tenantAccessor.TenantId;
 
-        // Check removal protection: cannot remove last sign-in method
-        var guard = await _subjectService.HasAlternativeAuthMethodAsync(auth.SubjectId.Value, AuthMethodType.Passkey);
-        if (!guard.HasAlternative)
+        // Symmetric factor-count rule: removing this passkey must leave at least one primary factor.
+        // Primary factors = passkeys + oidc identities. TOTP is a second factor and does not count.
+        var currentFactors = await _subjectService.CountPrimaryAuthFactorsAsync(auth.SubjectId.Value);
+        if (currentFactors - 1 < 1)
         {
-            return Problem(
-                detail: $"Cannot remove your last sign-in method. Your only remaining login method is your {guard.LastRemainingMethodName}.",
-                statusCode: 400, title: "Bad Request");
+            return Conflict(new
+            {
+                error = "last_factor",
+                message = "Cannot remove your only remaining sign-in method",
+            });
         }
 
         try
@@ -1140,7 +1144,7 @@ public class RecoveryVerifyResponse
 public class PasskeyCredentialListResponse
 {
     public List<PasskeyCredentialDto> Credentials { get; set; } = new();
-    public bool HasOidcLink { get; set; }
+    public int PrimaryAuthFactorCount { get; set; }
 }
 
 /// <summary>

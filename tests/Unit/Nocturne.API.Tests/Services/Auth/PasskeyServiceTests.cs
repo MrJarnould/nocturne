@@ -140,57 +140,6 @@ public class PasskeyServiceTests
 
     #endregion
 
-    #region HasOidcLinkAsync
-
-    [Fact]
-    [Trait("Category", "Unit")]
-    public async Task HasOidcLinkAsync_ReturnsTrueWhenOidcSubjectIdSet()
-    {
-        _dbContext.Subjects.Add(new SubjectEntity
-        {
-            Id = _subjectId,
-            Name = "Test User",
-        });
-        await _dbContext.SaveChangesAsync();
-
-        var service = CreateService();
-
-        var result = await service.HasOidcLinkAsync(_subjectId);
-
-        result.Should().BeTrue();
-    }
-
-    [Fact]
-    [Trait("Category", "Unit")]
-    public async Task HasOidcLinkAsync_ReturnsFalseWhenOidcSubjectIdNull()
-    {
-        _dbContext.Subjects.Add(new SubjectEntity
-        {
-            Id = _subjectId,
-            Name = "Test User",
-        });
-        await _dbContext.SaveChangesAsync();
-
-        var service = CreateService();
-
-        var result = await service.HasOidcLinkAsync(_subjectId);
-
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    [Trait("Category", "Unit")]
-    public async Task HasOidcLinkAsync_ReturnsFalseWhenSubjectNotFound()
-    {
-        var service = CreateService();
-
-        var result = await service.HasOidcLinkAsync(Guid.CreateVersion7());
-
-        result.Should().BeFalse();
-    }
-
-    #endregion
-
     #region RemoveCredentialAsync
 
     [Fact]
