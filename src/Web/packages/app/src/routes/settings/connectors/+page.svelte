@@ -73,6 +73,7 @@
     Link2,
     Wrench,
     Key,
+    MessageSquare,
   } from "lucide-svelte";
   import SettingsPageSkeleton from "$lib/components/settings/SettingsPageSkeleton.svelte";
   import DataSourceRow from "$lib/components/settings/DataSourceRow.svelte";
@@ -1628,6 +1629,38 @@
             </Button>
           </div>
         </div>
+      </CardContent>
+    </Card>
+
+    <!-- Integrations -->
+    <Card>
+      <CardHeader>
+        <CardTitle class="flex items-center gap-2">
+          <Link2 class="h-5 w-5" />
+          Integrations
+        </CardTitle>
+        <CardDescription>
+          Connect Nocturne to chat platforms and other external services
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <a
+          href="/settings/integrations/discord"
+          class="flex items-center justify-between rounded-lg border p-4 hover:bg-accent transition-colors"
+        >
+          <div class="flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-md bg-muted">
+              <MessageSquare class="h-5 w-5" />
+            </div>
+            <div>
+              <p class="font-medium">Discord</p>
+              <p class="text-sm text-muted-foreground">
+                Link a Discord account to receive alerts and use the Nocturne bot
+              </p>
+            </div>
+          </div>
+          <ChevronRight class="h-4 w-4 text-muted-foreground" />
+        </a>
       </CardContent>
     </Card>
 

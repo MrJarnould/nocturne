@@ -99,43 +99,20 @@ public static class DefaultTenantSeeder
         await context.SaveChangesAsync();
         logger.LogInformation("Assigned {Count} existing subjects to default tenant", subjects.Count);
 
-        // Backfill tenant_id on all tenant-scoped tables using raw SQL
-        var tenantScopedTables = new[]
-        {
-            "entries", "treatments", "devicestatus", "foods",
-            "connector_food_entries", "treatment_foods", "user_food_favorites",
-            "settings", "profiles", "activities", "step_counts", "heart_rates",
-            "discrepancy_analyses", "discrepancy_details",
-            "alert_rules", "alert_history",
-            "notification_preferences", "emergency_contacts", "device_health",
-            "data_source_metadata",
-            "tracker_definitions", "tracker_instances", "tracker_presets",
-            "tracker_notification_thresholds",
-            "state_spans", "linked_records", "connector_configurations",
-            "in_app_notifications", "clock_faces", "compression_low_suggestions",
-            // V4 tables
-            "sensor_glucose", "meter_glucose", "calibrations",
-            "boluses", "carb_intakes", "bg_checks", "notes", "device_events",
-            "bolus_calculations", "aps_snapshots", "pump_snapshots",
-            "uploader_snapshots", "pump_devices", "temp_basals",
-            "therapy_settings", "basal_schedules", "carb_ratio_schedules",
-            "sensitivity_schedules", "target_range_schedules",
-        };
-
-        foreach (var table in tenantScopedTables)
-        {
-            // Table names are from a hardcoded list above, not user input
-#pragma warning disable EF1002 // Risk of vulnerability to SQL injection
-            var updated = await context.Database.ExecuteSqlRawAsync(
-                $"UPDATE {table} SET tenant_id = {{0}} WHERE tenant_id IS NULL",
-                tenantId);
-#pragma warning restore EF1002
-
-            if (updated > 0)
-            {
-                logger.LogInformation("Backfilled tenant_id on {Count} rows in {Table}", updated, table);
-            }
-        }
+        // Previously this seeder also walked a hardcoded list of tenant-scoped
+        // tables and backfilled tenant_id on any NULL rows. That work was only
+        // needed during the original multitenancy rollout and ran in the same
+        // transaction as the 20260227034745_EnforceMultitenancy migration.
+        //
+        // The loop was removed because:
+        //   (1) It only runs when zero tenants exist, which on a fresh install
+        //       means the tenant-scoped tables are also empty.
+        //   (2) RLS is now enabled + forced on every tenant-scoped table. Any
+        //       UPDATE issued here would run without app.current_tenant_id set
+        //       and be rejected by the tenant_isolation policy.
+        //   (3) The hardcoded table list had drifted — it still referenced
+        //       alert_rules / alert_history, which were dropped in
+        //       20260322031413_DropOldAlertTables.
 
         logger.LogInformation("Default tenant seeding complete");
     }

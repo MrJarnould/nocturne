@@ -108,7 +108,7 @@ internal sealed class GlucosePublisher : IGlucosePublisher
 
     /// <summary>
     /// Updates the tenant's LastReadingAt timestamp after successful glucose publish.
-    /// Uses raw SQL to avoid loading the full tenant entity.
+    /// Uses ExecuteUpdateAsync to avoid materializing the tenant entity.
     /// </summary>
     private async Task UpdateLastReadingAtAsync(CancellationToken cancellationToken)
     {
@@ -118,8 +118,10 @@ internal sealed class GlucosePublisher : IGlucosePublisher
             if (tenantId == Guid.Empty) return;
 
             await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
-            await context.Database.ExecuteSqlInterpolatedAsync(
-                $"""UPDATE tenants SET last_reading_at = {DateTime.UtcNow} WHERE "Id" = {tenantId}""", cancellationToken);
+            var now = DateTime.UtcNow;
+            await context.Tenants
+                .Where(t => t.Id == tenantId)
+                .ExecuteUpdateAsync(s => s.SetProperty(t => t.LastReadingAt, now), cancellationToken);
         }
         catch (Exception ex)
         {
