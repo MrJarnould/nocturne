@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Data.Sqlite;
 using Moq;
 using Nocturne.API.Middleware.Handlers;
+using Nocturne.Core.Contracts.Multitenancy;
 using Nocturne.Core.Models.Authorization;
 using Nocturne.Infrastructure.Data;
 using Nocturne.Infrastructure.Data.Entities;
@@ -19,6 +20,7 @@ public class DirectGrantTokenHandlerTests : IDisposable
     private readonly Mock<IDbContextFactory<NocturneDbContext>> _dbContextFactory;
     private readonly DirectGrantTokenHandler _handler;
 
+    private readonly Guid _testTenantId = Guid.CreateVersion7();
     private readonly Guid _subjectId = Guid.CreateVersion7();
 
     public DirectGrantTokenHandlerTests()
@@ -31,14 +33,14 @@ public class DirectGrantTokenHandlerTests : IDisposable
             .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning))
             .Options;
 
-        using (var ctx = new NocturneDbContext(_dbOptions))
+        using (var ctx = new NocturneDbContext(_dbOptions) { TenantId = _testTenantId })
         {
             ctx.Database.EnsureCreated();
 
             // Seed required entities for FK constraints
             ctx.Tenants.Add(new Nocturne.Infrastructure.Data.Entities.TenantEntity
             {
-                Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                Id = _testTenantId,
                 Slug = "default",
                 DisplayName = "Default",
                 IsActive = true,
@@ -56,7 +58,7 @@ public class DirectGrantTokenHandlerTests : IDisposable
         _dbContextFactory = new Mock<IDbContextFactory<NocturneDbContext>>();
         _dbContextFactory
             .Setup(f => f.CreateDbContextAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(() => new NocturneDbContext(_dbOptions));
+            .ReturnsAsync(() => new NocturneDbContext(_dbOptions) { TenantId = _testTenantId });
 
         var logger = new Mock<ILogger<DirectGrantTokenHandler>>();
         _handler = new DirectGrantTokenHandler(_dbContextFactory.Object, logger.Object);
@@ -107,7 +109,7 @@ public class DirectGrantTokenHandlerTests : IDisposable
         var tokenHash = DirectGrantTokenHandler.ComputeSha256Hex(token);
 
         // Seed the grant
-        await using (var ctx = new NocturneDbContext(_dbOptions))
+        await using (var ctx = new NocturneDbContext(_dbOptions) { TenantId = _testTenantId })
         {
             ctx.OAuthGrants.Add(new OAuthGrantEntity
             {
@@ -153,7 +155,7 @@ public class DirectGrantTokenHandlerTests : IDisposable
         var tokenHash = DirectGrantTokenHandler.ComputeSha256Hex(token);
 
         // Seed a revoked grant
-        await using (var ctx = new NocturneDbContext(_dbOptions))
+        await using (var ctx = new NocturneDbContext(_dbOptions) { TenantId = _testTenantId })
         {
             ctx.OAuthGrants.Add(new OAuthGrantEntity
             {
@@ -189,9 +191,10 @@ public class DirectGrantTokenHandlerTests : IDisposable
         Assert.Equal("DirectGrantTokenHandler", _handler.Name);
     }
 
-    private static DefaultHttpContext CreateHttpContext()
+    private DefaultHttpContext CreateHttpContext()
     {
         var context = new DefaultHttpContext();
+        context.Items["TenantContext"] = new TenantContext(_testTenantId, "default", "Default", true);
         return context;
     }
 }

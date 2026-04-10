@@ -8,6 +8,7 @@ using Moq;
 using Nocturne.API.Controllers;
 using Nocturne.API.Middleware.Handlers;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Multitenancy;
 using Nocturne.Core.Models.Authorization;
 using Nocturne.Infrastructure.Data;
 using Nocturne.Infrastructure.Data.Entities;
@@ -21,6 +22,7 @@ public class DirectGrantControllerTests : IDisposable
     private readonly DbContextOptions<NocturneDbContext> _dbOptions;
     private readonly NocturneDbContext _dbContext;
     private readonly DirectGrantController _controller;
+    private readonly Guid _testTenantId = Guid.CreateVersion7();
     private readonly Guid _subjectId = Guid.CreateVersion7();
 
     public DirectGrantControllerTests()
@@ -33,13 +35,13 @@ public class DirectGrantControllerTests : IDisposable
             .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning))
             .Options;
 
-        _dbContext = new NocturneDbContext(_dbOptions);
+        _dbContext = new NocturneDbContext(_dbOptions) { TenantId = _testTenantId };
         _dbContext.Database.EnsureCreated();
 
         // Seed required entities for FK constraints
         _dbContext.Tenants.Add(new TenantEntity
         {
-            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Id = _testTenantId,
             Slug = "default",
             DisplayName = "Default",
             IsActive = true,
@@ -60,6 +62,7 @@ public class DirectGrantControllerTests : IDisposable
 
         // Set up authenticated HttpContext
         var httpContext = new DefaultHttpContext();
+        httpContext.Items["TenantContext"] = new TenantContext(_testTenantId, "default", "Default", true);
         httpContext.Items["AuthContext"] = new AuthContext
         {
             IsAuthenticated = true,

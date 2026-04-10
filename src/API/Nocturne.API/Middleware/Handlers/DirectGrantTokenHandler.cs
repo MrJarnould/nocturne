@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Nocturne.Core.Contracts.Multitenancy;
 using Nocturne.Core.Models.Authorization;
 using Nocturne.Infrastructure.Data;
 using Nocturne.Infrastructure.Data.Entities;
@@ -59,13 +60,22 @@ public class DirectGrantTokenHandler : IAuthHandler
             return AuthResult.Skip();
         }
 
+        // Direct grants are tenant-scoped — only match grants for the resolved tenant
+        var tenantCtx = context.Items["TenantContext"] as TenantContext;
+        if (tenantCtx is null)
+        {
+            return AuthResult.Skip();
+        }
+
         var tokenHash = ComputeSha256Hex(token);
 
         await using var dbContext = await _dbContextFactory.CreateDbContextAsync();
 
         var grant = await dbContext.OAuthGrants
             .AsNoTracking()
+            .IgnoreQueryFilters()
             .Where(g => g.TokenHash == tokenHash
+                     && g.TenantId == tenantCtx.TenantId
                      && g.GrantType == OAuthGrantTypes.Direct
                      && g.RevokedAt == null)
             .FirstOrDefaultAsync();

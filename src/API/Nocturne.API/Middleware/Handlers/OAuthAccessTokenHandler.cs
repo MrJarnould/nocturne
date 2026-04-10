@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Multitenancy;
 using Nocturne.Core.Models.Authorization;
 
 namespace Nocturne.API.Middleware.Handlers;
@@ -99,6 +100,19 @@ public class OAuthAccessTokenHandler : IAuthHandler
         }
 
         var claims = validationResult.Claims;
+
+        // Enforce tenant pin: reject tokens issued for a different tenant
+        if (claims.TenantId.HasValue)
+        {
+            var tenantCtx = context.Items["TenantContext"] as TenantContext;
+            if (tenantCtx is null || tenantCtx.TenantId != claims.TenantId.Value)
+            {
+                _logger.LogWarning(
+                    "OAuth access token tenant mismatch: token tenant {TokenTenant}, request tenant {RequestTenant}",
+                    claims.TenantId, tenantCtx?.TenantId);
+                return AuthResult.Failure("Token is not valid for this tenant");
+            }
+        }
 
         // Check revocation cache
         if (!string.IsNullOrEmpty(claims.JwtId))

@@ -193,6 +193,7 @@ public class OAuthGrantService : IOAuthGrantService
         return new OAuthGrantInfo
         {
             Id = entity.Id,
+            TenantId = entity.TenantId,
             ClientEntityId = entity.ClientEntityId,
             ClientId = entity.Client?.ClientId ?? string.Empty,
             ClientDisplayName = entity.Client?.DisplayName,

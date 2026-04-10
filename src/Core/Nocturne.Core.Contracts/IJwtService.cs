@@ -33,6 +33,8 @@ public interface IJwtService
     /// <param name="scopes">OAuth scopes to include in the token</param>
     /// <param name="clientId">OAuth client ID that requested this token</param>
     /// <param name="limitTo24Hours">When true, data requests should only return data from the last 24 hours</param>
+    /// <param name="tenantId">Tenant this token is pinned to. When present, the token is
+    /// only valid on the tenant subdomain that issued it.</param>
     /// <param name="lifetime">Optional custom lifetime (defaults to configuration)</param>
     /// <returns>JWT access token string</returns>
     string GenerateAccessToken(
@@ -42,6 +44,7 @@ public interface IJwtService
         IEnumerable<string> scopes,
         string? clientId = null,
         bool limitTo24Hours = false,
+        Guid? tenantId = null,
         TimeSpan? lifetime = null
     );
 
@@ -182,6 +185,13 @@ public class JwtClaims
     /// OAuth client ID that requested this token
     /// </summary>
     public string? ClientId { get; set; }
+
+    /// <summary>
+    /// Tenant this token is pinned to. Null for non-tenant-pinned tokens
+    /// (legacy session JWTs). When set, the token must only be accepted on
+    /// the matching tenant subdomain.
+    /// </summary>
+    public Guid? TenantId { get; set; }
 
     /// <summary>
     /// When true, data requests using this token should only return data from the

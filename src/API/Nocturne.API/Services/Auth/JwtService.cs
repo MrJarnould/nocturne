@@ -122,6 +122,7 @@ public class JwtService : IJwtService
         IEnumerable<string> scopes,
         string? clientId = null,
         bool limitTo24Hours = false,
+        Guid? tenantId = null,
         TimeSpan? lifetime = null
     )
     {
@@ -164,6 +165,12 @@ public class JwtService : IJwtService
         if (limitTo24Hours)
         {
             claims.Add(new Claim("limit_24h", "true", ClaimValueTypes.Boolean));
+        }
+
+        // Pin the token to a specific tenant so it cannot be replayed cross-tenant
+        if (tenantId.HasValue)
+        {
+            claims.Add(new Claim("tenant_id", tenantId.Value.ToString()));
         }
 
         // Add OAuth scopes as space-delimited string (RFC 6749 Section 3.3)
@@ -251,6 +258,10 @@ public class JwtService : IJwtService
             var limit24hClaim = principal.FindFirst("limit_24h")?.Value;
             var limitTo24Hours = limit24hClaim == "true";
 
+            // Parse tenant_id claim for tenant-pinned tokens
+            var tenantIdClaim = principal.FindFirst("tenant_id")?.Value;
+            Guid? tenantId = Guid.TryParse(tenantIdClaim, out var tid) ? tid : null;
+
             var claims = new JwtClaims
             {
                 SubjectId = subjectId,
@@ -260,6 +271,7 @@ public class JwtService : IJwtService
                 Permissions = principal.FindAll("permission").Select(c => c.Value).ToList(),
                 Scopes = scopeList,
                 ClientId = principal.FindFirst("client_id")?.Value,
+                TenantId = tenantId,
                 LimitTo24Hours = limitTo24Hours,
                 JwtId = jwtToken.Id,
                 IssuedAt = new DateTimeOffset(jwtToken.IssuedAt, TimeSpan.Zero),

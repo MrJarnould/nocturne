@@ -246,7 +246,8 @@ public class OAuthTokenService : IOAuthTokenService
             permissions,
             roles,
             grant.Scopes,
-            grant.Client?.ClientId
+            grant.Client?.ClientId,
+            tenantId: grant.TenantId
         );
 
         var expiresIn = (int)_jwtService.GetAccessTokenLifetime().TotalSeconds;
@@ -363,6 +364,7 @@ public class OAuthTokenService : IOAuthTokenService
         var grantInfo = new OAuthGrantInfo
         {
             Id = grantEntity.Id,
+            TenantId = grantEntity.TenantId,
             ClientEntityId = grantEntity.ClientEntityId,
             ClientId = grantEntity.Client?.ClientId ?? string.Empty,
             ClientDisplayName = grantEntity.Client?.DisplayName,
@@ -419,7 +421,8 @@ public class OAuthTokenService : IOAuthTokenService
             permissions,
             roles,
             grant.Scopes,
-            grant.ClientId
+            grant.ClientId,
+            tenantId: grant.TenantId
         );
 
         // Generate and store refresh token

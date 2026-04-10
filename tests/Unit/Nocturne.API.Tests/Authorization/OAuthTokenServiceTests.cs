@@ -40,6 +40,7 @@ public class OAuthTokenServiceTests : IDisposable
     // Pre-computed S256 challenge for TestCodeVerifier
     private static readonly string TestCodeChallenge = PkceValidator.ComputeCodeChallenge(TestCodeVerifier);
 
+    private readonly Guid _testTenantId = Guid.CreateVersion7();
     private readonly Guid _testSubjectId = Guid.CreateVersion7();
     private readonly Guid _testClientEntityId = Guid.CreateVersion7();
     private readonly Guid _testGrantId = Guid.CreateVersion7();
@@ -82,6 +83,7 @@ public class OAuthTokenServiceTests : IDisposable
                 It.IsAny<IEnumerable<string>>(),
                 It.IsAny<string?>(),
                 It.IsAny<bool>(),
+                It.IsAny<Guid?>(),
                 It.IsAny<TimeSpan?>()))
             .Returns(TestAccessToken);
         _mockJwtService.Setup(j => j.GetAccessTokenLifetime())
@@ -128,7 +130,7 @@ public class OAuthTokenServiceTests : IDisposable
 
     private NocturneDbContext CreateDbContext()
     {
-        return new NocturneDbContext(_contextOptions);
+        return new NocturneDbContext(_contextOptions) { TenantId = _testTenantId };
     }
 
     /// <summary>

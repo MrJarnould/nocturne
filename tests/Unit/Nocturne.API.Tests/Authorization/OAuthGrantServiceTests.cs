@@ -27,6 +27,7 @@ public class OAuthGrantServiceTests : IDisposable
 
     private const string TestClientId = "test-client-id";
 
+    private readonly Guid _testTenantId = Guid.CreateVersion7();
     private readonly Guid _testClientEntityId = Guid.CreateVersion7();
     private readonly Guid _ownerSubjectId = Guid.CreateVersion7();
 
@@ -73,7 +74,7 @@ public class OAuthGrantServiceTests : IDisposable
 
     private NocturneDbContext CreateDbContext()
     {
-        return new NocturneDbContext(_contextOptions);
+        return new NocturneDbContext(_contextOptions) { TenantId = _testTenantId };
     }
 
     private async Task SeedClientAsync(NocturneDbContext db, Guid? id = null, string? clientId = null)

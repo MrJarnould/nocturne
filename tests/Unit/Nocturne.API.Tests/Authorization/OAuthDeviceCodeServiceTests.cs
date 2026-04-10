@@ -32,6 +32,7 @@ public class OAuthDeviceCodeServiceTests : IDisposable
     private const string TestDeviceCodeHash = "test-device-code-hash";
     private const string TestClientId = "test-client-id";
 
+    private readonly Guid _testTenantId = Guid.CreateVersion7();
     private readonly Guid _testClientEntityId = Guid.CreateVersion7();
     private readonly Guid _testSubjectId = Guid.CreateVersion7();
     private readonly Guid _testGrantId = Guid.CreateVersion7();
@@ -109,7 +110,7 @@ public class OAuthDeviceCodeServiceTests : IDisposable
 
     private NocturneDbContext CreateDbContext()
     {
-        return new NocturneDbContext(_contextOptions);
+        return new NocturneDbContext(_contextOptions) { TenantId = _testTenantId };
     }
 
     /// <summary>
@@ -462,6 +463,7 @@ public class OAuthDeviceCodeExchangeTests : IDisposable
     private const string TestDeviceCodeHash = "test-device-code-hash";
     private const string TestClientId = "test-client-id";
 
+    private readonly Guid _testTenantId = Guid.CreateVersion7();
     private readonly Guid _testClientEntityId = Guid.CreateVersion7();
     private readonly Guid _testSubjectId = Guid.CreateVersion7();
     private readonly Guid _testGrantId = Guid.CreateVersion7();
@@ -506,6 +508,7 @@ public class OAuthDeviceCodeExchangeTests : IDisposable
                 It.IsAny<IEnumerable<string>>(),
                 It.IsAny<string?>(),
                 It.IsAny<bool>(),
+                It.IsAny<Guid?>(),
                 It.IsAny<TimeSpan?>()))
             .Returns(TestAccessToken);
         _mockJwtService.Setup(j => j.GetAccessTokenLifetime())
@@ -535,7 +538,7 @@ public class OAuthDeviceCodeExchangeTests : IDisposable
 
     private NocturneDbContext CreateDbContext()
     {
-        return new NocturneDbContext(_contextOptions);
+        return new NocturneDbContext(_contextOptions) { TenantId = _testTenantId };
     }
 
     /// <summary>
