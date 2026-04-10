@@ -385,26 +385,23 @@ class Program
                     .WithTransformXForwarded("X-Forwarded", ForwardedTransformActions.Set);
             });
 
-        // In run mode, derive PUBLIC_BASE_DOMAIN from the gateway's live endpoint
-        // so OAuth redirect URIs resolve correctly with dynamic ports.
-        // In publish mode, the parameter (set via user-secrets) is used instead.
+        // In run mode, derive PUBLIC_BASE_DOMAIN from the gateway's live HTTPS
+        // endpoint so OAuth redirect URIs resolve correctly with dynamic ports.
+        // In publish mode, PUBLIC_BASE_DOMAIN must be set via the public-base-domain
+        // parameter (user-secrets / env var) — the gateway only has an HTTP endpoint
+        // there (TLS via CertBot, TODO).
         // Note: consumers expect a bare host:port (e.g. "localhost:1612"), not a
         // full URL — they prepend the scheme themselves.
-        var publicBaseDomainValue = builder.Configuration["Parameters:public-base-domain"];
-        if (builder.ExecutionContext.IsRunMode || string.IsNullOrEmpty(publicBaseDomainValue))
+        if (builder.ExecutionContext.IsRunMode)
         {
             var gatewayEndpoint = gateway.GetEndpoint("https");
             var baseDomainExpr = ReferenceExpression.Create(
                 $"{gatewayEndpoint.Property(EndpointProperty.Host)}:{gatewayEndpoint.Property(EndpointProperty.Port)}");
             ((IResourceBuilder<IResourceWithEnvironment>)web)
                 .WithEnvironment("PUBLIC_BASE_DOMAIN", baseDomainExpr);
-
-            if (builder.ExecutionContext.IsRunMode)
-            {
-                ((IResourceBuilder<IResourceWithEnvironment>)web)
-                    .WithEnvironment("VITE_HMR_CLIENT_PORT", gatewayEndpoint.Property(EndpointProperty.Port))
-                    .WithEnvironment("VITE_HMR_HOST", "localhost");
-            }
+            ((IResourceBuilder<IResourceWithEnvironment>)web)
+                .WithEnvironment("VITE_HMR_CLIENT_PORT", gatewayEndpoint.Property(EndpointProperty.Port))
+                .WithEnvironment("VITE_HMR_HOST", "localhost");
         }
 
         // ------------------------------------------------------------------
