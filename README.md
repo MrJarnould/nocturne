@@ -124,18 +124,48 @@ Nocturne includes native connectors for popular diabetes platforms:
 If you set up the connector's settings in the appsettings, then it'll automatically start when you run `aspire run`.
 
 
-## Quick Start with Docker (For prod)
+## Production Deployment (Docker Compose)
 
-Run `aspire publish` anywhere within the repository. This will use the `appsettings.json` and create a `docker-compose.yml` and `.env` file within `./aspire-output` which you can then use. You may need to replace the image .env like so: 
+The easiest way to deploy Nocturne is with the production Docker Compose bundle. Each [GitHub Release](https://github.com/nightscout/nocturne/releases) includes ready-to-use artifacts, or you can generate them locally.
+
+### Using a release
+
+Download `docker-compose.production.yaml`, `.env.production`, and the `container-init/` folder from the latest release. The `.env.production` comes with random PostgreSQL passwords already generated.
 
 ```bash
-    NOCTURNE_API_IMAGE=ghcr.io/nightscout/nocturne/nocturne-api:latest
-    NOCTURNE_WEB_IMAGE=ghcr.io/nightscout/nocturne/nocturne-web:latest
-    NIGHTSCOUT_CONNECTOR_IMAGE=ghcr.io/nightscout/nocturne/nightscout-connector:latest
-    GLOOKO_CONNECTOR_IMAGE=ghcr.io/nightscout/nocturne/glooko-connector:latest
+# Review and customise .env.production:
+#   - Set PUBLIC_BASE_DOMAIN to your domain (e.g. nocturne.example.com)
+#   - Optionally add Discord / Telegram / Slack / WhatsApp credentials
+
+docker compose -f docker-compose.production.yaml up -d
 ```
 
-We're working on a tool to automate this and enable easier deployment via the web. 
+The production compose includes [Watchtower](https://github.com/nicholas-fedor/watchtower) for automatic container updates (checks daily), and omits the Aspire dashboard and Scalar API explorer.
+
+### Generating locally
+
+If you have the .NET SDK and Aspire CLI installed, you can generate the production bundle from source:
+
+```bash
+./scripts/publish-production.sh          # outputs to repo root
+./scripts/publish-production.sh ./deploy # or specify a directory
+```
+
+The script runs `aspire publish` with production flags and auto-generates random passwords for all PostgreSQL roles.
+
+### PostgreSQL Roles
+
+Nocturne uses three separate PostgreSQL roles for defense in depth. All three have `NOBYPASSRLS` so they obey Row Level Security policies, even when the database has no superuser connected.
+
+| Role | Purpose | Privileges |
+|------|---------|------------|
+| **`nocturne_migrator`** | Runs EF Core migrations (schema DDL). Owns the database and `public` schema. | `CREATE`, `ALTER`, `DROP` on tables. Cannot bypass RLS. |
+| **`nocturne_app`** | Runtime connection pool for the .NET API. Owns nothing. | `SELECT`, `INSERT`, `UPDATE`, `DELETE` on migrator-created tables. Cannot bypass RLS. |
+| **`nocturne_web`** | SvelteKit bot framework (chat state storage). Owns only its own `chat_state_*` tables. | `CREATE` on `public` schema (for its own tables only). No access to Nocturne tenant tables. Cannot bypass RLS. |
+
+The bootstrap user (`POSTGRES_USER`) is only used for initial container setup. After `container-init/00-init.sh` runs, all application traffic flows through the three roles above. Passwords are set via environment variables in `.env.production`.
+
+For bring-your-own PostgreSQL (not using the bundled container), run `docs/postgres/bootstrap-roles.sql` once as a superuser. See the comments in that file for details.
 
 ## Development
 
@@ -177,6 +207,10 @@ See [src/Tools/README.md](src/Tools/README.md) for detailed tool documentation.
 
 ## Deployment
 
+### Docker Compose (Recommended)
+
+See [Production Deployment](#production-deployment-docker-compose) above.
+
 ### Azure Container Apps
 
 ```bash
@@ -187,13 +221,6 @@ curl -fsSL https://aka.ms/install-azd.sh | bash
 azd auth login
 azd init
 azd up
-```
-
-### Docker Compose
-
-```bash
-docker-compose build
-docker-compose up -d
 ```
 
 ## API Documentation
