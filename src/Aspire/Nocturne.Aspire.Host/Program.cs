@@ -4,6 +4,7 @@ using Aspire.Hosting;
 using Aspire.Hosting.Publishing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Nocturne.Aspire.Host;
 using Nocturne.Aspire.Hosting;
 using Nocturne.Core.Constants;
 using Scalar.Aspire;
@@ -42,6 +43,9 @@ class Program
         // and the web block below also needs it.
         var solutionRoot = Path.GetFullPath(
             Path.Combine(builder.AppHostDirectory, "..", "..", ".."));
+
+        var persistence = WorktreeDetection.DetectPersistence(solutionRoot);
+        Console.WriteLine($"[Nocturne.Aspire] Postgres persistence mode: {persistence}");
 
         IResourceBuilder<PostgresServerResource>? postgresServer = null;
         IResourceBuilder<PostgresDatabaseResource>? managedDatabase = null;
@@ -83,10 +87,8 @@ class Program
 
             var postgres = builder
                 .AddPostgres(ServiceNames.PostgreSql + "-server")
-                .WithLifetime(ContainerLifetime.Persistent)
                 .WithUserName(postgresUsername)
                 .WithPassword(postgresPassword)
-                .WithDataVolume(ServiceNames.Volumes.PostgresData)
                 .WithBindMount(pgInitPath, "/docker-entrypoint-initdb.d", isReadOnly: true)
                 // Force the Postgres image to create the Nocturne database at
                 // container init, BEFORE /docker-entrypoint-initdb.d/ scripts
@@ -100,7 +102,14 @@ class Program
                 .WithEnvironment("NOCTURNE_APP_PASSWORD", postgresAppPassword)
                 .WithEnvironment("NOCTURNE_WEB_PASSWORD", postgresWebPassword);
 
-            if (builder.Environment.IsDevelopment())
+            if (persistence == PersistenceMode.Persistent)
+            {
+                postgres
+                    .WithLifetime(ContainerLifetime.Persistent)
+                    .WithDataVolume(ServiceNames.Volumes.PostgresData);
+            }
+
+            if (builder.Environment.IsDevelopment() && persistence == PersistenceMode.Persistent)
             {
                 postgres.WithPgAdmin();
             }
