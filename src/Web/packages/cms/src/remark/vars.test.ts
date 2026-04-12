@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkHtml from 'remark-html';
-import { remarkVars } from './vars.js';
+import { remarkVars } from './vars.ts';
 
 async function process(markdown: string): Promise<string> {
   const result = await unified()

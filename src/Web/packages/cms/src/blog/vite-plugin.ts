@@ -1,6 +1,6 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { parseFrontmatter, buildManifest } from './manifest.js';
+import { parseFrontmatter, buildManifest } from './manifest.ts';
 import type { Plugin } from 'vite';
 
 const VIRTUAL_MODULE_ID = 'virtual:blog-manifest';

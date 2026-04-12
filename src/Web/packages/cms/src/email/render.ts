@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import type { EmailComponentMap } from './component-map.js';
+import type { EmailComponentMap } from './component-map.ts';
 
 export interface EmailRenderOptions {
 	/** Email component substitution map (strict allowlist) */

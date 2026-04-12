@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { generateRss } from './rss.js';
-import type { BlogManifest } from './types.js';
+import { generateRss } from './rss.ts';
+import type { BlogManifest } from './types.ts';
 
 describe('generateRss', () => {
   const manifest: BlogManifest = {

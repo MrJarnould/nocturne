@@ -1,4 +1,4 @@
-import type { BlogPostMeta, BlogManifest } from './types.js';
+import type { BlogPostMeta, BlogManifest } from './types.ts';
 
 interface LoadResult {
   content: unknown;

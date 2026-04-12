@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { parseFrontmatter, buildManifest } from './manifest.js';
-import type { BlogPostMeta } from './types.js';
+import { parseFrontmatter, buildManifest } from './manifest.ts';
+import type { BlogPostMeta } from './types.ts';
 
 describe('parseFrontmatter', () => {
   it('parses valid frontmatter from svx content', () => {

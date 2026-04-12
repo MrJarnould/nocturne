@@ -1,4 +1,4 @@
-import type { BlogPostMeta, BlogManifest } from './types.js';
+import type { BlogPostMeta, BlogManifest } from './types.ts';
 
 export function parseFrontmatter(content: string, filename: string): BlogPostMeta | null {
   const match = content.match(/^---\n([\s\S]*?)\n---/);

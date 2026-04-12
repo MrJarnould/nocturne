@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { createBlogLoader } from './loader.js';
-import type { BlogManifest } from './types.js';
+import { createBlogLoader } from './loader.ts';
+import type { BlogManifest } from './types.ts';
 
 const mockManifest: BlogManifest = {
   posts: [

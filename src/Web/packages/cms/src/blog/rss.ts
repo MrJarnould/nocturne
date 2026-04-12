@@ -1,4 +1,4 @@
-import type { BlogManifest } from './types.js';
+import type { BlogManifest } from './types.ts';
 
 export interface RssOptions {
   siteUrl: string;

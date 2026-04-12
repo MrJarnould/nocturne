@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateComponentUsage } from './component-map.js';
+import { validateComponentUsage } from './component-map.ts';
 
 describe('validateComponentUsage', () => {
 	it('returns empty array when all components are in the allowlist', () => {
