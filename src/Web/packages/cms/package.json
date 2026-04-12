@@ -17,22 +17,24 @@
   },
   "peerDependencies": {
     "@nocturne/ui": ">=0.1.0",
-    "svelte": ">=5.0.0",
+    "@sveltejs/kit": ">=2.0.0",
     "mdsvex": ">=0.12.0",
-    "@sveltejs/kit": ">=2.0.0"
+    "svelte": ">=5.0.0"
   },
   "devDependencies": {
-    "svelte": "^5.50.0",
-    "mdsvex": "^0.12.3",
+    "@nocturne/ui": "workspace:*",
     "@sveltejs/kit": "^2.50.2",
     "@sveltejs/vite-plugin-svelte": "^6.2.4",
-    "@nocturne/ui": "workspace:*",
-    "typescript": "^5.8.3",
+    "mdsvex": "^0.12.3",
+    "remark-html": "^16.0.1",
+    "remark-parse": "^11.0.0",
+    "svelte": "^5.50.0",
     "svelte-check": "^4.3.6",
-    "vitest": "^3.2.1",
+    "typescript": "^5.8.3",
     "unified": "^11.0.0",
     "unist-util-visit": "^5.0.0",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "vitest": "^3.2.1"
   },
   "scripts": {
     "check": "svelte-check --tsconfig ./tsconfig.json",
