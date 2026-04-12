@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nocturne.Connectors.Core.Models;
@@ -11,6 +13,8 @@ namespace Nocturne.API.Controllers.V4.Connectors;
 /// <summary>
 /// Receives inbound webhooks from Home Assistant automations.
 /// Authentication is via secret in URL path, not standard auth middleware.
+/// Configuration is loaded from the database at request time (not the startup singleton)
+/// so that webhook settings can be changed without restarting the application.
 /// </summary>
 // TODO: In multitenant deployments, webhook URL should include tenant context.
 // Current implementation works for single-tenant setups. For multitenant:
@@ -20,17 +24,37 @@ namespace Nocturne.API.Controllers.V4.Connectors;
 [Route("api/v4/connectors/home-assistant/webhook")]
 [AllowAnonymous]
 public class HomeAssistantWebhookController(
-    HomeAssistantConnectorConfiguration config,
+    IConnectorConfigurationService configService,
     HomeAssistantEntityMapper mapper,
     IEntryService entryService,
     ILogger<HomeAssistantWebhookController> logger) : ControllerBase
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        Converters = { new JsonStringEnumConverter() }
+    };
+
     [HttpPost("{secret}")]
     public async Task<IActionResult> ReceiveWebhook(
         string secret,
         [FromBody] HomeAssistantStateResponse payload,
         CancellationToken ct)
     {
+        // Load runtime configuration from DB (same source as the background service)
+        var dbConfig = await configService.GetConfigurationAsync("HomeAssistant", ct);
+        if (dbConfig?.Configuration == null)
+            return NotFound();
+
+        var config = JsonSerializer.Deserialize<HomeAssistantConnectorConfiguration>(
+            dbConfig.Configuration.RootElement.GetRawText(), JsonOptions)
+            ?? new();
+
+        // Apply decrypted secrets (webhookSecret is stored encrypted)
+        var secrets = await configService.GetSecretsAsync("HomeAssistant", ct);
+        if (secrets.TryGetValue("webhookSecret", out var webhookSecret))
+            config.WebhookSecret = webhookSecret;
+
         if (!config.WebhookEnabled || string.IsNullOrEmpty(config.WebhookSecret))
             return NotFound();
 

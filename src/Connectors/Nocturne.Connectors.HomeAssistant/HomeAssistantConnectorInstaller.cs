@@ -18,6 +18,10 @@ public class HomeAssistantConnectorInstaller : IConnectorInstaller
         var config = services.AddConnectorConfiguration<HomeAssistantConnectorConfiguration>(
             configuration, "HomeAssistant");
 
+        // Always register mapper — the webhook controller needs it even when
+        // polling is disabled (webhook uses DB-stored config, not env vars)
+        services.AddScoped<HomeAssistantEntityMapper>();
+
         if (!config.Enabled)
             return;
 
@@ -39,9 +43,6 @@ public class HomeAssistantConnectorInstaller : IConnectorInstaller
 
         // Register the interface mapping
         services.AddScoped<IHomeAssistantApiClient>(sp => sp.GetRequiredService<HomeAssistantApiClient>());
-
-        // Mapper
-        services.AddScoped<HomeAssistantEntityMapper>();
 
         // Sync executor
         services.AddScoped<IConnectorSyncExecutor, HomeAssistantSyncExecutor>();
