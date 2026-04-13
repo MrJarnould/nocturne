@@ -221,7 +221,7 @@ importers:
         version: 5.50.0
       svelte-check:
         specifier: ^4.3.6
-        version: 4.3.6(picomatch@4.0.4)(svelte@5.50.0)(typescript@5.9.3)
+        version: 4.3.6(picomatch@4.0.3)(svelte@5.50.0)(typescript@5.9.3)
       svelte-sonner:
         specifier: ^1.0.7
         version: 1.0.7(svelte@5.50.0)
@@ -371,6 +371,9 @@ importers:
       '@tiptap/extensions':
         specifier: ^3.0.0
         version: 3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))(@tiptap/pm@3.22.3)
+      '@tiptap/html':
+        specifier: ^3.22.3
+        version: 3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))(@tiptap/pm@3.22.3)(happy-dom@20.5.3)
       '@tiptap/markdown':
         specifier: ^3.0.0
         version: 3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))(@tiptap/pm@3.22.3)
@@ -400,7 +403,7 @@ importers:
         version: 5.50.0
       svelte-check:
         specifier: ^4.3.6
-        version: 4.4.6(picomatch@4.0.4)(svelte@5.50.0)(typescript@5.9.3)
+        version: 4.4.6(picomatch@4.0.3)(svelte@5.50.0)(typescript@5.9.3)
       svelte-sonner:
         specifier: ^0.3.0
         version: 0.3.28(svelte@5.50.0)
@@ -519,7 +522,7 @@ importers:
         version: 5.45.2
       svelte-check:
         specifier: ^4.3.4
-        version: 4.3.4(picomatch@4.0.3)(svelte@5.45.2)(typescript@5.9.3)
+        version: 4.3.4(picomatch@4.0.4)(svelte@5.45.2)(typescript@5.9.3)
       svelte-sonner:
         specifier: ^1.0.7
         version: 1.0.7(svelte@5.45.2)
@@ -2719,6 +2722,13 @@ packages:
     peerDependencies:
       '@tiptap/core': ^3.22.3
       '@tiptap/pm': ^3.22.3
+
+  '@tiptap/html@3.22.3':
+    resolution: {integrity: sha512-Cc1v2x5HJNDjgkT9vxhP1rJGscIPWTprCRUzRCIVwLuqdnRblntJtOpxMhFUU7yXCqlY27yUqmOBAvyhH1WO9g==}
+    peerDependencies:
+      '@tiptap/core': ^3.22.3
+      '@tiptap/pm': ^3.22.3
+      happy-dom: ^20.8.9
 
   '@tiptap/markdown@3.22.3':
     resolution: {integrity: sha512-Ajw8AkAae7IET1sxZqNv+dhZQSuLY0AHWocowTny1azyiBtmRRKygkGK0ysVA+k6UxmBD6K+tvnbpjQ0/ACl4A==}
@@ -8255,6 +8265,12 @@ snapshots:
       '@tiptap/core': 3.22.3(@tiptap/pm@3.22.3)
       '@tiptap/pm': 3.22.3
 
+  '@tiptap/html@3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))(@tiptap/pm@3.22.3)(happy-dom@20.5.3)':
+    dependencies:
+      '@tiptap/core': 3.22.3(@tiptap/pm@3.22.3)
+      '@tiptap/pm': 3.22.3
+      happy-dom: 20.5.3
+
   '@tiptap/markdown@3.22.3(@tiptap/core@3.22.3(@tiptap/pm@3.22.3))(@tiptap/pm@3.22.3)':
     dependencies:
       '@tiptap/core': 3.22.3(@tiptap/pm@3.22.3)
@@ -11395,11 +11411,11 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  svelte-check@4.3.4(picomatch@4.0.3)(svelte@5.45.2)(typescript@5.9.3):
+  svelte-check@4.3.4(picomatch@4.0.4)(svelte@5.45.2)(typescript@5.9.3):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       chokidar: 4.0.3
-      fdir: 6.5.0(picomatch@4.0.3)
+      fdir: 6.5.0(picomatch@4.0.4)
       picocolors: 1.1.1
       sade: 1.8.1
       svelte: 5.45.2
@@ -11407,11 +11423,23 @@ snapshots:
     transitivePeerDependencies:
       - picomatch
 
-  svelte-check@4.3.6(picomatch@4.0.4)(svelte@5.50.0)(typescript@5.9.3):
+  svelte-check@4.3.6(picomatch@4.0.3)(svelte@5.50.0)(typescript@5.9.3):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       chokidar: 4.0.3
-      fdir: 6.5.0(picomatch@4.0.4)
+      fdir: 6.5.0(picomatch@4.0.3)
+      picocolors: 1.1.1
+      sade: 1.8.1
+      svelte: 5.50.0
+      typescript: 5.9.3
+    transitivePeerDependencies:
+      - picomatch
+
+  svelte-check@4.4.6(picomatch@4.0.3)(svelte@5.50.0)(typescript@5.9.3):
+    dependencies:
+      '@jridgewell/trace-mapping': 0.3.31
+      chokidar: 4.0.3
+      fdir: 6.5.0(picomatch@4.0.3)
       picocolors: 1.1.1
       sade: 1.8.1
       svelte: 5.50.0
