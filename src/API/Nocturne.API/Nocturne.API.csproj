@@ -37,7 +37,6 @@
     </PackageReference>
     <PackageReference Include="OpenTelemetry.Exporter.Console" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
-    <PackageReference Include="Scalar.AspNetCore" />
     <PackageReference Include="ShiroTrie" />
     <PackageReference Include="Wasmtime" />
     <PackageReference Include="Yarp.ReverseProxy" />

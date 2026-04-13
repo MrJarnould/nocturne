@@ -24,7 +24,6 @@ using Nocturne.Infrastructure.Data.Interceptors;
 using OpenTelemetry.Logs;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Scalar.AspNetCore;
 using JwtOptions = Nocturne.Core.Models.Configuration.JwtOptions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -184,6 +183,9 @@ builder.Services.AddOpenApi("nocturne", options =>
             || ns == "Nocturne.API.Controllers";
     };
     options.AddOperationTransformer<FolderBasedTagOperationTransformer>();
+    options.AddOperationTransformer<SecurityRequirementOperationTransformer>();
+    options.AddDocumentTransformer<TagDescriptionDocumentTransformer>();
+    options.AddDocumentTransformer<SecuritySchemeDocumentTransformer>();
 });
 
 builder.Services.AddOpenApi("nightscout", options =>
@@ -200,6 +202,9 @@ builder.Services.AddOpenApi("nightscout", options =>
             || ns.EndsWith(".Controllers.V3", StringComparison.Ordinal);
     };
     options.AddOperationTransformer<FolderBasedTagOperationTransformer>();
+    options.AddOperationTransformer<SecurityRequirementOperationTransformer>();
+    options.AddDocumentTransformer<TagDescriptionDocumentTransformer>();
+    options.AddDocumentTransformer<SecuritySchemeDocumentTransformer>();
 });
 
 // ── Service registration (grouped by concern) ──────────────────────────
@@ -333,16 +338,8 @@ app.MapHub<ConfigHub>("/hubs/config");
 // Serve OpenAPI specs at /openapi/{documentName}.json
 app.MapOpenApi();
 
-// Scalar API Reference provides interactive API documentation at /scalar
-app.MapScalarApiReference(options =>
-{
-    options.WithTitle("Nocturne API Documentation");
-    options.WithTheme(Scalar.AspNetCore.ScalarTheme.Mars);
-    options.AddDocument("nocturne", "Nocturne API", isDefault: true);
-    options.AddDocument("nightscout", "Nightscout API", isDefault: false);
-    options.SortTagsAlphabetically();
-    options.WithDefaultOpenAllTags(false);
-});
+// Scalar API docs are served by the Aspire host integration, not here.
+// OpenAPI specs are still served from this project at /openapi/{documentName}.json.
 
 // Add root endpoint to serve a basic info page
 app.MapGet(
