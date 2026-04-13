@@ -22,7 +22,6 @@ public class MigrationController : ControllerBase
         _logger = logger;
     }
 
-    /// <summary>
     /// <inheritdoc cref="IMigrationJobService.TestConnectionAsync"/>
     [HttpPost("test")]
     [RemoteForm]
@@ -36,7 +35,6 @@ public class MigrationController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
     /// <inheritdoc cref="IMigrationJobService.StartMigrationAsync"/>
     [HttpPost("start")]
     [RemoteForm]
@@ -70,7 +68,6 @@ public class MigrationController : ControllerBase
         return AcceptedAtAction(nameof(GetStatus), new { jobId = jobInfo.Id }, jobInfo);
     }
 
-    /// <summary>
     /// <inheritdoc cref="IMigrationJobService.GetStatusAsync"/>
     [HttpGet("{jobId:guid}/status")]
     [RemoteQuery]
@@ -89,7 +86,6 @@ public class MigrationController : ControllerBase
         }
     }
 
-    /// <summary>
     /// <inheritdoc cref="IMigrationJobService.CancelAsync"/>
     [HttpPost("{jobId:guid}/cancel")]
     [RemoteCommand]
@@ -108,7 +104,6 @@ public class MigrationController : ControllerBase
         }
     }
 
-    /// <summary>
     /// <inheritdoc cref="IMigrationJobService.GetHistoryAsync"/>
     [HttpGet("history")]
     [RemoteQuery]
@@ -119,7 +114,6 @@ public class MigrationController : ControllerBase
         return Ok(history);
     }
 
-    /// <summary>
     /// <inheritdoc cref="IMigrationJobService.GetPendingConfig"/>
     [HttpGet("pending-config")]
     [RemoteQuery]
@@ -130,7 +124,6 @@ public class MigrationController : ControllerBase
         return Ok(config);
     }
 
-    /// <summary>
     /// <inheritdoc cref="IMigrationJobService.GetSourcesAsync"/>
     [HttpGet("sources")]
     [RemoteQuery]

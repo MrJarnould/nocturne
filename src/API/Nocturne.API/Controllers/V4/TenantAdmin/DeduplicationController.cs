@@ -27,7 +27,6 @@ public class DeduplicationController : ControllerBase
         _logger = logger;
     }
 
-    /// <summary>
     /// <inheritdoc cref="IDeduplicationService.StartDeduplicationJobAsync"/>
     [HttpPost("run")]
     [RemoteCommand]
@@ -56,7 +55,6 @@ public class DeduplicationController : ControllerBase
         }
     }
 
-    /// <summary>
     /// <inheritdoc cref="IDeduplicationService.GetJobStatusAsync"/>
     [HttpGet("status/{jobId:guid}")]
     [RemoteQuery]
@@ -87,7 +85,6 @@ public class DeduplicationController : ControllerBase
         }
     }
 
-    /// <summary>
     /// <inheritdoc cref="IDeduplicationService.CancelJobAsync"/>
     [HttpPost("cancel/{jobId:guid}")]
     [RemoteCommand]
@@ -123,7 +120,6 @@ public class DeduplicationController : ControllerBase
         }
     }
 
-    /// <summary>
     /// <inheritdoc cref="IDeduplicationService.GetLinkedRecordsAsync"/>
     [HttpGet("entries/{entryId}/sources")]
     [RemoteQuery]
@@ -166,7 +162,6 @@ public class DeduplicationController : ControllerBase
         }
     }
 
-    /// <summary>
     /// <inheritdoc cref="IDeduplicationService.GetLinkedRecordsAsync"/>
     [HttpGet("treatments/{treatmentId}/sources")]
     [RemoteQuery]
@@ -209,7 +204,6 @@ public class DeduplicationController : ControllerBase
         }
     }
 
-    /// <summary>
     /// <inheritdoc cref="IDeduplicationService.GetLinkedRecordsAsync"/>
     [HttpGet("state-spans/{stateSpanId}/sources")]
     [RemoteQuery]
@@ -252,7 +246,6 @@ public class DeduplicationController : ControllerBase
         }
     }
 
-    /// <summary>
     /// <inheritdoc cref="IDeduplicationService.GetLinkedRecordsAsync"/>
     [HttpGet("records/{recordType}/{recordId}/sources")]
     [RemoteQuery]
