@@ -14,10 +14,12 @@ public sealed class ChatIdentityService(
     IDbContextFactory<NocturneDbContext> contextFactory,
     ILogger<ChatIdentityService> logger)
 {
+    /// <summary>Returns all active chat identity links for the specified tenant.</summary>
     public Task<IReadOnlyList<ChatIdentityDirectoryEntry>> GetByTenantAsync(
         Guid tenantId, CancellationToken ct)
         => directory.GetByTenantAsync(tenantId, ct);
 
+    /// <summary>Consumes a pending link token and creates a directory entry linking the chat platform user to the tenant.</summary>
     public async Task<ChatIdentityDirectoryEntry> ClaimPendingLinkAsync(
         Guid tenantId, Guid userId, string token, CancellationToken ct)
     {
@@ -52,6 +54,7 @@ public sealed class ChatIdentityService(
         return entry;
     }
 
+    /// <summary>Creates a chat identity link directly, bypassing the pending-token flow.</summary>
     public async Task<ChatIdentityDirectoryEntry> CreateDirectLinkAsync(
         Guid tenantId, Guid userId, string platform, string platformUserId, CancellationToken ct)
     {
@@ -65,15 +68,19 @@ public sealed class ChatIdentityService(
             platform, platformUserId, tenantId, userId, tenant.Slug, tenant.DisplayName, ct);
     }
 
+    /// <summary>Designates a chat identity link as the default for the platform user.</summary>
     public Task SetDefaultAsync(Guid tenantId, Guid linkId, CancellationToken ct)
         => directory.SetDefaultAsync(linkId, ct);
 
+    /// <summary>Renames the label on a chat identity link.</summary>
     public Task RenameLabelAsync(Guid tenantId, Guid linkId, string newLabel, CancellationToken ct)
         => directory.RenameLabelAsync(linkId, newLabel, ct);
 
+    /// <summary>Updates the display name on a chat identity link.</summary>
     public Task UpdateDisplayNameAsync(Guid tenantId, Guid linkId, string newDisplayName, CancellationToken ct)
         => directory.UpdateDisplayNameAsync(linkId, newDisplayName, ct);
 
+    /// <summary>Permanently removes a chat identity link.</summary>
     public Task RevokeAsync(Guid tenantId, Guid linkId, CancellationToken ct)
         => directory.RevokeAsync(linkId, ct);
 

@@ -2,6 +2,7 @@ namespace Nocturne.Core.Contracts.Multitenancy;
 
 public interface IMemberInviteService
 {
+    /// <summary>Creates a new invite link that grants the specified roles and permissions when accepted.</summary>
     Task<MemberInviteResult> CreateInviteAsync(
         Guid tenantId,
         Guid createdBySubjectId,
@@ -12,9 +13,16 @@ public interface IMemberInviteService
         int? maxUses = null,
         bool limitTo24Hours = false);
 
+    /// <summary>Retrieves invite details by token, or null if the token is invalid or expired.</summary>
     Task<MemberInviteInfo?> GetInviteByTokenAsync(string token);
+
+    /// <summary>Accepts an invite and adds the subject as a member of the tenant.</summary>
     Task<AcceptMemberInviteResult> AcceptInviteAsync(string token, Guid acceptingSubjectId);
+
+    /// <summary>Returns all invites for the specified tenant, including usage history.</summary>
     Task<List<MemberInviteInfo>> GetInvitesForTenantAsync(Guid tenantId);
+
+    /// <summary>Revokes an invite so it can no longer be accepted.</summary>
     Task<bool> RevokeInviteAsync(Guid inviteId, Guid tenantId);
 }
 

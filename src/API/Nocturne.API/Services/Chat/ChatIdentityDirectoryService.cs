@@ -13,6 +13,7 @@ public sealed class ChatIdentityDirectoryService(
     IDbContextFactory<NocturneDbContext> contextFactory,
     ILogger<ChatIdentityDirectoryService> logger)
 {
+    /// <summary>Returns all active directory entries for a platform user, ordered by creation date.</summary>
     public async Task<IReadOnlyList<ChatIdentityDirectoryEntry>> GetCandidatesAsync(
         string platform, string platformUserId, CancellationToken ct)
     {
@@ -25,6 +26,7 @@ public sealed class ChatIdentityDirectoryService(
             .ToListAsync(ct);
     }
 
+    /// <summary>Resolves a single directory entry by platform user and optional label, falling back to the default link.</summary>
     public async Task<ChatIdentityDirectoryEntry?> GetByPlatformAndUserAsync(
         string platform, string platformUserId, string? labelArg, CancellationToken ct)
     {
@@ -48,6 +50,7 @@ public sealed class ChatIdentityDirectoryService(
         return defaults.Count == 1 ? defaults[0] : null;
     }
 
+    /// <summary>Returns all active directory entries for a tenant.</summary>
     public async Task<IReadOnlyList<ChatIdentityDirectoryEntry>> GetByTenantAsync(
         Guid tenantId, CancellationToken ct)
     {
@@ -58,12 +61,14 @@ public sealed class ChatIdentityDirectoryService(
             .ToListAsync(ct);
     }
 
+    /// <summary>Returns a directory entry by its ID, or null if not found.</summary>
     public async Task<ChatIdentityDirectoryEntry?> GetByIdAsync(Guid id, CancellationToken ct)
     {
         await using var db = await contextFactory.CreateDbContextAsync(ct);
         return await db.ChatIdentityDirectory.FirstOrDefaultAsync(d => d.Id == id, ct);
     }
 
+    /// <summary>Creates a directory link between a chat platform user and a tenant, auto-suffixing the label if it collides.</summary>
     public async Task<ChatIdentityDirectoryEntry> CreateLinkAsync(
         string platform, string platformUserId, Guid tenantId, Guid nocturneUserId,
         string suggestedLabel, string suggestedDisplayName, CancellationToken ct)
@@ -110,6 +115,7 @@ public sealed class ChatIdentityDirectoryService(
         return entry;
     }
 
+    /// <summary>Designates a link as the default for the platform user, clearing the previous default in a transaction.</summary>
     public async Task SetDefaultAsync(Guid linkId, CancellationToken ct)
     {
         await using var db = await contextFactory.CreateDbContextAsync(ct);
@@ -141,6 +147,7 @@ public sealed class ChatIdentityDirectoryService(
             linkId, target.Platform, target.PlatformUserId);
     }
 
+    /// <summary>Renames a link's label, throwing if the new label collides with an existing one.</summary>
     public async Task RenameLabelAsync(Guid linkId, string newLabel, CancellationToken ct)
     {
         await using var db = await contextFactory.CreateDbContextAsync(ct);
@@ -162,6 +169,7 @@ public sealed class ChatIdentityDirectoryService(
         }
     }
 
+    /// <summary>Updates the display name shown to the chat platform user for a link.</summary>
     public async Task UpdateDisplayNameAsync(Guid linkId, string newDisplayName, CancellationToken ct)
     {
         await using var db = await contextFactory.CreateDbContextAsync(ct);
@@ -172,6 +180,7 @@ public sealed class ChatIdentityDirectoryService(
         await db.SaveChangesAsync(ct);
     }
 
+    /// <summary>Permanently deletes a directory link.</summary>
     public async Task RevokeAsync(Guid linkId, CancellationToken ct)
     {
         await using var db = await contextFactory.CreateDbContextAsync(ct);
