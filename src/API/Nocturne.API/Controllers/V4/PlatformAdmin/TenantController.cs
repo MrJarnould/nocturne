@@ -76,6 +76,7 @@ public class TenantController : ControllerBase
         return Ok(tenant);
     }
 
+    /// <inheritdoc cref="ITenantService.AddMemberAsync"/>
     [HttpPost("{id:guid}/members")]
     [RemoteCommand(Invalidates = ["GetById"])]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -90,6 +91,7 @@ public class TenantController : ControllerBase
         return NoContent();
     }
 
+    /// <inheritdoc cref="ITenantService.RemoveMemberAsync"/>
     [HttpDelete("{id:guid}/members/{subjectId:guid}")]
     [RemoteCommand(Invalidates = ["GetById"])]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -114,6 +116,7 @@ public class TenantController : ControllerBase
         return NoContent();
     }
 
+    /// <inheritdoc cref="IMemberInviteService.CreateInviteAsync"/>
     [HttpPost("{id:guid}/invites")]
     [RemoteCommand(Invalidates = ["GetById"])]
     [ProducesResponseType(typeof(MemberInviteResult), StatusCodes.Status201Created)]
@@ -138,6 +141,7 @@ public class TenantController : ControllerBase
         return StatusCode(StatusCodes.Status201Created, result);
     }
 
+    /// <inheritdoc cref="IMemberInviteService.GetInvitesForTenantAsync"/>
     [HttpGet("{id:guid}/invites")]
     [RemoteQuery]
     [ProducesResponseType(typeof(List<MemberInviteInfo>), StatusCodes.Status200OK)]
@@ -151,6 +155,7 @@ public class TenantController : ControllerBase
         return Ok(invites);
     }
 
+    /// <inheritdoc cref="IMemberInviteService.RevokeInviteAsync"/>
     [HttpDelete("{id:guid}/invites/{inviteId:guid}")]
     [RemoteCommand(Invalidates = ["GetById", "ListInvites"])]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -175,6 +180,7 @@ public class TenantController : ControllerBase
         return NoContent();
     }
 
+    /// <inheritdoc cref="ITenantService.ProvisionWithOwnerAsync"/>
     [HttpPost("provision")]
     [RemoteCommand(Invalidates = ["GetAll"])]
     [ProducesResponseType(typeof(ProvisionResult), StatusCodes.Status201Created)]

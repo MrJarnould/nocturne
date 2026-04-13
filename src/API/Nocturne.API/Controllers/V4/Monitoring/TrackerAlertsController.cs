@@ -37,10 +37,7 @@ public class TrackerAlertsController : ControllerBase
         _logger = logger;
     }
 
-    /// <summary>
-    /// Get pending tracker alerts for the current user
-    /// </summary>
-    /// <returns>List of pending alerts that need attention</returns>
+    /// <inheritdoc cref="ITrackerAlertService.GetPendingAlertsAsync"/>
     [HttpGet("pending")]
     [ProducesResponseType(typeof(TrackerAlertDto[]), 200)]
     public async Task<ActionResult<TrackerAlertDto[]>> GetPendingAlerts()

@@ -26,6 +26,7 @@ public class RoleController : ControllerBase
     [RemoteQuery]
     [ProducesResponseType(typeof(List<TenantRoleDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    /// <inheritdoc cref="ITenantRoleService.GetRolesAsync"/>
     public async Task<IActionResult> GetRoles(CancellationToken ct)
     {
         if (!HasPermission(TenantPermissions.RolesManage))
@@ -42,6 +43,7 @@ public class RoleController : ControllerBase
     [RemoteCommand(Invalidates = ["GetRoles"])]
     [ProducesResponseType(typeof(TenantRoleDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    /// <inheritdoc cref="ITenantRoleService.CreateRoleAsync"/>
     public async Task<IActionResult> CreateRole([FromBody] CreateRoleRequest request, CancellationToken ct)
     {
         if (!HasPermission(TenantPermissions.RolesManage))
@@ -59,6 +61,7 @@ public class RoleController : ControllerBase
     [RemoteCommand(Invalidates = ["GetRoles"])]
     [ProducesResponseType(typeof(TenantRoleDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    /// <inheritdoc cref="ITenantRoleService.UpdateRoleAsync"/>
     public async Task<IActionResult> UpdateRole(Guid id, [FromBody] UpdateRoleRequest request, CancellationToken ct)
     {
         if (!HasPermission(TenantPermissions.RolesManage))
@@ -83,6 +86,7 @@ public class RoleController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    /// <inheritdoc cref="ITenantRoleService.DeleteRoleAsync"/>
     public async Task<IActionResult> DeleteRole(Guid id, CancellationToken ct)
     {
         if (!HasPermission(TenantPermissions.RolesManage))

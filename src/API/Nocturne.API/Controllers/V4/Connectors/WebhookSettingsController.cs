@@ -16,6 +16,7 @@ public class WebhookSettingsController(
     [HttpGet]
     [ProducesResponseType(typeof(WebhookNotificationSettings), 200)]
     [ProducesResponseType(500)]
+    /// <summary>Gets the webhook notification settings for the current tenant.</summary>
     public Task<ActionResult<WebhookNotificationSettings>> GetWebhookSettings(
         CancellationToken cancellationToken = default
     )
@@ -37,6 +38,7 @@ public class WebhookSettingsController(
     [ProducesResponseType(typeof(WebhookNotificationSettings), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
+    /// <summary>Saves webhook notification settings.</summary>
     public Task<ActionResult<WebhookNotificationSettings>> SaveWebhookSettings(
         [FromBody] WebhookNotificationSettings settings,
         CancellationToken cancellationToken = default
@@ -51,6 +53,7 @@ public class WebhookSettingsController(
     [ProducesResponseType(typeof(WebhookTestResult), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
+    /// <summary>Tests webhook settings by sending test payloads to configured URLs.</summary>
     public async Task<ActionResult<WebhookTestResult>> TestWebhookSettings(
         [FromBody] WebhookTestRequest request,
         CancellationToken cancellationToken = default

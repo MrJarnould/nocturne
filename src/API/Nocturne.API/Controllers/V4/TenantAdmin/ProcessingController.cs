@@ -23,16 +23,12 @@ public class ProcessingController : ControllerBase
         _logger = logger;
     }
 
-    /// <summary>
-    /// Get the processing status for a correlation ID
-    /// </summary>
-    /// <param name="correlationId">The correlation ID to check</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>Processing status or 404 if not found</returns>
+    /// <inheritdoc cref="IProcessingStatusService.GetStatusAsync"/>
     [HttpGet("status/{correlationId}")]
     [ProducesResponseType(typeof(ProcessingStatusResponse), 200)]
     [ProducesResponseType(typeof(object), 404)]
     [ProducesResponseType(typeof(object), 500)]
+    /// <inheritdoc cref="IProcessingStatusService.GetStatusAsync"/>
     public async Task<ActionResult<ProcessingStatusResponse>> GetProcessingStatus(
         string correlationId,
         CancellationToken cancellationToken = default
@@ -123,18 +119,13 @@ public class ProcessingController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Wait for processing to complete with long polling
-    /// </summary>
-    /// <param name="correlationId">The correlation ID to wait for</param>
-    /// <param name="timeoutSeconds">Maximum time to wait in seconds (default: 30)</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>Processing status when completed or timeout response</returns>
+    /// <inheritdoc cref="IProcessingStatusService.WaitForCompletionAsync"/>
     [HttpGet("status/{correlationId}/wait")]
     [ProducesResponseType(typeof(ProcessingStatusResponse), 200)]
     [ProducesResponseType(typeof(object), 404)]
     [ProducesResponseType(typeof(object), 408)]
     [ProducesResponseType(typeof(object), 500)]
+    /// <inheritdoc cref="IProcessingStatusService.WaitForCompletionAsync"/>
     public async Task<ActionResult<ProcessingStatusResponse>> WaitForCompletion(
         string correlationId,
         [FromQuery] int timeoutSeconds = 30,

@@ -42,6 +42,7 @@ public class ConnectedAppsController : ControllerBase
     [HttpGet]
     [RemoteQuery]
     [ProducesResponseType(typeof(List<ConnectedAppDto>), StatusCodes.Status200OK)]
+    /// <inheritdoc cref="IOAuthGrantService.GetGrantsForSubjectAsync"/>
     public async Task<ActionResult<List<ConnectedAppDto>>> List(CancellationToken ct)
     {
         var subjectId = HttpContext.GetSubjectId();
@@ -82,6 +83,7 @@ public class ConnectedAppsController : ControllerBase
     [RemoteCommand(Invalidates = ["List"])]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    /// <inheritdoc cref="IOAuthGrantService.RevokeGrantAsync"/>
     public async Task<ActionResult> Revoke(Guid grantId, CancellationToken ct)
     {
         var subjectId = HttpContext.GetSubjectId();

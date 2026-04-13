@@ -28,17 +28,12 @@ public class BackfillController : ControllerBase
         _logger = logger;
     }
 
-    /// <summary>
-    /// Trigger a full backfill of legacy entries and treatments into v4 granular tables.
-    /// This operation is idempotent and safe to re-run. Records are matched by LegacyId
-    /// to avoid creating duplicates. Only one backfill can run at a time.
-    /// </summary>
-    /// <param name="ct">Cancellation token</param>
-    /// <returns>Backfill result with counts of processed, failed, and skipped records</returns>
+    /// <summary>Triggers a backfill operation to recalculate derived data.</summary>
     [HttpPost("backfill")]
     [ProducesResponseType(typeof(BackfillResult), 200)]
     [ProducesResponseType(409)]
     [ProducesResponseType(500)]
+    /// <summary>Triggers a backfill operation to recalculate derived data.</summary>
     public async Task<ActionResult<BackfillResult>> TriggerBackfill(CancellationToken ct)
     {
         if (!await BackfillLock.WaitAsync(0, ct))

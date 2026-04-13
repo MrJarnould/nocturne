@@ -36,6 +36,7 @@ public class HomeAssistantWebhookController(
     };
 
     [HttpPost("{secret}")]
+    /// <summary>Receives a webhook from Home Assistant with entity state updates and creates corresponding glucose entries.</summary>
     public async Task<IActionResult> ReceiveWebhook(
         string secret,
         [FromBody] HomeAssistantStateResponse payload,

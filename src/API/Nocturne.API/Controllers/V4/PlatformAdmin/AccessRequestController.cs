@@ -42,6 +42,7 @@ public class AccessRequestController(
         return Ok(requests);
     }
 
+    /// <inheritdoc cref="ITenantService.AddMemberAsync"/>
     [HttpPost("{subjectId:guid}/approve")]
     [RemoteCommand]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -110,6 +111,7 @@ public class AccessRequestController(
         return Ok();
     }
 
+    /// <inheritdoc cref="ISubjectService.DeleteSubjectAsync"/>
     [HttpPost("{subjectId:guid}/deny")]
     [RemoteCommand]
     [ProducesResponseType(StatusCodes.Status200OK)]

@@ -24,6 +24,7 @@ public class SystemEventsController : ControllerBase
     /// Query system events with optional filtering
     /// </summary>
     [HttpGet]
+    /// <inheritdoc cref="ISystemEventRepository.GetSystemEventsAsync"/>
     public async Task<ActionResult<IEnumerable<SystemEvent>>> GetSystemEvents(
         [FromQuery] SystemEventType? type = null,
         [FromQuery] SystemEventCategory? category = null,
@@ -45,6 +46,7 @@ public class SystemEventsController : ControllerBase
     /// Get a specific system event by ID
     /// </summary>
     [HttpGet("{id}")]
+    /// <inheritdoc cref="ISystemEventRepository.GetSystemEventByIdAsync"/>
     public async Task<ActionResult<SystemEvent>> GetSystemEvent(
         string id,
         CancellationToken cancellationToken = default)
@@ -60,6 +62,7 @@ public class SystemEventsController : ControllerBase
     /// </summary>
     [HttpPost]
     [ProducesResponseType(typeof(SystemEvent), StatusCodes.Status201Created)]
+    /// <inheritdoc cref="ISystemEventRepository.UpsertSystemEventAsync"/>
     public async Task<ActionResult<SystemEvent>> CreateSystemEvent(
         [FromBody] CreateSystemEventRequest request,
         CancellationToken cancellationToken = default)
@@ -84,6 +87,7 @@ public class SystemEventsController : ControllerBase
     /// Delete a system event
     /// </summary>
     [HttpDelete("{id}")]
+    /// <inheritdoc cref="ISystemEventRepository.DeleteSystemEventAsync"/>
     public async Task<IActionResult> DeleteSystemEvent(
         string id,
         CancellationToken cancellationToken = default)

@@ -28,11 +28,7 @@ public class DeduplicationController : ControllerBase
     }
 
     /// <summary>
-    /// Start a deduplication job to link related records from different data sources.
-    /// The job runs in the background and can be monitored using the status endpoint.
-    /// </summary>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>Job ID for tracking progress</returns>
+    /// <inheritdoc cref="IDeduplicationService.StartDeduplicationJobAsync"/>
     [HttpPost("run")]
     [RemoteCommand]
     [ProducesResponseType(typeof(DeduplicationJobResponse), 202)]
@@ -61,11 +57,7 @@ public class DeduplicationController : ControllerBase
     }
 
     /// <summary>
-    /// Get the status of a deduplication job.
-    /// </summary>
-    /// <param name="jobId">The job ID returned from the run endpoint</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>Current status and progress of the job</returns>
+    /// <inheritdoc cref="IDeduplicationService.GetJobStatusAsync"/>
     [HttpGet("status/{jobId:guid}")]
     [RemoteQuery]
     [ProducesResponseType(typeof(DeduplicationJobStatus), 200)]
@@ -96,11 +88,7 @@ public class DeduplicationController : ControllerBase
     }
 
     /// <summary>
-    /// Cancel a running deduplication job.
-    /// </summary>
-    /// <param name="jobId">The job ID to cancel</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>Whether the job was successfully cancelled</returns>
+    /// <inheritdoc cref="IDeduplicationService.CancelJobAsync"/>
     [HttpPost("cancel/{jobId:guid}")]
     [RemoteCommand]
     [ProducesResponseType(typeof(CancelJobResponse), 200)]
@@ -136,11 +124,7 @@ public class DeduplicationController : ControllerBase
     }
 
     /// <summary>
-    /// Get linked records for a specific entry by its canonical group.
-    /// </summary>
-    /// <param name="entryId">The entry ID</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>All linked records in the same canonical group</returns>
+    /// <inheritdoc cref="IDeduplicationService.GetLinkedRecordsAsync"/>
     [HttpGet("entries/{entryId}/sources")]
     [RemoteQuery]
     [ProducesResponseType(typeof(LinkedRecordsResponse), 200)]
@@ -183,11 +167,7 @@ public class DeduplicationController : ControllerBase
     }
 
     /// <summary>
-    /// Get linked records for a specific treatment by its canonical group.
-    /// </summary>
-    /// <param name="treatmentId">The treatment ID</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>All linked records in the same canonical group</returns>
+    /// <inheritdoc cref="IDeduplicationService.GetLinkedRecordsAsync"/>
     [HttpGet("treatments/{treatmentId}/sources")]
     [RemoteQuery]
     [ProducesResponseType(typeof(LinkedRecordsResponse), 200)]
@@ -230,11 +210,7 @@ public class DeduplicationController : ControllerBase
     }
 
     /// <summary>
-    /// Get linked records for a specific state span by its canonical group.
-    /// </summary>
-    /// <param name="stateSpanId">The state span ID</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>All linked records in the same canonical group</returns>
+    /// <inheritdoc cref="IDeduplicationService.GetLinkedRecordsAsync"/>
     [HttpGet("state-spans/{stateSpanId}/sources")]
     [RemoteQuery]
     [ProducesResponseType(typeof(LinkedRecordsResponse), 200)]
@@ -277,12 +253,7 @@ public class DeduplicationController : ControllerBase
     }
 
     /// <summary>
-    /// Get linked records for any V4 record type by its canonical group.
-    /// </summary>
-    /// <param name="recordType">The record type (e.g. SensorGlucose, Bolus, CarbIntake)</param>
-    /// <param name="recordId">The record ID</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>All linked records in the same canonical group</returns>
+    /// <inheritdoc cref="IDeduplicationService.GetLinkedRecordsAsync"/>
     [HttpGet("records/{recordType}/{recordId}/sources")]
     [RemoteQuery]
     [ProducesResponseType(typeof(LinkedRecordsResponse), 200)]

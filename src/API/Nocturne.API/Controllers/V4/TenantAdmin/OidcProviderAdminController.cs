@@ -66,6 +66,7 @@ public class OidcProviderAdminController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, OidcProviderResponse.FromDomain(created));
     }
 
+    /// <inheritdoc cref="IOidcProviderService.IsConfigManaged"/>
     [HttpGet("config-managed")]
     [RemoteQuery]
     [ProducesResponseType(typeof(ConfigManagedResponse), StatusCodes.Status200OK)]
@@ -122,6 +123,7 @@ public class OidcProviderAdminController : ControllerBase
         return deleted ? NoContent() : NotFound();
     }
 
+    /// <inheritdoc cref="IOidcProviderService.EnableProviderAsync"/>
     [HttpPost("{id:guid}/enable")]
     [RemoteCommand(Invalidates = ["GetAll", "GetById"])]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -132,6 +134,7 @@ public class OidcProviderAdminController : ControllerBase
         return enabled ? NoContent() : NotFound();
     }
 
+    /// <inheritdoc cref="IOidcProviderService.DisableProviderAsync"/>
     [HttpPost("{id:guid}/disable")]
     [RemoteCommand(Invalidates = ["GetAll", "GetById"])]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -146,6 +149,7 @@ public class OidcProviderAdminController : ControllerBase
         return disabled ? NoContent() : NotFound();
     }
 
+    /// <inheritdoc cref="IOidcProviderService.TestProviderAsync"/>
     [HttpPost("{id:guid}/test")]
     [RemoteCommand]
     [ProducesResponseType(typeof(OidcProviderTestResult), StatusCodes.Status200OK)]

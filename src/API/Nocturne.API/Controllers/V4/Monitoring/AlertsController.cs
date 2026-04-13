@@ -134,9 +134,7 @@ public class AlertsController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// Acknowledge all active alerts for the current tenant.
-    /// </summary>
+    /// <inheritdoc cref="IAlertAcknowledgementService.AcknowledgeAllAsync"/>
     [HttpPost("acknowledge")]
     [RemoteCommand(Invalidates = ["GetActiveAlerts"])]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -256,9 +254,7 @@ public class AlertsController : ControllerBase
         return NoContent();
     }
 
-    /// <summary>
-    /// Mark a delivery as successfully sent by the channel adapter.
-    /// </summary>
+    /// <inheritdoc cref="IAlertDeliveryService.MarkDeliveredAsync"/>
     [HttpPost("deliveries/{deliveryId:guid}/delivered")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> MarkDelivered(
@@ -269,9 +265,7 @@ public class AlertsController : ControllerBase
         return NoContent();
     }
 
-    /// <summary>
-    /// Mark a delivery as failed by the channel adapter.
-    /// </summary>
+    /// <inheritdoc cref="IAlertDeliveryService.MarkFailedAsync"/>
     [HttpPost("deliveries/{deliveryId:guid}/failed")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> MarkFailed(

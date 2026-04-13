@@ -21,6 +21,7 @@ public class ApiSecretController : ControllerBase
         _tenantAccessor = tenantAccessor;
     }
 
+    /// <inheritdoc cref="ITenantService.HasApiSecretAsync"/>
     [HttpGet("status")]
     [RemoteQuery]
     [ProducesResponseType(typeof(ApiSecretStatusResponse), StatusCodes.Status200OK)]
@@ -36,6 +37,7 @@ public class ApiSecretController : ControllerBase
         return Ok(new ApiSecretStatusResponse(hasSecret));
     }
 
+    /// <inheritdoc cref="ITenantService.RegenerateApiSecretAsync"/>
     [HttpPost("regenerate")]
     [RemoteCommand(Invalidates = ["GetStatus"])]
     [ProducesResponseType(typeof(ApiSecretRegeneratedResponse), StatusCodes.Status200OK)]

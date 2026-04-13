@@ -67,6 +67,7 @@ public class ChatIdentityDirectoryController : ControllerBase
         });
     }
 
+    /// <inheritdoc cref="ChatIdentityPendingLinkService.CreateAsync"/>
     [HttpPost("pending-links")]
     public async Task<ActionResult<PendingLinkResponse>> CreatePending(
         [FromBody] CreatePendingLinkRequest request, CancellationToken ct)

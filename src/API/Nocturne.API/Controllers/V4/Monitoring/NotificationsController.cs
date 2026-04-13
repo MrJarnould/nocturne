@@ -31,10 +31,7 @@ public class NotificationsController : ControllerBase
         _logger = logger;
     }
 
-    /// <summary>
-    /// Get all active notifications for the current user
-    /// </summary>
-    /// <returns>List of active notifications</returns>
+    /// <inheritdoc cref="IInAppNotificationService.GetActiveNotificationsAsync"/>
     [HttpGet]
     [RemoteQuery]
     [Authorize]
@@ -57,12 +54,7 @@ public class NotificationsController : ControllerBase
         return Ok(notifications);
     }
 
-    /// <summary>
-    /// Execute an action on a notification
-    /// </summary>
-    /// <param name="id">The notification ID</param>
-    /// <param name="actionId">The action ID to execute</param>
-    /// <returns>No content if successful</returns>
+    /// <inheritdoc cref="IInAppNotificationService.ExecuteActionAsync"/>
     [HttpPost("{id:guid}/actions/{actionId}")]
     [RemoteCommand(Invalidates = ["GetNotifications"])]
     [Authorize]
@@ -100,11 +92,7 @@ public class NotificationsController : ControllerBase
         return NoContent();
     }
 
-    /// <summary>
-    /// Dismiss a notification (archive with dismissed reason)
-    /// </summary>
-    /// <param name="id">The notification ID to dismiss</param>
-    /// <returns>No content if successful</returns>
+    /// <inheritdoc cref="IInAppNotificationService.ArchiveNotificationAsync"/>
     [HttpDelete("{id:guid}")]
     [RemoteCommand(Invalidates = ["GetNotifications"])]
     [Authorize]

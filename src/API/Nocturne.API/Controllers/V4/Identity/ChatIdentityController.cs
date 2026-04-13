@@ -74,6 +74,7 @@ public class ChatIdentityController : ControllerBase
         return Ok(MapResponse(entry));
     }
 
+    /// <inheritdoc cref="ChatIdentityService.SetDefaultAsync"/>
     [HttpPost("links/{id:guid}/set-default")]
     [RemoteCommand(Invalidates = ["GetLinks"])]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -98,6 +99,7 @@ public class ChatIdentityController : ControllerBase
         return NoContent();
     }
 
+    /// <inheritdoc cref="ChatIdentityService.RevokeAsync"/>
     [HttpDelete("links/{id:guid}")]
     [RemoteCommand(Invalidates = ["GetLinks"])]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

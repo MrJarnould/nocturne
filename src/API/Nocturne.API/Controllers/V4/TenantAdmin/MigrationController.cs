@@ -23,8 +23,7 @@ public class MigrationController : ControllerBase
     }
 
     /// <summary>
-    /// Test a migration source connection
-    /// </summary>
+    /// <inheritdoc cref="IMigrationJobService.TestConnectionAsync"/>
     [HttpPost("test")]
     [RemoteForm]
     [ProducesResponseType(typeof(TestMigrationConnectionResult), StatusCodes.Status200OK)]
@@ -38,8 +37,7 @@ public class MigrationController : ControllerBase
     }
 
     /// <summary>
-    /// Start a new migration job
-    /// </summary>
+    /// <inheritdoc cref="IMigrationJobService.StartMigrationAsync"/>
     [HttpPost("start")]
     [RemoteForm]
     [ProducesResponseType(typeof(MigrationJobInfo), StatusCodes.Status202Accepted)]
@@ -73,8 +71,7 @@ public class MigrationController : ControllerBase
     }
 
     /// <summary>
-    /// Get the status of a migration job
-    /// </summary>
+    /// <inheritdoc cref="IMigrationJobService.GetStatusAsync"/>
     [HttpGet("{jobId:guid}/status")]
     [RemoteQuery]
     [ProducesResponseType(typeof(MigrationJobStatus), StatusCodes.Status200OK)]
@@ -93,8 +90,7 @@ public class MigrationController : ControllerBase
     }
 
     /// <summary>
-    /// Cancel a running migration job
-    /// </summary>
+    /// <inheritdoc cref="IMigrationJobService.CancelAsync"/>
     [HttpPost("{jobId:guid}/cancel")]
     [RemoteCommand]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -113,8 +109,7 @@ public class MigrationController : ControllerBase
     }
 
     /// <summary>
-    /// Get migration job history
-    /// </summary>
+    /// <inheritdoc cref="IMigrationJobService.GetHistoryAsync"/>
     [HttpGet("history")]
     [RemoteQuery]
     [ProducesResponseType(typeof(IReadOnlyList<MigrationJobInfo>), StatusCodes.Status200OK)]
@@ -125,8 +120,7 @@ public class MigrationController : ControllerBase
     }
 
     /// <summary>
-    /// Get pending migration configuration from environment variables
-    /// </summary>
+    /// <inheritdoc cref="IMigrationJobService.GetPendingConfig"/>
     [HttpGet("pending-config")]
     [RemoteQuery]
     [ProducesResponseType(typeof(PendingMigrationConfig), StatusCodes.Status200OK)]
@@ -137,8 +131,7 @@ public class MigrationController : ControllerBase
     }
 
     /// <summary>
-    /// Get saved migration sources with their last migration timestamps
-    /// </summary>
+    /// <inheritdoc cref="IMigrationJobService.GetSourcesAsync"/>
     [HttpGet("sources")]
     [RemoteQuery]
     [ProducesResponseType(typeof(IReadOnlyList<MigrationSourceDto>), StatusCodes.Status200OK)]
