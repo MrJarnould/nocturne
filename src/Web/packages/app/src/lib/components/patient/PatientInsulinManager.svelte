@@ -28,7 +28,7 @@
     insulinRoleLabels,
     insulinRoleDescriptions,
   } from "./labels";
-  import { createInsulinListState } from "./state.svelte";
+  import { InsulinListState } from "./state.svelte";
 
   interface Props {
     /** "inline" = wizard-style card forms, "dialog" = settings-style dialog CRUD */
@@ -37,7 +37,7 @@
 
   let { variant = "dialog" }: Props = $props();
 
-  const insulinList = createInsulinListState();
+  const insulinList = new InsulinListState();
 
   // ── Helpers ──────────────────────────────────────────────────────
 

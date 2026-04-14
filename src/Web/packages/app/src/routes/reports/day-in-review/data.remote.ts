@@ -5,7 +5,8 @@
 import { z } from 'zod';
 import { getRequestEvent, query } from '$app/server';
 import { error } from '@sveltejs/kit';
-import { getAll as getApsSnapshots } from '$api/generated/apssnapshots.generated.remote';
+import { getAll as getApsSnapshots } from '$api/generated/apsSnapshots.generated.remote';
+import { getInsulinDeliveryStatistics } from '$api/generated/statistics.generated.remote';
 import { getProfileSummary } from '$api/generated/profiles.generated.remote';
 import { getLocalDayBoundariesUtc } from '$lib/utils/timezone';
 
@@ -45,11 +46,29 @@ export const getDayInReviewData = query(
 		const carbIntakes = carbResponse.data ?? [];
 		const apsSnapshots = apsResponse.data ?? [];
 
-		// TODO: apiClient.statistics has been removed. These methods need to be migrated
-		// to use apiClient.summary or apiClient.retrospective clients when available.
-		const analysis = null;
-		const treatmentSummary = null;
-		const insulinDelivery = null;
+		// Calculate analysis from the backend - this includes treatmentSummary
+		const analysis = entries.length > 0
+			? await apiClient.statistics.analyzeGlucoseDataExtended({
+					entries,
+					boluses,
+					carbIntakes,
+					population: 0 as const, // Type1Adult
+				})
+			: null;
+
+		// Use the treatmentSummary from analysis (if available) to avoid redundant API call
+		// The backend AnalyzeGlucoseDataExtended already calculates TreatmentSummary
+		// If no entries but we have boluses/carbIntakes, calculate treatmentSummary directly
+		const treatmentSummary = analysis?.treatmentSummary
+			?? ((boluses.length > 0 || carbIntakes.length > 0)
+				? await apiClient.statistics.calculateTreatmentSummary({ boluses, carbIntakes })
+				: null);
+
+		// Fetch insulin delivery stats (includes scheduled vs additional basal breakdown)
+		const insulinDelivery = await getInsulinDeliveryStatistics({
+			startDate: dayStart,
+			endDate: dayEnd,
+		});
 
 		return {
 			date: dateParam,

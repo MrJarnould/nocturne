@@ -19208,7 +19208,6 @@ msgstr ""
 #~ msgid "{0} of 4 required steps complete"
 #~ msgstr ""
 
-#: src/lib/components/patient/state.svelte.ts
 #: src/routes/(fullscreen)/setup/profile/+page.svelte
 #: src/routes/settings/setup/profile/+page.svelte
 msgid "Something went wrong. Please try again."
@@ -24276,9 +24275,8 @@ msgstr ""
 msgid "Nightscout v1-v4"
 msgstr ""
 
-#: src/lib/components/patient/state.svelte.ts
-msgid "Failed to save weight. Please try again."
-msgstr ""
+#~ msgid "Failed to save weight. Please try again."
+#~ msgstr ""
 
 #: src/routes/(fullscreen)/auth/bot/discord/finalize/+page.svelte
 msgid "Missing Token"

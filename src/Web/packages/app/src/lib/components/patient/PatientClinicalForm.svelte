@@ -4,7 +4,7 @@
   import * as Select from "$lib/components/ui/select";
   import { DiabetesType } from "$api";
   import { diabetesTypeLabels } from "./labels";
-  import { createClinicalState } from "./state.svelte";
+  import { ClinicalState } from "./state.svelte";
 
   interface Props {
     /** Expose reactive state API to parent */
@@ -17,7 +17,7 @@
 
   let { onstate }: Props = $props();
 
-  const state = createClinicalState();
+  const state = new ClinicalState();
 
   // Expose state API to parent reactively
   $effect(() => {

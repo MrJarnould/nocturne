@@ -22,7 +22,7 @@
     list as listGrants,
     create as createGrant,
     revoke as revokeGrant,
-  } from "$lib/api/generated/directgrants.generated.remote";
+  } from "$lib/api/generated/directGrants.generated.remote";
   import type { DirectGrantDto } from "$api";
   import {
     getOAuthScopeDescription,

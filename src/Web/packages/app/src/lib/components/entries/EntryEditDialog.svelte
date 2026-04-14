@@ -41,7 +41,7 @@
     create as createBGCheckForm,
     update as updateBGCheckForm,
     remove as deleteBGCheck,
-  } from "$api/generated/bgchecks.generated.remote";
+  } from "$api/generated/bgChecks.generated.remote";
   import {
     create as createNoteForm,
     update as updateNoteForm,
@@ -51,7 +51,7 @@
     create as createDeviceEventForm,
     update as updateDeviceEventForm,
     remove as deleteDeviceEvent,
-  } from "$api/generated/deviceevents.generated.remote";
+  } from "$api/generated/deviceEvents.generated.remote";
 
   interface Sections {
     bolus: Partial<Bolus> | null;

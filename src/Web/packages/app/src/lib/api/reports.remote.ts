@@ -3,12 +3,10 @@
  * Provides sensor glucose, boluses, carb intakes, device events, and analysis data for all report pages
  */
 import { z } from 'zod';
+import { DiabetesPopulationSchema } from '$lib/api/generated/schemas';
 import { getRequestEvent, query } from '$app/server';
 import { error } from '@sveltejs/kit';
-import { type BasalPoint } from '$lib/api';
-
-// DiabetesPopulation is not yet in the generated API — schema defined locally until the backend exposes it
-const DiabetesPopulationSchema = z.enum(['Type1Adult', 'Type1Child', 'Type2Adult', 'Type2Child', 'Pregnant', 'Other']);
+import { DiabetesPopulation, type BasalPoint } from '$lib/api';
 
 /**
  * Input schema for date range queries.
@@ -155,9 +153,16 @@ export const getAnalysis = query(
 		carbIntakes: z.array(z.any()),
 		population: DiabetesPopulationSchema.optional(),
 	}),
-	async (_input) => {
-		// TODO: statistics client removed
-		return null;
+	async ({ entries, boluses, carbIntakes, population = DiabetesPopulation.Type1Adult }) => {
+		const { locals } = getRequestEvent();
+		const { apiClient } = locals;
+
+		return apiClient.statistics.analyzeGlucoseDataExtended({
+			entries,
+			boluses,
+			carbIntakes,
+			population: population as DiabetesPopulation,
+		});
 	}
 );
 
@@ -167,78 +172,7 @@ export const getAnalysis = query(
 export const getSummary = query(async () => {
 	const { locals } = getRequestEvent();
 	const { apiClient } = locals;
-
-	// TODO: integrate with backend when statistics client is restored
-	// Temporary stub returning expected structure
-	return {
-		lastDay: {
-			entryCount: 0,
-			reliability: {
-				meetsReliabilityCriteria: false,
-				daysOfData: 0,
-				recommendedMinimumDays: 14,
-			},
-			analytics: {
-				timeInRange: {
-					percentages: {
-						target: 0,
-						veryLow: 0,
-						low: 0,
-						high: 0,
-						veryHigh: 0,
-					},
-				},
-			},
-			insulinDelivery: {
-				totalBolus: 0,
-				totalBasal: 0,
-				tdd: 0,
-				bolusPercent: 0,
-				basalPercent: 0,
-			},
-			treatmentSummary: {
-				totals: {
-					food: {
-						carbs: 0,
-					},
-				},
-			},
-		},
-		last90Days: {
-			entryCount: 0,
-			periodDays: 90,
-			reliability: {
-				meetsReliabilityCriteria: false,
-				daysOfData: 0,
-				recommendedMinimumDays: 14,
-			},
-			analytics: {
-				timeInRange: {
-					percentages: {
-						target: 0,
-						veryLow: 0,
-						low: 0,
-						high: 0,
-						veryHigh: 0,
-					},
-				},
-			},
-			insulinDelivery: {
-				totalBolus: 0,
-				totalBasal: 0,
-				tdd: 0,
-				bolusPercent: 0,
-				basalPercent: 0,
-			},
-			treatmentSummary: {
-				totals: {
-					food: {
-						carbs: 0,
-					},
-				},
-			},
-		},
-	};
+	return apiClient.statistics.getMultiPeriodStatistics();
 });
 
 /**
@@ -302,19 +236,24 @@ export const getReportsData = query(
 
 		const boluses = allBoluses!;
 		const carbIntakes = allCarbIntakes!;
+		const population = DiabetesPopulation.Type1Adult; // TODO: Get from user settings
 
-		// Get basal data; statistics calls are stubbed out until the statistics client is restored
-		// TODO: statistics client removed
-		const summary = null;
-		// TODO: statistics client removed
-		const analysis = null;
-		// TODO: statistics client removed
-		const averagedStats = null;
-		const chartData = await apiClient.chartData.getDashboardChartData(
-			startDate.getTime(),
-			endDate.getTime(),
-			5 // 5-minute intervals
-		);
+		// Get summary, analysis, averaged stats, and basal data in parallel
+		const [summary, analysis, averagedStats, chartData] = await Promise.all([
+			apiClient.statistics.getMultiPeriodStatistics(),
+			apiClient.statistics.analyzeGlucoseDataExtended({
+				entries,
+				boluses,
+				carbIntakes,
+				population,
+			}),
+			apiClient.statistics.calculateAveragedStats(entries),
+			apiClient.chartData.getDashboardChartData(
+				startDate.getTime(),
+				endDate.getTime(),
+				5 // 5-minute intervals
+			),
+		]);
 
 		return {
 			entries,
@@ -385,8 +324,14 @@ export const getSiteChangeImpact = query(
 			}
 		}
 
-		// TODO: statistics client removed
-		const analysis = null;
+		// Call the site change impact analysis endpoint
+		const analysis = await apiClient.statistics.calculateSiteChangeImpact({
+			entries,
+			deviceEvents: allDeviceEvents!,
+			hoursBeforeChange: input?.hoursBeforeChange ?? 12,
+			hoursAfterChange: input?.hoursAfterChange ?? 24,
+			bucketSizeMinutes: input?.bucketSizeMinutes ?? 30,
+		});
 
 		return {
 			analysis,

@@ -1,13 +1,7 @@
 <script lang="ts">
   import { Info } from "lucide-svelte";
   import { Badge } from "$lib/components/ui/badge";
-
-  // Local type definition for statistic reliability
-  interface StatisticReliability {
-    meetsReliabilityCriteria?: boolean;
-    daysOfData?: number;
-    recommendedMinimumDays?: number;
-  }
+  import type { StatisticReliability } from "$lib/api";
 
   let { reliability } = $props<{ reliability?: StatisticReliability | null }>();
 </script>

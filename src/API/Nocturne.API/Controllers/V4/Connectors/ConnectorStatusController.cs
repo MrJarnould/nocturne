@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OpenApi.Remote.Attributes;
 using Nocturne.API.Models;
 using Nocturne.API.Services;
+using OpenApi.Remote.Attributes;
 
-namespace Nocturne.API.Controllers.V1;
+namespace Nocturne.API.Controllers.V4;
 
 [Authorize]
 [ApiController]
-[Route("api/v1/connectors")]
+[Route("api/v4/connectors")]
 public class ConnectorStatusController : ControllerBase
 {
     private readonly IConnectorHealthService _healthService;
@@ -16,7 +16,8 @@ public class ConnectorStatusController : ControllerBase
 
     public ConnectorStatusController(
         IConnectorHealthService healthService,
-        ILogger<ConnectorStatusController> logger)
+        ILogger<ConnectorStatusController> logger
+    )
     {
         _healthService = healthService;
         _logger = logger;
@@ -28,7 +29,9 @@ public class ConnectorStatusController : ControllerBase
     [HttpGet("status")]
     [RemoteQuery]
     [ProducesResponseType(typeof(IEnumerable<ConnectorStatusDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<ConnectorStatusDto>>> GetStatus(CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<ConnectorStatusDto>>> GetStatus(
+        CancellationToken cancellationToken
+    )
     {
         _logger.LogDebug("Fetching connector statuses");
         var statuses = await _healthService.GetConnectorStatusesAsync(cancellationToken);

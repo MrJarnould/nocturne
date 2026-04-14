@@ -1,22 +1,22 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OpenApi.Remote.Attributes;
 using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Multitenancy;
+using Nocturne.Core.Contracts.Repositories;
 using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.V4;
 using Nocturne.Infrastructure.Cache.Abstractions;
-using Nocturne.Core.Contracts.Repositories;
+using OpenApi.Remote.Attributes;
 
-namespace Nocturne.API.Controllers.V1;
+namespace Nocturne.API.Controllers.V4.Analytics;
 
 /// <summary>
 /// Controller for comprehensive glucose and treatment statistics
 /// Provides endpoints for calculating various glucose metrics and analytics
 /// </summary>
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v4/[controller]")]
 [Produces("application/json")]
 [Authorize]
 public class StatisticsController : ControllerBase
@@ -36,7 +36,8 @@ public class StatisticsController : ControllerBase
     private readonly IDeviceEventRepository _deviceEventRepository;
     private readonly ITargetRangeScheduleRepository _targetRangeScheduleRepository;
 
-    private string TenantCacheId => _tenantAccessor.Context?.TenantId.ToString()
+    private string TenantCacheId =>
+        _tenantAccessor.Context?.TenantId.ToString()
         ?? throw new InvalidOperationException("Tenant context is not resolved");
 
     public StatisticsController(
@@ -645,26 +646,30 @@ public class StatisticsController : ControllerBase
 
                     // Fetch TempBasals and algorithm boluses for basal data
                     // Deduplicate by 30s window + rate to eliminate duplicates from multiple connectors
-                    var tempBasals = (await _tempBasalRepository.GetAsync(
-                        from: startTimestamp,
-                        to: endTimestamp,
-                        device: null,
-                        source: null,
-                        limit: 10000,
-                        descending: false,
-                        ct: cancellationToken
-                    )).ToList();
+                    var tempBasals = (
+                        await _tempBasalRepository.GetAsync(
+                            from: startTimestamp,
+                            to: endTimestamp,
+                            device: null,
+                            source: null,
+                            limit: 10000,
+                            descending: false,
+                            ct: cancellationToken
+                        )
+                    ).ToList();
 
-                    var algorithmBoluses = (await _bolusRepository.GetAsync(
-                        from: startTimestamp,
-                        to: endTimestamp,
-                        device: null,
-                        source: null,
-                        limit: 10000,
-                        descending: false,
-                        kind: BolusKind.Algorithm,
-                        ct: cancellationToken
-                    )).ToList();
+                    var algorithmBoluses = (
+                        await _bolusRepository.GetAsync(
+                            from: startTimestamp,
+                            to: endTimestamp,
+                            device: null,
+                            source: null,
+                            limit: 10000,
+                            descending: false,
+                            kind: BolusKind.Algorithm,
+                            ct: cancellationToken
+                        )
+                    ).ToList();
 
                     insulinDelivery = _statisticsService.CalculateInsulinDeliveryStatistics(
                         filteredBoluses,
@@ -676,7 +681,11 @@ public class StatisticsController : ControllerBase
                     );
 
                     // If no TempBasals/algorithm boluses but we have profile data, augment with scheduled basal
-                    if (tempBasals.Count == 0 && algorithmBoluses.Count == 0 && _profileService.HasData())
+                    if (
+                        tempBasals.Count == 0
+                        && algorithmBoluses.Count == 0
+                        && _profileService.HasData()
+                    )
                     {
                         var profileBasal = CalculateScheduledBasalForPeriod(
                             startTimestamp,
@@ -687,19 +696,27 @@ public class StatisticsController : ControllerBase
                         insulinDelivery.ScheduledBasal = Math.Round(profileBasal * 100) / 100;
                         insulinDelivery.AdditionalBasal = 0;
                         insulinDelivery.TotalInsulin = Math.Round(totalWithProfile * 100) / 100;
-                        insulinDelivery.Tdd = Math.Round(totalWithProfile / Math.Max(1, insulinDelivery.DayCount) * 10) / 10;
-                        insulinDelivery.BasalPercent = totalWithProfile > 0
-                            ? Math.Round(profileBasal / totalWithProfile * 100 * 10) / 10
-                            : 0;
-                        insulinDelivery.BolusPercent = totalWithProfile > 0
-                            ? Math.Round(insulinDelivery.TotalBolus / totalWithProfile * 100 * 10) / 10
-                            : 0;
+                        insulinDelivery.Tdd =
+                            Math.Round(
+                                totalWithProfile / Math.Max(1, insulinDelivery.DayCount) * 10
+                            ) / 10;
+                        insulinDelivery.BasalPercent =
+                            totalWithProfile > 0
+                                ? Math.Round(profileBasal / totalWithProfile * 100 * 10) / 10
+                                : 0;
+                        insulinDelivery.BolusPercent =
+                            totalWithProfile > 0
+                                ? Math.Round(
+                                    insulinDelivery.TotalBolus / totalWithProfile * 100 * 10
+                                ) / 10
+                                : 0;
                     }
 
                     // Keep treatment summary basal consistent
                     treatmentSummary.Totals.Insulin.Basal = insulinDelivery.TotalBasal;
                     treatmentSummary.Totals.Insulin.ScheduledBasal = insulinDelivery.ScheduledBasal;
-                    treatmentSummary.Totals.Insulin.AdditionalBasal = insulinDelivery.AdditionalBasal;
+                    treatmentSummary.Totals.Insulin.AdditionalBasal =
+                        insulinDelivery.AdditionalBasal;
                 }
 
                 // Compute GMI and reliability for this period
@@ -798,10 +815,7 @@ public class StatisticsController : ControllerBase
     /// <param name="startTimestamp">Start time as DateTime (UTC)</param>
     /// <param name="endTimestamp">End time as DateTime (UTC)</param>
     /// <returns>Total scheduled basal insulin in units</returns>
-    private double CalculateScheduledBasalForPeriod(
-        DateTime startTimestamp,
-        DateTime endTimestamp
-    )
+    private double CalculateScheduledBasalForPeriod(DateTime startTimestamp, DateTime endTimestamp)
     {
         double totalBasal = 0.0;
 
@@ -882,14 +896,16 @@ public class StatisticsController : ControllerBase
                 kind: BolusKind.Manual
             );
 
-            var tempBasals = (await _tempBasalRepository.GetAsync(
-                from: startDt,
-                to: endDt,
-                device: null,
-                source: null,
-                limit: 10000,
-                descending: false
-            )).ToList();
+            var tempBasals = (
+                await _tempBasalRepository.GetAsync(
+                    from: startDt,
+                    to: endDt,
+                    device: null,
+                    source: null,
+                    limit: 10000,
+                    descending: false
+                )
+            ).ToList();
 
             var algorithmBoluses = await _bolusRepository.GetAsync(
                 from: startDt,
@@ -949,14 +965,16 @@ public class StatisticsController : ControllerBase
                 kind: BolusKind.Manual
             );
 
-            var tempBasals = (await _tempBasalRepository.GetAsync(
-                from: startDt,
-                to: endDt,
-                device: null,
-                source: null,
-                limit: 10000,
-                descending: false
-            )).ToList();
+            var tempBasals = (
+                await _tempBasalRepository.GetAsync(
+                    from: startDt,
+                    to: endDt,
+                    device: null,
+                    source: null,
+                    limit: 10000,
+                    descending: false
+                )
+            ).ToList();
 
             var algorithmBoluses = await _bolusRepository.GetAsync(
                 from: startDt,
@@ -994,7 +1012,13 @@ public class StatisticsController : ControllerBase
             }
 
             var result = _statisticsService.CalculateInsulinDeliveryStatistics(
-                boluses, algorithmBoluses, tempBasals, carbs, startDate, endDate);
+                boluses,
+                algorithmBoluses,
+                tempBasals,
+                carbs,
+                startDate,
+                endDate
+            );
             return Ok(result);
         }
         catch (Exception ex)
@@ -1028,14 +1052,16 @@ public class StatisticsController : ControllerBase
 
             // Fetch TempBasals and algorithm boluses
             // Deduplicate by 30s window + rate to eliminate duplicates from multiple connectors
-            var tempBasals = (await _tempBasalRepository.GetAsync(
-                from: (DateTime?)startUtc,
-                to: (DateTime?)endUtc,
-                device: null,
-                source: null,
-                limit: 10000,
-                descending: false
-            )).ToList();
+            var tempBasals = (
+                await _tempBasalRepository.GetAsync(
+                    from: (DateTime?)startUtc,
+                    to: (DateTime?)endUtc,
+                    device: null,
+                    source: null,
+                    limit: 10000,
+                    descending: false
+                )
+            ).ToList();
 
             var algorithmBoluses = await _bolusRepository.GetAsync(
                 from: (DateTime?)startUtc,
@@ -1060,15 +1086,20 @@ public class StatisticsController : ControllerBase
                         if (hourStart < startUtc || hourStart >= endUtc)
                             continue;
 
-                        var hourMills = new DateTimeOffset(hourStart, TimeSpan.Zero).ToUnixTimeMilliseconds();
+                        var hourMills = new DateTimeOffset(
+                            hourStart,
+                            TimeSpan.Zero
+                        ).ToUnixTimeMilliseconds();
                         var rate = _profileService.GetBasalRate(hourMills);
-                        tempBasals.Add(new TempBasal
-                        {
-                            StartTimestamp = hourStart,
-                            EndTimestamp = hourStart.AddHours(1),
-                            Rate = rate,
-                            Origin = TempBasalOrigin.Scheduled,
-                        });
+                        tempBasals.Add(
+                            new TempBasal
+                            {
+                                StartTimestamp = hourStart,
+                                EndTimestamp = hourStart.AddHours(1),
+                                Rate = rate,
+                                Origin = TempBasalOrigin.Scheduled,
+                            }
+                        );
                     }
                 }
             }
@@ -1095,7 +1126,8 @@ public class StatisticsController : ControllerBase
     [RemoteQuery]
     public async Task<ActionResult<AidSystemMetrics>> GetAidSystemMetrics(
         [FromQuery] DateTime startDate,
-        [FromQuery] DateTime endDate)
+        [FromQuery] DateTime endDate
+    )
     {
         try
         {
@@ -1107,7 +1139,9 @@ public class StatisticsController : ControllerBase
 
             // Map patient devices to segment inputs
             var deviceSegments = devices
-                .Where(d => d.DeviceCategory == DeviceCategory.InsulinPump && d.AidAlgorithm.HasValue)
+                .Where(d =>
+                    d.DeviceCategory == DeviceCategory.InsulinPump && d.AidAlgorithm.HasValue
+                )
                 .Select(d => new DeviceSegmentInput
                 {
                     Algorithm = d.AidAlgorithm!.Value,
@@ -1121,20 +1155,54 @@ public class StatisticsController : ControllerBase
                 .ToList();
 
             // Fetch data sequentially (DbContext is not thread-safe)
-            var apsSnapshots = (await _apsSnapshotRepository.GetAsync(
-                from: startDt, to: endDt, device: null, source: null, limit: 50000, descending: false)).ToList();
+            var apsSnapshots = (
+                await _apsSnapshotRepository.GetAsync(
+                    from: startDt,
+                    to: endDt,
+                    device: null,
+                    source: null,
+                    limit: 50000,
+                    descending: false
+                )
+            ).ToList();
 
-            var tempBasals = (await _tempBasalRepository.GetAsync(
-                from: startDt, to: endDt, device: null, source: null, limit: 50000, descending: false)).ToList();
+            var tempBasals = (
+                await _tempBasalRepository.GetAsync(
+                    from: startDt,
+                    to: endDt,
+                    device: null,
+                    source: null,
+                    limit: 50000,
+                    descending: false
+                )
+            ).ToList();
 
-            var deviceEvents = (await _deviceEventRepository.GetAsync(
-                from: startDt, to: endDt, device: null, source: null, limit: 10000, descending: false)).ToList();
+            var deviceEvents = (
+                await _deviceEventRepository.GetAsync(
+                    from: startDt,
+                    to: endDt,
+                    device: null,
+                    source: null,
+                    limit: 10000,
+                    descending: false
+                )
+            ).ToList();
 
-            var glucose = (await _sensorGlucoseRepository.GetAsync(
-                from: startDt, to: endDt, device: null, source: null, limit: 50000, descending: false)).ToList();
+            var glucose = (
+                await _sensorGlucoseRepository.GetAsync(
+                    from: startDt,
+                    to: endDt,
+                    device: null,
+                    source: null,
+                    limit: 50000,
+                    descending: false
+                )
+            ).ToList();
 
             // Count site changes
-            var siteChangeCount = deviceEvents.Count(e => e.EventType == DeviceEventType.SiteChange);
+            var siteChangeCount = deviceEvents.Count(e =>
+                e.EventType == DeviceEventType.SiteChange
+            );
 
             // Calculate CGM metrics using existing statistics service
             double? cgmUsePercent = null;
@@ -1144,7 +1212,8 @@ public class StatisticsController : ControllerBase
                 var analytics = _statisticsService.AnalyzeGlucoseData(
                     glucose,
                     Enumerable.Empty<Bolus>(),
-                    Enumerable.Empty<CarbIntake>());
+                    Enumerable.Empty<CarbIntake>()
+                );
                 cgmUsePercent = analytics.DataQuality.CgmActivePercent;
                 cgmActivePercent = analytics.DataQuality.DataCompleteness;
             }
@@ -1155,7 +1224,13 @@ public class StatisticsController : ControllerBase
             try
             {
                 var targetSchedules = await _targetRangeScheduleRepository.GetAsync(
-                    from: null, to: null, device: null, source: null, limit: 10, descending: true);
+                    from: null,
+                    to: null,
+                    device: null,
+                    source: null,
+                    limit: 10,
+                    descending: true
+                );
                 var firstSchedule = targetSchedules.FirstOrDefault();
                 if (firstSchedule?.Entries.Count > 0)
                 {
@@ -1178,7 +1253,8 @@ public class StatisticsController : ControllerBase
                 targetLow,
                 targetHigh,
                 startDt,
-                endDt);
+                endDt
+            );
 
             return Ok(result);
         }
@@ -1377,4 +1453,3 @@ public class SiteChangeImpactRequest
     /// </summary>
     public int BucketSizeMinutes { get; set; } = 30;
 }
-

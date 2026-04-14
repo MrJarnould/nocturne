@@ -16,7 +16,7 @@
     ExternalLink,
   } from "lucide-svelte";
   import { formatDate } from "$lib/utils/formatting";
-  import { list, revoke } from "$lib/api/generated/connectedapps.generated.remote";
+  import { list, revoke } from "$lib/api/generated/connectedApps.generated.remote";
   import { getOAuthScopeDescription } from "$lib/constants/oauth-scopes";
 
   // Remote queries

@@ -14311,7 +14311,6 @@ msgstr ""
 "Your therapy profile is being managed by a connected system. Changes\n"
 "will sync automatically."
 
-#: src/lib/components/patient/state.svelte.ts
 #: src/routes/(fullscreen)/setup/profile/+page.svelte
 #: src/routes/settings/setup/profile/+page.svelte
 msgid "Something went wrong. Please try again."
@@ -21065,9 +21064,8 @@ msgstr "API Endpoint"
 msgid "Nightscout v1-v4"
 msgstr "Nightscout v1-v4"
 
-#: src/lib/components/patient/state.svelte.ts
-msgid "Failed to save weight. Please try again."
-msgstr "Failed to save weight. Please try again."
+#~ msgid "Failed to save weight. Please try again."
+#~ msgstr "Failed to save weight. Please try again."
 
 #: src/routes/oauth/consent/+page.svelte
 msgid "Missing required OAuth parameters."

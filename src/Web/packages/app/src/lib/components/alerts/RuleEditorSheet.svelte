@@ -7,7 +7,7 @@
   import {
     getSounds,
     deleteSound,
-  } from "$api/generated/alertcustomsounds.generated.remote";
+  } from "$api/generated/alertCustomSounds.generated.remote";
   import type {
     AlertRuleResponse,
     AlertCustomSoundResponse,

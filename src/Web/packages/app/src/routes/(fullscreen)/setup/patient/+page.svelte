@@ -1,6 +1,6 @@
 <script lang="ts">
   import WizardShell from "$lib/components/setup/WizardShell.svelte";
-  import { PatientClinicalForm, createWeightState } from "$lib/components/patient";
+  import { PatientClinicalForm, WeightState } from "$lib/components/patient";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
 
@@ -8,7 +8,7 @@
   let saveDisabled = $state(true);
   let clinicalSaveFn = $state<(() => Promise<boolean>) | undefined>(undefined);
 
-  const weight = createWeightState();
+  const weight = new WeightState();
 
   function handleState(api: { save: () => Promise<boolean>; saving: boolean; isValid: boolean }) {
     saving = api.saving || weight.saving;

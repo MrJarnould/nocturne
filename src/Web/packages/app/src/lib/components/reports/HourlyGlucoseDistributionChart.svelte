@@ -3,22 +3,7 @@
   import { timeFormat } from "$lib/stores/appearance-store.svelte";
   import { bg } from "$lib/utils/formatting";
   import { BarChart2 } from "lucide-svelte";
-
-  // Local type definition for averaged stats
-  interface TimeInRange {
-    veryLow?: number;
-    low?: number;
-    normal?: number;
-    aboveTarget?: number;
-    high?: number;
-    veryHigh?: number;
-  }
-
-  interface AveragedStats {
-    hour?: number;
-    timeInRange?: TimeInRange;
-    count?: number;
-  }
+  import type { AveragedStats } from "$lib/api";
 
   interface Props {
     averagedStats?: AveragedStats[];

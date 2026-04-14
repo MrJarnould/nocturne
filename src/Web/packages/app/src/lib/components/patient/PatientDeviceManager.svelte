@@ -30,7 +30,7 @@
     deviceCategoryLabels,
     aidAlgorithmLabels,
   } from "./labels";
-  import { createDeviceListState } from "./state.svelte";
+  import { DeviceListState } from "./state.svelte";
 
   interface Props {
     /** "inline" = wizard-style card forms, "dialog" = settings-style dialog CRUD */
@@ -39,7 +39,7 @@
 
   let { variant = "dialog" }: Props = $props();
 
-  const deviceList = createDeviceListState();
+  const deviceList = new DeviceListState();
 
   // ── Category icons (for inline variant) ─────────────────────────
 

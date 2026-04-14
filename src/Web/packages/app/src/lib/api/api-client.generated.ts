@@ -27,6 +27,7 @@ import {
   ConfigurationClient,
   ConnectedAppsClient,
   ConnectorFoodEntriesClient,
+  ConnectorStatusClient,
   CorrelationClient,
   DataOverviewClient,
   DebugClient,
@@ -65,6 +66,7 @@ import {
   SensorGlucoseClient,
   ServicesClient,
   StateSpansClient,
+  StatisticsClient,
   StatusClient,
   StepCountClient,
   SubjectAdminClient,
@@ -112,6 +114,7 @@ export class ApiClient {
   public readonly configuration: ConfigurationClient;
   public readonly connectedApps: ConnectedAppsClient;
   public readonly connectorFoodEntries: ConnectorFoodEntriesClient;
+  public readonly connectorStatus: ConnectorStatusClient;
   public readonly correlation: CorrelationClient;
   public readonly dataOverview: DataOverviewClient;
   public readonly debug: DebugClient;
@@ -150,6 +153,7 @@ export class ApiClient {
   public readonly sensorGlucose: SensorGlucoseClient;
   public readonly services: ServicesClient;
   public readonly stateSpans: StateSpansClient;
+  public readonly statistics: StatisticsClient;
   public readonly status: StatusClient;
   public readonly stepCount: StepCountClient;
   public readonly subjectAdmin: SubjectAdminClient;
@@ -197,6 +201,7 @@ export class ApiClient {
     this.configuration = new ConfigurationClient(apiBaseUrl, http);
     this.connectedApps = new ConnectedAppsClient(apiBaseUrl, http);
     this.connectorFoodEntries = new ConnectorFoodEntriesClient(apiBaseUrl, http);
+    this.connectorStatus = new ConnectorStatusClient(apiBaseUrl, http);
     this.correlation = new CorrelationClient(apiBaseUrl, http);
     this.dataOverview = new DataOverviewClient(apiBaseUrl, http);
     this.debug = new DebugClient(apiBaseUrl, http);
@@ -235,6 +240,7 @@ export class ApiClient {
     this.sensorGlucose = new SensorGlucoseClient(apiBaseUrl, http);
     this.services = new ServicesClient(apiBaseUrl, http);
     this.stateSpans = new StateSpansClient(apiBaseUrl, http);
+    this.statistics = new StatisticsClient(apiBaseUrl, http);
     this.status = new StatusClient(apiBaseUrl, http);
     this.stepCount = new StepCountClient(apiBaseUrl, http);
     this.subjectAdmin = new SubjectAdminClient(apiBaseUrl, http);

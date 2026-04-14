@@ -1,6 +1,6 @@
-import * as patientRemote from "$api/generated/patientrecords.generated.remote";
-import { getCatalog as getInsulinCatalog } from "$api/generated/insulincatalogs.generated.remote";
-import { getBodyWeights, create as createBodyWeight } from "$api/generated/bodyweights.generated.remote";
+import * as patientRemote from "$api/generated/patientRecords.generated.remote";
+import { getCatalog as getInsulinCatalog } from "$api/generated/insulinCatalogs.generated.remote";
+import { getBodyWeights, create as createBodyWeight } from "$api/generated/bodyWeights.generated.remote";
 import {
   type PatientDevice,
   type PatientInsulin,
@@ -8,162 +8,129 @@ import {
   DiabetesType,
 } from "$api";
 
-/** Creates reactive clinical form state bound to the patient record API */
-export function createClinicalState() {
-  const record = patientRemote.getPatientRecord();
+/** Reactive clinical form state bound to the patient record API */
+export class ClinicalState {
+  diabetesType = $state("");
+  diabetesTypeOther = $state("");
+  diagnosisDate = $state("");
+  dateOfBirth = $state("");
+  preferredName = $state("");
+  pronouns = $state("");
+  saving = $state(false);
+  saveError = $state<string | null>(null);
 
-  let diabetesType = $state<string>("");
-  let diabetesTypeOther = $state("");
-  let diagnosisDate = $state("");
-  let dateOfBirth = $state("");
-  let preferredName = $state("");
-  let pronouns = $state("");
-  let saving = $state(false);
-  let saveError = $state<string | null>(null);
+  readonly #record = patientRemote.getPatientRecord();
 
-  // Pre-populate from existing record
-  $effect(() => {
-    const r = record.current;
-    if (r) {
-      diabetesType = r.diabetesType ?? "";
-      diabetesTypeOther = r.diabetesTypeOther ?? "";
-      diagnosisDate = r.diagnosisDate
-        ? new Date(r.diagnosisDate).toISOString().split("T")[0]
-        : "";
-      dateOfBirth = r.dateOfBirth
-        ? new Date(r.dateOfBirth).toISOString().split("T")[0]
-        : "";
-      preferredName = r.preferredName ?? "";
-      pronouns = r.pronouns ?? "";
-    }
-  });
+  get isValid() { return !!this.diabetesType; }
 
-  async function save(): Promise<boolean> {
-    saving = true;
-    saveError = null;
+  constructor() {
+    $effect(() => {
+      const r = this.#record.current;
+      if (r) {
+        this.diabetesType = r.diabetesType ?? "";
+        this.diabetesTypeOther = r.diabetesTypeOther ?? "";
+        this.diagnosisDate = r.diagnosisDate
+          ? new Date(r.diagnosisDate).toISOString().split("T")[0]
+          : "";
+        this.dateOfBirth = r.dateOfBirth
+          ? new Date(r.dateOfBirth).toISOString().split("T")[0]
+          : "";
+        this.preferredName = r.preferredName ?? "";
+        this.pronouns = r.pronouns ?? "";
+      }
+    });
+  }
+
+  save = async (): Promise<boolean> => {
+    this.saving = true;
+    this.saveError = null;
     try {
-      const current = record.current;
+      const current = this.#record.current;
       await patientRemote.updatePatientRecord({
         id: current?.id,
         avatarUrl: current?.avatarUrl,
         createdAt: current?.createdAt instanceof Date ? current.createdAt.toISOString() : current?.createdAt,
         modifiedAt: current?.modifiedAt instanceof Date ? current.modifiedAt.toISOString() : current?.modifiedAt,
-        diabetesType: (diabetesType as DiabetesType) || undefined,
+        diabetesType: (this.diabetesType as DiabetesType) || undefined,
         diabetesTypeOther:
-          diabetesType === DiabetesType.Other
-            ? diabetesTypeOther
+          this.diabetesType === DiabetesType.Other
+            ? this.diabetesTypeOther
             : undefined,
-        diagnosisDate: diagnosisDate || undefined,
-        dateOfBirth: dateOfBirth || undefined,
-        preferredName: preferredName || undefined,
-        pronouns: pronouns || undefined,
+        diagnosisDate: this.diagnosisDate || undefined,
+        dateOfBirth: this.dateOfBirth || undefined,
+        preferredName: this.preferredName || undefined,
+        pronouns: this.pronouns || undefined,
       });
       return true;
     } catch {
-      saveError = "Something went wrong. Please try again.";
+      this.saveError = "Something went wrong. Please try again.";
       return false;
     } finally {
-      saving = false;
+      this.saving = false;
     }
-  }
-
-  return {
-    get diabetesType() { return diabetesType; },
-    set diabetesType(v: string) { diabetesType = v; },
-    get diabetesTypeOther() { return diabetesTypeOther; },
-    set diabetesTypeOther(v: string) { diabetesTypeOther = v; },
-    get diagnosisDate() { return diagnosisDate; },
-    set diagnosisDate(v: string) { diagnosisDate = v; },
-    get dateOfBirth() { return dateOfBirth; },
-    set dateOfBirth(v: string) { dateOfBirth = v; },
-    get preferredName() { return preferredName; },
-    set preferredName(v: string) { preferredName = v; },
-    get pronouns() { return pronouns; },
-    set pronouns(v: string) { pronouns = v; },
-    get saving() { return saving; },
-    get saveError() { return saveError; },
-    get isValid() { return !!diabetesType; },
-    save,
   };
 }
 
-/** Creates reactive device list state with CRUD */
-export function createDeviceListState() {
-  const devices = patientRemote.getDevices();
-  const createForm = patientRemote.createDevice;
-  const updateForm = patientRemote.updateDevice;
+/** Reactive device list state with CRUD */
+export class DeviceListState {
+  readonly #devices = patientRemote.getDevices();
+  readonly createForm = patientRemote.createDevice;
+  readonly updateForm = patientRemote.updateDevice;
 
-  async function remove(id: string): Promise<void> {
+  get items(): PatientDevice[] { return (this.#devices.current ?? []) as PatientDevice[]; }
+
+  remove = async (id: string): Promise<void> => {
     await patientRemote.deleteDevice(id);
-  }
-
-  return {
-    get items(): PatientDevice[] { return (devices.current ?? []) as PatientDevice[]; },
-    get createForm() { return createForm; },
-    get updateForm() { return updateForm; },
-    remove,
   };
 }
 
-/** Creates reactive insulin list state with CRUD and catalog */
-export function createInsulinListState() {
-  const insulins = patientRemote.getInsulins();
-  const catalog = getInsulinCatalog(undefined);
-  const createForm = patientRemote.createInsulin;
-  const updateForm = patientRemote.updateInsulin;
+/** Reactive insulin list state with CRUD and catalog */
+export class InsulinListState {
+  readonly #insulins = patientRemote.getInsulins();
+  readonly #catalog = getInsulinCatalog(undefined);
+  readonly createForm = patientRemote.createInsulin;
+  readonly updateForm = patientRemote.updateInsulin;
 
-  async function remove(id: string): Promise<void> {
+  get items(): PatientInsulin[] { return (this.#insulins.current ?? []) as PatientInsulin[]; }
+  get catalog(): InsulinFormulation[] { return (this.#catalog.current ?? []) as InsulinFormulation[]; }
+
+  remove = async (id: string): Promise<void> => {
     await patientRemote.deleteInsulin(id);
-  }
-
-  return {
-    get items(): PatientInsulin[] { return (insulins.current ?? []) as PatientInsulin[]; },
-    get catalog(): InsulinFormulation[] { return (catalog.current ?? []) as InsulinFormulation[]; },
-    get createForm() { return createForm; },
-    get updateForm() { return updateForm; },
-    remove,
   };
 }
 
-/** Creates reactive weight state for initial body weight entry */
-export function createWeightState() {
-  const existing = getBodyWeights({ count: 1, skip: 0 });
+/** Reactive weight state for initial body weight entry */
+export class WeightState {
+  weightKg = $state("");
+  saving = $state(false);
+  saveError = $state<string | null>(null);
 
-  let weightKg = $state<string>("");
-  let saving = $state(false);
-  let saveError = $state<string | null>(null);
+  readonly #existing = getBodyWeights({ count: 1, skip: 0 });
 
-  // Pre-populate from most recent record
-  $effect(() => {
-    const records = existing.current;
-    if (records && records.length > 0) {
-      weightKg = String(records[0].weightKg ?? "");
-    }
-  });
+  constructor() {
+    $effect(() => {
+      const records = this.#existing.current;
+      if (records && records.length > 0) {
+        this.weightKg = String(records[0].weightKg ?? "");
+      }
+    });
+  }
 
-  async function save(): Promise<boolean> {
-    if (!weightKg) return true; // Optional field, skip if empty
-    saving = true;
-    saveError = null;
+  save = async (): Promise<boolean> => {
+    if (!this.weightKg) return true;
+    this.saving = true;
+    this.saveError = null;
     try {
       await createBodyWeight({
-        weightKg: Number(weightKg),
+        weightKg: Number(this.weightKg),
         mills: Date.now(),
       });
       return true;
     } catch {
-      saveError = "Failed to save weight. Please try again.";
+      this.saveError = "Failed to save weight. Please try again.";
       return false;
     } finally {
-      saving = false;
+      this.saving = false;
     }
-  }
-
-  return {
-    get weightKg() { return weightKg; },
-    set weightKg(v: string) { weightKg = v; },
-    get saving() { return saving; },
-    get saveError() { return saveError; },
-    save,
   };
 }

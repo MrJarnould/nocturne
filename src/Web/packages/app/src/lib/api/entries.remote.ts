@@ -58,7 +58,11 @@ export const getStats = query(entriesSchema, async (props) => {
   const boluses = bolusResponse.data ?? [];
   const carbIntakes = carbResponse.data ?? [];
 
-  const stats = null; // TODO: statistics client removed
+  const stats = apiClient.statistics.analyzeGlucoseData({
+    entries,
+    boluses,
+    carbIntakes,
+  });
 
   return stats;
 });

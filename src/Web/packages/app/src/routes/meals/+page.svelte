@@ -27,7 +27,7 @@
     SuggestedMealMatch,
   } from "$lib/api";
   import { getMeals, addCarbIntakeFood, deleteCarbIntakeFood } from "$api/generated/nutritions.generated.remote";
-  import { getSuggestions as getMealMatchingSuggestions, acceptMatch, dismissMatch } from "$api/generated/mealmatchings.generated.remote";
+  import { getSuggestions as getMealMatchingSuggestions, acceptMatch, dismissMatch } from "$api/generated/mealMatchings.generated.remote";
   import { toast } from "svelte-sonner";
   import {
     TreatmentFoodSelectorDialog,

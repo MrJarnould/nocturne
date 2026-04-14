@@ -73,9 +73,10 @@ export const getTreatmentsData = query(
 		const notes = noteResponse.data ?? [];
 		const deviceEvents = deviceEventResponse.data ?? [];
 
-		// TODO: calculateTreatmentSummary endpoint no longer exists
-		// This needs to be re-implemented using the available summary or retrospective endpoints
-		const treatmentSummary = null;
+		const treatmentSummary =
+			boluses.length > 0 || carbIntakes.length > 0
+				? await apiClient.statistics.calculateTreatmentSummary({ boluses, carbIntakes })
+				: null;
 
 		return {
 			boluses,

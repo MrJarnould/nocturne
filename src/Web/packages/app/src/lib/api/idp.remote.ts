@@ -6,18 +6,7 @@
 import { z } from 'zod';
 import { getRequestEvent, query } from '$app/server';
 import { error } from '@sveltejs/kit';
-
-// DiabetesPopulation is not yet in the generated API — defined locally until the backend exposes it
-const DiabetesPopulationSchema = z.enum(['Type1Adult', 'Type1Child', 'Type2Adult', 'Type2Child', 'Pregnant', 'Other']);
-type DiabetesPopulation = z.infer<typeof DiabetesPopulationSchema>;
-const DiabetesPopulation = {
-	Type1Adult: 'Type1Adult',
-	Type1Child: 'Type1Child',
-	Type2Adult: 'Type2Adult',
-	Type2Child: 'Type2Child',
-	Pregnant: 'Pregnant',
-	Other: 'Other',
-} as const satisfies Record<string, DiabetesPopulation>;
+import { DiabetesPopulation } from '$lib/api';
 
 /**
  * Input schema for date range queries.
@@ -128,14 +117,22 @@ export const getIdpData = query(
 		const carbIntakes = allCarbIntakes!;
 		const population = DiabetesPopulation.Type1Adult; // TODO: Get from user settings
 
-		// Fetch profile summary in parallel
-		// TODO: statistics client removed
-		const insulinDeliveryStats = null;
-		const profileSummary = await apiClient.profile.getProfileSummary(startDate, endDate);
-		const analysis = null;
-		const averagedStats = null;
-		const basalAnalysis = null;
-		const aidSystemMetrics = null;
+		// Fetch insulin delivery stats, profile summary, extended glucose analytics,
+		// averaged stats, and basal analysis in parallel
+		const [insulinDeliveryStats, profileSummary, analysis, averagedStats, basalAnalysis, aidSystemMetrics] =
+			await Promise.all([
+				apiClient.statistics.getInsulinDeliveryStatistics(startDate, endDate),
+				apiClient.profile.getProfileSummary(startDate, endDate),
+				apiClient.statistics.analyzeGlucoseDataExtended({
+					entries,
+					boluses,
+					carbIntakes,
+					population,
+				}),
+				apiClient.statistics.calculateAveragedStats(entries),
+				apiClient.statistics.getBasalAnalysis(startDate, endDate),
+				apiClient.statistics.getAidSystemMetrics(startDate, endDate),
+			]);
 
 		return {
 			entries,
