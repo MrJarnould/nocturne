@@ -17,7 +17,7 @@ export const load: LayoutServerLoad = async ({ locals, cookies, url }) => {
     if (!isBypassed) {
       const onboarding = await checkOnboarding(locals.apiClient, cookies);
       if (!onboarding.isComplete) {
-        throw redirect(303, "/settings/setup");
+        throw redirect(303, "/setup");
       }
     }
   }

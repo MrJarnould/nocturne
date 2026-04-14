@@ -117,7 +117,7 @@ const siteSecurityHandle: Handle = async ({ event, resolve }) => {
   // follow HTML redirects and will treat any non-2xx as a hard failure.
   const skipProbe =
     STATIC_ASSET_PREFIXES.some((p) => pathname.startsWith(p)) ||
-    pathname.startsWith("/settings/setup") ||
+    pathname.startsWith("/setup") ||
     pathname.startsWith("/auth") ||
     pathname.startsWith("/api/v4/webhooks") ||
     pathname.startsWith("/api/v4/bot");
@@ -173,7 +173,7 @@ const siteSecurityHandle: Handle = async ({ event, resolve }) => {
           if (body.setupRequired) {
             return new Response(null, {
               status: 303,
-              headers: { Location: "/settings/setup/passkey" },
+              headers: { Location: "/setup/passkey" },
             });
           }
           if (body.recoveryMode) {

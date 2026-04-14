@@ -5,7 +5,7 @@
 export const PUBLIC_ROUTE_PREFIXES = [
   "/auth",
   "/api",
-  "/settings/setup",
+  "/setup",
   "/clock",
   "/invite",
 ] as const;

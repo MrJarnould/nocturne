@@ -281,7 +281,7 @@
       title: "Settings",
       icon: Settings,
       children: [
-        { title: "Setup", href: "/settings/setup", icon: ListChecks },
+        { title: "Setup", href: "/setup", icon: ListChecks },
         { title: "Account", href: "/settings/account", icon: User },
         {
           title: "Patient Record",
