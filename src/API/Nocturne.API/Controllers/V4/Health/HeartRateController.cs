@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OpenApi.Remote.Attributes;
+using Nocturne.API.Attributes;
 using Nocturne.Core.Contracts;
 using Nocturne.Core.Models;
+using Nocturne.Core.Models.Authorization;
+using OpenApi.Remote.Attributes;
 
 namespace Nocturne.API.Controllers.V4.Health;
 
@@ -10,6 +13,8 @@ namespace Nocturne.API.Controllers.V4.Health;
 /// </summary>
 [ApiController]
 [Route("api/v4/[controller]")]
+[Authorize]
+[Produces("application/json")]
 public class HeartRateController : ControllerBase
 {
     private readonly IHeartRateService _heartRateService;
@@ -30,6 +35,7 @@ public class HeartRateController : ControllerBase
     /// <returns>List of heart rate records ordered by most recent first</returns>
     [HttpGet]
     [RemoteQuery]
+    [RequireScope(OAuthScopes.HeartRateRead)]
     [ProducesResponseType(typeof(IEnumerable<HeartRate>), 200)]
     [ProducesResponseType(500)]
     public async Task<ActionResult<IEnumerable<HeartRate>>> GetHeartRates(
@@ -57,6 +63,7 @@ public class HeartRateController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     [HttpGet("{id}")]
     [RemoteQuery]
+    [RequireScope(OAuthScopes.HeartRateRead)]
     [ProducesResponseType(typeof(HeartRate), 200)]
     [ProducesResponseType(404)]
     [ProducesResponseType(500)]
@@ -84,6 +91,7 @@ public class HeartRateController : ControllerBase
     /// Create one or more heart rate records (single object or array)
     /// </summary>
     [HttpPost]
+    [RequireScope(OAuthScopes.HeartRateReadWrite)]
     [ProducesResponseType(typeof(IEnumerable<HeartRate>), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
@@ -138,6 +146,7 @@ public class HeartRateController : ControllerBase
     /// Update an existing heart rate record
     /// </summary>
     [HttpPut("{id}")]
+    [RequireScope(OAuthScopes.HeartRateReadWrite)]
     [ProducesResponseType(typeof(HeartRate), 200)]
     [ProducesResponseType(404)]
     [ProducesResponseType(500)]
@@ -166,6 +175,7 @@ public class HeartRateController : ControllerBase
     /// Delete a heart rate record by ID
     /// </summary>
     [HttpDelete("{id}")]
+    [RequireScope(OAuthScopes.HeartRateReadWrite)]
     [ProducesResponseType(200)]
     [ProducesResponseType(404)]
     [ProducesResponseType(500)]

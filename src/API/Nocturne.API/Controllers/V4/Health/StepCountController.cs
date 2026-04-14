@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OpenApi.Remote.Attributes;
+using Nocturne.API.Attributes;
 using Nocturne.Core.Contracts;
 using Nocturne.Core.Models;
+using Nocturne.Core.Models.Authorization;
+using OpenApi.Remote.Attributes;
 
 namespace Nocturne.API.Controllers.V4.Health;
 
@@ -10,6 +13,8 @@ namespace Nocturne.API.Controllers.V4.Health;
 /// </summary>
 [ApiController]
 [Route("api/v4/[controller]")]
+[Authorize]
+[Produces("application/json")]
 public class StepCountController : ControllerBase
 {
     private readonly IStepCountService _stepCountService;
@@ -30,6 +35,7 @@ public class StepCountController : ControllerBase
     /// <returns>List of step count records ordered by most recent first</returns>
     [HttpGet]
     [RemoteQuery]
+    [RequireScope(OAuthScopes.StepCountRead)]
     [ProducesResponseType(typeof(IEnumerable<StepCount>), 200)]
     [ProducesResponseType(500)]
     public async Task<ActionResult<IEnumerable<StepCount>>> GetStepCounts(
@@ -57,6 +63,7 @@ public class StepCountController : ControllerBase
     /// <param name="cancellationToken">Cancellation token</param>
     [HttpGet("{id}")]
     [RemoteQuery]
+    [RequireScope(OAuthScopes.StepCountRead)]
     [ProducesResponseType(typeof(StepCount), 200)]
     [ProducesResponseType(404)]
     [ProducesResponseType(500)]
@@ -84,6 +91,7 @@ public class StepCountController : ControllerBase
     /// Create one or more step count records (single object or array)
     /// </summary>
     [HttpPost]
+    [RequireScope(OAuthScopes.StepCountReadWrite)]
     [ProducesResponseType(typeof(IEnumerable<StepCount>), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
@@ -138,6 +146,7 @@ public class StepCountController : ControllerBase
     /// Update an existing step count record
     /// </summary>
     [HttpPut("{id}")]
+    [RequireScope(OAuthScopes.StepCountReadWrite)]
     [ProducesResponseType(typeof(StepCount), 200)]
     [ProducesResponseType(404)]
     [ProducesResponseType(500)]
@@ -166,6 +175,7 @@ public class StepCountController : ControllerBase
     /// Delete a step count record by ID
     /// </summary>
     [HttpDelete("{id}")]
+    [RequireScope(OAuthScopes.StepCountReadWrite)]
     [ProducesResponseType(200)]
     [ProducesResponseType(404)]
     [ProducesResponseType(500)]
