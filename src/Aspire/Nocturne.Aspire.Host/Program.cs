@@ -372,6 +372,14 @@ class Program
                 .WithRemoteImageTag("latest");
 
             ConfigureWebEnvironment(dockerWeb);
+
+            // SvelteKit needs ORIGIN when running behind a reverse proxy so SSR
+            // constructs URLs with the public domain instead of the container hostname.
+            // Derive from PUBLIC_BASE_DOMAIN (bare host or host:port).
+            dockerWeb.WithEnvironment("ORIGIN", ReferenceExpression.Create(
+                $"https://{publicBaseDomain}"
+            ));
+
             if (postgresServer != null && postgresWebPassword != null)
             {
                 dockerWeb.WithNocturneWebDatabase(postgresServer, dbName, postgresWebPassword);

@@ -287,13 +287,15 @@ app.UseResponseCaching();
 app.UseCors();
 app.UseForwardedHeaders();
 
+// Strip .json suffixes before routing so /api/v1/treatments.json matches
+// the TreatmentsController route /api/v1/treatments. Must run before
+// UseRouting so the rewritten path is what the router sees.
+app.UseMiddleware<JsonExtensionMiddleware>();
+
 // Explicit UseRouting so TenantSetupMiddleware and RecoveryModeMiddleware can
 // read endpoint metadata (e.g. [AllowDuringSetup]). Minimal hosting would
 // insert this automatically but we make it explicit for clarity.
 app.UseRouting();
-
-// Add JSON extension middleware to handle .json suffixes for legacy compatibility
-app.UseMiddleware<JsonExtensionMiddleware>();
 
 // Block most API traffic when recovery mode is active (orphaned subjects detected)
 app.UseMiddleware<RecoveryModeMiddleware>();

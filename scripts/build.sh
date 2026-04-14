@@ -9,6 +9,7 @@
 # Environment variables (optional):
 #   REGISTRY          Container registry   (default: ghcr.io)
 #   IMAGE_REPOSITORY  Image repository     (default: detected from git remote)
+#   CONTAINER_RID     .NET RID for API container (default: auto-detected, e.g. linux-x64)
 #   SKIP_API          Skip API container    (default: false)
 #   SKIP_WEB          Skip Web container    (default: false)
 set -euo pipefail
@@ -86,8 +87,11 @@ fi
 # ---------------------------------------------------------------------------
 if [[ "${SKIP_API:-false}" != "true" ]]; then
   echo "==> Building API container"
+  # Default to linux-x64 so cross-compilation from ARM Macs works out of the box.
+  API_RID="${CONTAINER_RID:-linux-x64}"
   PUBLISH_ARGS=(
     -c Release
+    -r "$API_RID"
     -p:PublishProfile=DefaultContainer
     -p:ContainerRepository="$IMAGE_REPOSITORY/nocturne-api"
     -p:ContainerImageTag="$VERSION"
