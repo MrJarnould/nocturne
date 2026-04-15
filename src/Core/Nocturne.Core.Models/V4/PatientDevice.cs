@@ -6,6 +6,7 @@ public class PatientDevice
     public DeviceCategory DeviceCategory { get; set; }
     public string Manufacturer { get; set; } = string.Empty;
     public string Model { get; set; } = string.Empty;
+    public string? CatalogId { get; set; }
     public AidAlgorithm? AidAlgorithm { get; set; }
     public string? SerialNumber { get; set; }
     public Guid? DeviceId { get; set; }

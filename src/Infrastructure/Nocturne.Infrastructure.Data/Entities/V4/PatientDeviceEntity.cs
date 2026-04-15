@@ -46,6 +46,13 @@ public class PatientDeviceEntity : ITenantScoped
     public string Model { get; set; } = string.Empty;
 
     /// <summary>
+    /// Reference to the device catalog entry (e.g. "dexcom-g7")
+    /// </summary>
+    [Column("catalog_id")]
+    [MaxLength(64)]
+    public string? CatalogId { get; set; }
+
+    /// <summary>
     /// AID algorithm stored as string (e.g. "OpenAps", "Loop", "ControlIQ")
     /// </summary>
     [Column("aid_algorithm")]
