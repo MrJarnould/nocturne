@@ -58,7 +58,8 @@ public class ConnectorSyncServiceTests
         mock.Setup(x => x.ExecuteSyncAsync(
                 It.IsAny<IServiceProvider>(),
                 It.IsAny<SyncRequest>(),
-                It.IsAny<CancellationToken>()))
+                It.IsAny<CancellationToken>(),
+                It.IsAny<ISyncProgressReporter?>()))
             .ReturnsAsync(result ?? new SyncResult { Success = true, Message = "OK" });
         return mock.Object;
     }
@@ -85,7 +86,8 @@ public class ConnectorSyncServiceTests
             x => x.ExecuteSyncAsync(
                 It.IsAny<IServiceProvider>(),
                 request,
-                CancellationToken.None),
+                CancellationToken.None,
+                It.IsAny<ISyncProgressReporter?>()),
             Times.Once);
     }
 
@@ -126,7 +128,8 @@ public class ConnectorSyncServiceTests
             x => x.ExecuteSyncAsync(
                 It.IsAny<IServiceProvider>(),
                 request,
-                CancellationToken.None),
+                CancellationToken.None,
+                It.IsAny<ISyncProgressReporter?>()),
             Times.Once);
     }
 }

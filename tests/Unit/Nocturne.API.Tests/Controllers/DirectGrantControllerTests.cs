@@ -134,7 +134,8 @@ public class DirectGrantControllerTests : IDisposable
 
         var result = await _controller.Create(request);
 
-        Assert.IsType<BadRequestObjectResult>(result.Result);
+        var objectResult = Assert.IsType<ObjectResult>(result.Result);
+        Assert.Equal(400, objectResult.StatusCode);
     }
 
     [Fact]
@@ -148,7 +149,8 @@ public class DirectGrantControllerTests : IDisposable
 
         var result = await _controller.Create(request);
 
-        Assert.IsType<BadRequestObjectResult>(result.Result);
+        var objectResult = Assert.IsType<ObjectResult>(result.Result);
+        Assert.Equal(400, objectResult.StatusCode);
     }
 
     [Fact]
@@ -162,7 +164,8 @@ public class DirectGrantControllerTests : IDisposable
 
         var result = await _controller.Create(request);
 
-        Assert.IsType<BadRequestObjectResult>(result.Result);
+        var objectResult = Assert.IsType<ObjectResult>(result.Result);
+        Assert.Equal(400, objectResult.StatusCode);
     }
 
     [Fact]
@@ -178,7 +181,8 @@ public class DirectGrantControllerTests : IDisposable
 
         var result = await _controller.Create(request);
 
-        Assert.IsType<UnauthorizedObjectResult>(result.Result);
+        var objectResult = Assert.IsType<ObjectResult>(result.Result);
+        Assert.Equal(401, objectResult.StatusCode);
     }
 
     [Fact]
@@ -271,7 +275,8 @@ public class DirectGrantControllerTests : IDisposable
     {
         var result = await _controller.Revoke(Guid.CreateVersion7());
 
-        Assert.IsType<NotFoundObjectResult>(result);
+        var objectResult = Assert.IsType<ObjectResult>(result);
+        Assert.Equal(404, objectResult.StatusCode);
     }
 
     [Fact]

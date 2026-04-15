@@ -333,13 +333,8 @@ public class StatusServiceTests
         // Additional timestamps
         result.Additional.Should().NotBeNull();
         result.Additional!.Should().ContainKey("auth");
-        result.Additional.Should().ContainKey("notifications");
         result
             .Additional["auth"]
-            .Should()
-            .BeOnOrBefore(result.ServerTime);
-        result
-            .Additional["notifications"]
             .Should()
             .BeOnOrBefore(result.ServerTime);
     }

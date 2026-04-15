@@ -57,12 +57,26 @@ public class DirectGrantController : ControllerBase
             return Problem(detail: "Authentication required", statusCode: 401, title: "Unauthorized");
         }
 
+        if (string.IsNullOrWhiteSpace(request.Label))
+        {
+            return Problem(detail: "Label is required", statusCode: 400, title: "Bad Request");
+        }
+
+        if (request.Scopes == null || request.Scopes.Count == 0)
+        {
+            return Problem(detail: "At least one scope is required", statusCode: 400, title: "Bad Request");
+        }
+
+        var normalizedScopes = OAuthScopes.Normalize(request.Scopes).ToList();
+        if (normalizedScopes.Count == 0)
+        {
+            return Problem(detail: "No valid scopes provided", statusCode: 400, title: "Bad Request");
+        }
+
         // Generate opaque token
         var randomBytes = RandomNumberGenerator.GetBytes(TokenRandomBytes);
         var plaintextToken = TokenPrefix + Base64UrlEncode(randomBytes);
         var tokenHash = DirectGrantTokenHandler.ComputeSha256Hex(plaintextToken);
-
-        var normalizedScopes = OAuthScopes.Normalize(request.Scopes).ToList();
 
         var entity = new OAuthGrantEntity
         {

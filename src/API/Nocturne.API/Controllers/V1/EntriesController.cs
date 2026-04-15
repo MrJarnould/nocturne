@@ -793,6 +793,7 @@ public class EntriesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token for async operations</param>
     /// <returns>Updated entry</returns>
     [HttpPut("{id}")]
+    [Authorize]
     [NightscoutEndpoint("/api/v1/entries/{id}")]
     [ProducesResponseType(typeof(Entry), 200)]
     [ProducesResponseType(typeof(object), 400)]
@@ -880,6 +881,7 @@ public class EntriesController : ControllerBase
     /// <param name="cancellationToken">Cancellation token for async operations</param>
     /// <returns>Confirmation of deletion</returns>
     [HttpDelete("{id}")]
+    [Authorize]
     [NightscoutEndpoint("/api/v1/entries/{id}")]
     [ProducesResponseType(typeof(object), 200)]
     [ProducesResponseType(typeof(object), 400)]

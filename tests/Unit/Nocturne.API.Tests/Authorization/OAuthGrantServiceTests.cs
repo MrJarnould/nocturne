@@ -42,6 +42,8 @@ public class OAuthGrantServiceTests : IDisposable
 
         using var dbContext = new NocturneDbContext(_contextOptions);
         dbContext.Database.EnsureCreated();
+        dbContext.Tenants.Add(new TenantEntity { Id = _testTenantId, Slug = "test" });
+        dbContext.SaveChanges();
 
         _mockClientService = new Mock<IOAuthClientService>();
         _mockLogger = new Mock<ILogger<OAuthGrantService>>();

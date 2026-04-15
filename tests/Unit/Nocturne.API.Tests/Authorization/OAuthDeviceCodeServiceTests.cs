@@ -48,6 +48,8 @@ public class OAuthDeviceCodeServiceTests : IDisposable
 
         using var dbContext = new NocturneDbContext(_contextOptions);
         dbContext.Database.EnsureCreated();
+        dbContext.Tenants.Add(new TenantEntity { Id = _testTenantId, Slug = "test" });
+        dbContext.SaveChanges();
 
         _mockJwtService = new Mock<IJwtService>();
         _mockClientService = new Mock<IOAuthClientService>();
@@ -479,6 +481,8 @@ public class OAuthDeviceCodeExchangeTests : IDisposable
 
         using var dbContext = new NocturneDbContext(_contextOptions);
         dbContext.Database.EnsureCreated();
+        dbContext.Tenants.Add(new TenantEntity { Id = _testTenantId, Slug = "test" });
+        dbContext.SaveChanges();
 
         _mockJwtService = new Mock<IJwtService>();
         _mockSubjectService = new Mock<ISubjectService>();

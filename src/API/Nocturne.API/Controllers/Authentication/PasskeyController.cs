@@ -80,6 +80,11 @@ public class PasskeyController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<PasskeyOptionsResponse>> RegisterOptions([FromBody] PasskeyRegisterOptionsRequest request)
     {
+        if (string.IsNullOrEmpty(request.Username))
+        {
+            return Problem(detail: "Username is required", statusCode: 400, title: "Bad Request");
+        }
+
         var tenantId = _tenantAccessor.TenantId;
         var result = await _passkeyService.GenerateRegistrationOptionsAsync(
             request.SubjectId, request.Username, tenantId);
@@ -156,6 +161,11 @@ public class PasskeyController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<PasskeyOptionsResponse>> LoginOptions([FromBody] PasskeyLoginOptionsRequest request)
     {
+        if (string.IsNullOrEmpty(request.Username))
+        {
+            return Problem(detail: "Username is required", statusCode: 400, title: "Bad Request");
+        }
+
         var tenantId = _tenantAccessor.TenantId;
         var result = await _passkeyService.GenerateAssertionOptionsAsync(request.Username, tenantId);
 
@@ -254,6 +264,11 @@ public class PasskeyController : ControllerBase
     public async Task<ActionResult<RecoveryVerifyResponse>> RecoveryVerify(
         [FromBody] RecoveryVerifyRequest request)
     {
+        if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Code))
+        {
+            return Problem(detail: "Username and recovery code are required", statusCode: 400, title: "Bad Request");
+        }
+
         var tenantId = _tenantAccessor.TenantId;
 
         // Look up subject by username within the current tenant

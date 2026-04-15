@@ -247,7 +247,8 @@ public class DebugControllerTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Result.Should().BeOfType<BadRequestObjectResult>();
+        var objectResult = result.Result.Should().BeOfType<ObjectResult>().Subject;
+        objectResult.StatusCode.Should().Be(400);
     }
 
     [Fact]
