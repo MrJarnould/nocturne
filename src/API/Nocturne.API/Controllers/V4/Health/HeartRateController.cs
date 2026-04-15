@@ -108,7 +108,7 @@ public class HeartRateController : ControllerBase
 
             var heartRateList = requests.Select(request => new HeartRate
             {
-                Mills = new DateTimeOffset(request.Timestamp.UtcDateTime, TimeSpan.Zero).ToUnixTimeMilliseconds(),
+                Timestamp = request.Timestamp.UtcDateTime,
                 UtcOffset = request.UtcOffset,
                 Bpm = request.Bpm,
                 Accuracy = request.Accuracy,
@@ -145,7 +145,7 @@ public class HeartRateController : ControllerBase
         {
             var heartRate = new HeartRate
             {
-                Mills = new DateTimeOffset(request.Timestamp.UtcDateTime, TimeSpan.Zero).ToUnixTimeMilliseconds(),
+                Timestamp = request.Timestamp.UtcDateTime,
                 UtcOffset = request.UtcOffset,
                 Bpm = request.Bpm,
                 Accuracy = request.Accuracy,

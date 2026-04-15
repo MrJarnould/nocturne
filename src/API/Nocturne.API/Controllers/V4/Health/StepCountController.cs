@@ -108,7 +108,7 @@ public class StepCountController : ControllerBase
 
             var stepCountList = requests.Select(request => new StepCount
             {
-                Mills = new DateTimeOffset(request.Timestamp.UtcDateTime, TimeSpan.Zero).ToUnixTimeMilliseconds(),
+                Timestamp = request.Timestamp.UtcDateTime,
                 UtcOffset = request.UtcOffset,
                 Metric = request.Metric,
                 Source = request.Source,
@@ -145,7 +145,7 @@ public class StepCountController : ControllerBase
         {
             var stepCount = new StepCount
             {
-                Mills = new DateTimeOffset(request.Timestamp.UtcDateTime, TimeSpan.Zero).ToUnixTimeMilliseconds(),
+                Timestamp = request.Timestamp.UtcDateTime,
                 UtcOffset = request.UtcOffset,
                 Metric = request.Metric,
                 Source = request.Source,
