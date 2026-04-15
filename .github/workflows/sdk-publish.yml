@@ -206,7 +206,9 @@ jobs:
             --additional-properties=artifactVersion=${{ needs.generate-spec.outputs.sdk_version }}
 
       - name: Fix file permissions
-        run: sudo chown -R $USER:$USER sdk/kotlin/out
+        run: |
+          sudo chown -R $USER:$USER sdk/kotlin/out
+          chmod +x sdk/kotlin/out/gradlew
 
       - name: Apply publish overlay
         run: cp sdk/kotlin/publish.gradle sdk/kotlin/out/build.gradle
@@ -338,7 +340,9 @@ jobs:
             --additional-properties=artifactVersion=${{ needs.generate-spec.outputs.sdk_version }}
 
       - name: Fix file permissions
-        run: sudo chown -R $USER:$USER sdk/java/out
+        run: |
+          sudo chown -R $USER:$USER sdk/java/out
+          chmod +x sdk/java/out/gradlew
 
       - name: Apply publish overlay
         run: cp sdk/java/publish.gradle sdk/java/out/build.gradle
