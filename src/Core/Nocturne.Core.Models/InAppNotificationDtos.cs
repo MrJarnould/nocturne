@@ -16,6 +16,11 @@ public class InAppNotificationDto
     public InAppNotificationType Type { get; set; }
 
     /// <summary>
+    /// Broad rendering category that determines visual treatment
+    /// </summary>
+    public NotificationCategory Category { get; set; }
+
+    /// <summary>
     /// Urgency level for prioritization and visual styling
     /// </summary>
     public NotificationUrgency Urgency { get; set; }
@@ -34,6 +39,16 @@ public class InAppNotificationDto
     /// When the notification was created
     /// </summary>
     public DateTime CreatedAt { get; set; }
+
+    /// <summary>
+    /// Lucide icon name for the notification (e.g., "alert-triangle", "bell")
+    /// </summary>
+    public string? Icon { get; set; }
+
+    /// <summary>
+    /// Subsystem or service that created the notification (e.g., "TrackerService", "ConnectorSync")
+    /// </summary>
+    public string? Source { get; set; }
 
     /// <summary>
     /// Optional source identifier for the notification (e.g., food entry ID for meal match)

@@ -306,3 +306,32 @@ public enum NotificationArchiveReason
     /// </summary>
     Expired
 }
+
+/// <summary>
+/// Broad rendering category for notifications. Determines visual treatment (icon shape,
+/// color palette, default sound) without coupling to a specific notification type.
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter<NotificationCategory>))]
+public enum NotificationCategory
+{
+    /// <summary>
+    /// Passive informational notifications (e.g., statistics summary, help response).
+    /// Default value — safest fallback for uninitialized notifications.
+    /// </summary>
+    Informational,
+
+    /// <summary>
+    /// Time-sensitive alerts requiring immediate attention (e.g., predicted low, urgent high)
+    /// </summary>
+    Alert,
+
+    /// <summary>
+    /// Notifications that require user action to resolve (e.g., unconfigured tracker, login request)
+    /// </summary>
+    ActionRequired,
+
+    /// <summary>
+    /// Gentle reminders for optional actions (e.g., suggested meal match, tracker reset)
+    /// </summary>
+    Reminder
+}
