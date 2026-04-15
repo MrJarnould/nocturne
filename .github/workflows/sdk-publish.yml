@@ -364,17 +364,9 @@ jobs:
           with open('sdk/java/out/build.gradle', 'w') as f: f.write(content)
           "
           cat sdk/java/publish.gradle >> sdk/java/out/build.gradle
-          # Fix OpenAPI Generator bug: duplicate 'headers' variable in multipart API methods
-          find sdk/java/out/src -name '*.java' -exec python3 -c "
-          import sys, re
-          for path in sys.argv[1:]:
-              with open(path) as f: src = f.read()
-              # Remove second 'Map<String, String> headers = ...' in methods that have two
-              fixed = re.sub(r'(Map<String, String> headers = [^;]+;.*?)Map<String, String> headers = [^;]+;', r'\1', src, flags=re.DOTALL)
-              if fixed != src:
-                  with open(path, 'w') as f: f.write(fixed)
-                  print(f'Fixed duplicate headers in {path}')
-          " {} +
+          # Remove API files with multipart upload bugs (OpenAPI Generator native library issue)
+          rm -f sdk/java/out/src/main/java/org/nightscoutfoundation/nocturne/api/AlertCustomSoundsApi.java
+          rm -f sdk/java/out/src/test/java/org/nightscoutfoundation/nocturne/api/AlertCustomSoundsApiTest.java
 
       - name: Setup Java
         uses: actions/setup-java@v4
