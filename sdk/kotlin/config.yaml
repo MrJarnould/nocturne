@@ -3,7 +3,7 @@ outputDir: ./out
 globalProperties:
   skipFormModel: true
 additionalProperties:
-  groupId: org.nightscoutfoundation
+  groupId: io.github.ryceg
   artifactId: nocturne
   packageName: org.nightscoutfoundation.nocturne
   artifactVersion: "0.1.0"
