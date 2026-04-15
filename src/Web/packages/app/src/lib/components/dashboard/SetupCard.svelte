@@ -41,7 +41,7 @@
   );
 
   const profileConfigured = $derived(
-    ((profileSummary.current?.basalSchedules as any[]) ?? []).length > 0
+    (profileSummary.current?.basalSchedules ?? []).length > 0
   );
 
   type SetupStep = {
