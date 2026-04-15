@@ -487,6 +487,9 @@ public class NocturneDbContext : DbContext
         // Configure per-tenant global query filters
         ConfigureTenantFilters(modelBuilder);
 
+        // Configure cascade deletes from tenant to all tenant-scoped entities
+        ConfigureTenantCascadeDeletes(modelBuilder);
+
         // Normalize primary-key column naming. EF Core's default convention
         // emits the C# property name verbatim for the column, which produces
         // case-sensitive quoted "Id" columns in PostgreSQL. Some entities
@@ -3111,6 +3114,26 @@ public class NocturneDbContext : DbContext
             }
 
             modelBuilder.Entity(entityType.ClrType).HasQueryFilter(Expression.Lambda(body, parameter));
+        }
+    }
+
+    /// <summary>
+    /// Adds FK constraints with ON DELETE CASCADE from every ITenantScoped entity's
+    /// TenantId column to the tenants table. This ensures tenant deletion cascades to
+    /// all tenant-scoped data instead of silently orphaning rows.
+    /// </summary>
+    private static void ConfigureTenantCascadeDeletes(ModelBuilder modelBuilder)
+    {
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (!typeof(ITenantScoped).IsAssignableFrom(entityType.ClrType))
+                continue;
+
+            modelBuilder.Entity(entityType.ClrType)
+                .HasOne(typeof(TenantEntity))
+                .WithMany()
+                .HasForeignKey(nameof(ITenantScoped.TenantId))
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

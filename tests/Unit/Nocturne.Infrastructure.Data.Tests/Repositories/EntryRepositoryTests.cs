@@ -34,10 +34,12 @@ public class EntryRepositoryTests : IDisposable
             .EnableSensitiveDataLogging()
             .Options;
 
-        // Create the database schema
+        // Create the database schema and seed the tenant
         using var context = new NocturneDbContext(_contextOptions);
         context.TenantId = TestTenantId;
         context.Database.EnsureCreated();
+        context.Tenants.Add(new TenantEntity { Id = TestTenantId, Slug = "test" });
+        context.SaveChanges();
 
         // Setup mocks for repository dependencies
         _mockDeduplicationService = new Mock<IDeduplicationService>();

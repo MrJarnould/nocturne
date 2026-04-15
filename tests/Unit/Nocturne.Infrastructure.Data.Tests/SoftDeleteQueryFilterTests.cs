@@ -23,6 +23,10 @@ public class SoftDeleteQueryFilterTests : IDisposable
             .Options;
         using var context = new NocturneDbContext(_contextOptions);
         context.Database.EnsureCreated();
+
+        // Seed the tenant so FK constraints on TenantId are satisfied
+        context.Tenants.Add(new TenantEntity { Id = _tenantId, Slug = "test" });
+        context.SaveChanges();
     }
 
     private NocturneDbContext CreateContext()

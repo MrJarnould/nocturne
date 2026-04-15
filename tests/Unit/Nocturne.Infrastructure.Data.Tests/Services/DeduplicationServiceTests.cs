@@ -34,10 +34,12 @@ public class DeduplicationServiceTests : IDisposable
             .EnableSensitiveDataLogging()
             .Options;
 
-        // Create the database schema
+        // Create the database schema and seed the tenant
         using var context = new NocturneDbContext(_contextOptions);
         context.TenantId = TestTenantId;
         context.Database.EnsureCreated();
+        context.Tenants.Add(new TenantEntity { Id = TestTenantId, Slug = "test" });
+        context.SaveChanges();
 
         // Set up DI container for IServiceScopeFactory
         var services = new ServiceCollection();
