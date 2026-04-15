@@ -137,7 +137,7 @@ public class InAppNotificationRepository : IInAppNotificationRepository
     /// <returns>The notification if found, null otherwise</returns>
     public virtual async Task<InAppNotificationEntity?> FindBySourceAsync(
         string userId,
-        InAppNotificationType type,
+        string type,
         string sourceId,
         CancellationToken cancellationToken = default
     )
@@ -200,7 +200,10 @@ public class InAppNotificationRepository : IInAppNotificationRepository
         return new InAppNotificationDto
         {
             Id = entity.Id,
-            Type = entity.Type,
+            Type = Enum.TryParse<InAppNotificationType>(entity.Type, out var parsedType)
+                ? parsedType
+                : default,
+            Category = entity.Category,
             Urgency = entity.Urgency,
             Title = entity.Title,
             Subtitle = entity.Subtitle,

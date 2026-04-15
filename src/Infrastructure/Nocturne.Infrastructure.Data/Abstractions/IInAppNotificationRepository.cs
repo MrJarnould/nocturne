@@ -48,7 +48,7 @@ public interface IInAppNotificationRepository
     /// </summary>
     Task<InAppNotificationEntity?> FindBySourceAsync(
         string userId,
-        InAppNotificationType type,
+        string type,
         string sourceId,
         CancellationToken cancellationToken = default);
 }

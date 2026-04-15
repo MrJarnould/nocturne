@@ -68,7 +68,7 @@ public class InAppNotificationService : IInAppNotificationService
         var entity = new InAppNotificationEntity
         {
             UserId = userId,
-            Type = type,
+            Type = type.ToString(),
             Urgency = urgency,
             Title = title,
             Subtitle = subtitle,
@@ -204,7 +204,7 @@ public class InAppNotificationService : IInAppNotificationService
 
             default:
                 // Check for domain-specific action handling
-                if (notification.Type == InAppNotificationType.SuggestedMealMatch)
+                if (notification.Type == InAppNotificationType.SuggestedMealMatch.ToString())
                 {
                     switch (actionId.ToLowerInvariant())
                     {
@@ -238,7 +238,7 @@ public class InAppNotificationService : IInAppNotificationService
                 }
 
                 // Handle tracker suggestion actions
-                if (notification.Type == InAppNotificationType.SuggestedTrackerMatch)
+                if (notification.Type == InAppNotificationType.SuggestedTrackerMatch.ToString())
                 {
                     // Lazy resolution to avoid circular dependency
                     var trackerSuggestionService = _serviceProvider.GetRequiredService<ITrackerSuggestionService>();
@@ -286,7 +286,7 @@ public class InAppNotificationService : IInAppNotificationService
     {
         var notification = await _repository.FindBySourceAsync(
             userId,
-            type,
+            type.ToString(),
             sourceId,
             cancellationToken
         );
