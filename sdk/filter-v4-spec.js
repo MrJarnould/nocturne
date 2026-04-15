@@ -57,6 +57,39 @@ for (const name of usedSchemaNames) {
   }
 }
 
+// Deduplicate allOf compositions: remove properties from composed object
+// that already exist in the referenced parent schema
+for (const [name, schema] of Object.entries(filteredSchemas)) {
+  if (!schema.allOf || schema.allOf.length < 2) continue;
+
+  // Collect property names from all $ref'd parent schemas
+  const parentProps = new Set();
+  for (const part of schema.allOf) {
+    if (part['$ref']) {
+      const parentName = part['$ref'].replace('#/components/schemas/', '');
+      const parent = filteredSchemas[parentName];
+      if (parent?.properties) {
+        for (const prop of Object.keys(parent.properties)) {
+          parentProps.add(prop);
+        }
+      }
+    }
+  }
+
+  // Remove duplicates from inline composed objects
+  if (parentProps.size > 0) {
+    for (const part of schema.allOf) {
+      if (!part['$ref'] && part.properties) {
+        for (const prop of Object.keys(part.properties)) {
+          if (parentProps.has(prop)) {
+            delete part.properties[prop];
+          }
+        }
+      }
+    }
+  }
+}
+
 const output = {
   openapi: spec.openapi,
   info: {
