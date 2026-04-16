@@ -12,6 +12,7 @@
 
   let viewState: "redirecting" | "fallback" = $state("redirecting");
   let copied = $state(false);
+  let copyTimeout: ReturnType<typeof setTimeout> | null = null;
 
   const instanceUrl = typeof window !== "undefined" ? window.location.origin : "";
   const deepLink = `xdrip://connect/nocturne?url=${encodeURIComponent(instanceUrl)}`;
@@ -21,13 +22,21 @@
     const timeout = setTimeout(() => {
       viewState = "fallback";
     }, 2000);
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      if (copyTimeout) clearTimeout(copyTimeout);
+    };
   });
 
   async function copyUrl() {
-    await navigator.clipboard.writeText(instanceUrl);
-    copied = true;
-    setTimeout(() => (copied = false), 2000);
+    try {
+      await navigator.clipboard.writeText(instanceUrl);
+      copied = true;
+      if (copyTimeout) clearTimeout(copyTimeout);
+      copyTimeout = setTimeout(() => (copied = false), 2000);
+    } catch {
+      // Clipboard API unavailable; user can still long-press the code block.
+    }
   }
 </script>
 
