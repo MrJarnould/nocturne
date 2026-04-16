@@ -386,12 +386,15 @@ public class NutritionController : ControllerBase
     }
 
     /// <summary>
-    /// Get carb intake records with food attribution status for the meals view.
+    /// Get meal events grouped by <c>CorrelationId</c>. Each event carries its
+    /// own carb intakes, correlated boluses, food attribution rows, and
+    /// aggregated totals. Carb intakes with a null <c>CorrelationId</c> become
+    /// single-member events on their own (they are NOT collapsed together).
     /// </summary>
     [HttpGet("meals")]
     [RemoteQuery]
-    [ProducesResponseType(typeof(MealCarbIntake[]), StatusCodes.Status200OK)]
-    public async Task<ActionResult<MealCarbIntake[]>> GetMeals(
+    [ProducesResponseType(typeof(MealEvent[]), StatusCodes.Status200OK)]
+    public async Task<ActionResult<MealEvent[]>> GetMeals(
         [FromQuery] DateTime? from = null,
         [FromQuery] DateTime? to = null,
         [FromQuery] bool? attributed = null,
@@ -414,7 +417,7 @@ public class NutritionController : ControllerBase
             .ToListAsync(ct);
 
         if (carbIntakeEntities.Count == 0)
-            return Ok(Array.Empty<MealCarbIntake>());
+            return Ok(Array.Empty<MealEvent>());
 
         var carbIntakeIds = carbIntakeEntities.Select(c => c.Id).ToList();
         var foodEntries = await _treatmentFoodService.GetByCarbIntakeIdsAsync(carbIntakeIds, ct);
@@ -422,59 +425,94 @@ public class NutritionController : ControllerBase
             .GroupBy(f => f.CarbIntakeId)
             .ToDictionary(g => g.Key, g => g.ToList());
 
-        // Look up correlated boluses
         var correlationIds = carbIntakeEntities
             .Where(c => c.CorrelationId.HasValue)
             .Select(c => c.CorrelationId!.Value)
             .Distinct()
             .ToList();
 
-        var correlatedBoluses = correlationIds.Count > 0
+        var correlatedBolusEntities = correlationIds.Count > 0
             ? await _context.Set<BolusEntity>()
                 .AsNoTracking()
-                .Where(b => b.CorrelationId.HasValue && correlationIds.Contains(b.CorrelationId.Value))
+                .Where(b => b.CorrelationId.HasValue && correlationIds.Contains(b.CorrelationId!.Value))
                 .ToListAsync(ct)
             : [];
 
-        var bolusByCorrelationId = correlatedBoluses
-            .Where(b => b.CorrelationId.HasValue)
+        var bolusesByCorrelation = correlatedBolusEntities
             .GroupBy(b => b.CorrelationId!.Value)
-            .ToDictionary(g => g.Key, g => g.First());
+            .ToDictionary(g => g.Key, g => g.Select(BolusMapper.ToDomainModel).ToArray());
 
-        var results = new List<MealCarbIntake>();
+        var events = new List<MealEvent>();
 
-        foreach (var entity in carbIntakeEntities)
+        // Pass 1: carb intakes WITH a CorrelationId — group by that key so an
+        // event with multiple carb intakes (or multiple boluses) emits ONE event.
+        var correlatedGroups = carbIntakeEntities
+            .Where(c => c.CorrelationId.HasValue)
+            .GroupBy(c => c.CorrelationId!.Value);
+
+        foreach (var group in correlatedGroups)
         {
-            var foods = foodsByCarbIntake.TryGetValue(entity.Id, out var list)
-                ? list
-                : [];
-            var attributedCarbs = foods.Sum(f => f.Carbs);
-            var totalCarbs = (decimal)entity.Carbs;
-
-            Bolus? correlatedBolus = null;
-            if (entity.CorrelationId.HasValue &&
-                bolusByCorrelationId.TryGetValue(entity.CorrelationId.Value, out var bolusEntity))
-            {
-                correlatedBolus = BolusMapper.ToDomainModel(bolusEntity);
-            }
-
-            var meal = new MealCarbIntake
-            {
-                CarbIntake = CarbIntakeMapper.ToDomainModel(entity),
-                CorrelatedBolus = correlatedBolus,
-                Foods = foods,
-                IsAttributed = foods.Count > 0,
-                AttributedCarbs = attributedCarbs,
-                UnspecifiedCarbs = totalCarbs - attributedCarbs,
-            };
-
-            if (attributed.HasValue && meal.IsAttributed != attributed.Value)
-                continue;
-
-            results.Add(meal);
+            var members = group.ToList();
+            events.Add(BuildEvent(
+                correlationId: group.Key,
+                carbEntities: members,
+                boluses: bolusesByCorrelation.TryGetValue(group.Key, out var bs) ? bs : [],
+                foodsByCarbIntake: foodsByCarbIntake));
         }
 
-        return Ok(results.ToArray());
+        // Pass 2: orphan carb intakes (null CorrelationId) — each becomes its
+        // own event with empty Boluses. Do NOT collapse them together.
+        foreach (var orphan in carbIntakeEntities.Where(c => !c.CorrelationId.HasValue))
+        {
+            events.Add(BuildEvent(
+                correlationId: Guid.Empty,
+                carbEntities: [orphan],
+                boluses: [],
+                foodsByCarbIntake: foodsByCarbIntake));
+        }
+
+        var filtered = attributed.HasValue
+            ? events.Where(e => e.IsAttributed == attributed.Value)
+            : events;
+
+        return Ok(filtered.OrderByDescending(e => e.Timestamp).ToArray());
+    }
+
+    private static MealEvent BuildEvent(
+        Guid correlationId,
+        IReadOnlyList<CarbIntakeEntity> carbEntities,
+        Bolus[] boluses,
+        IReadOnlyDictionary<Guid, List<TreatmentFood>> foodsByCarbIntake)
+    {
+        var carbModels = carbEntities.Select(CarbIntakeMapper.ToDomainModel).ToArray();
+        var foods = carbEntities
+            .SelectMany(c => foodsByCarbIntake.TryGetValue(c.Id, out var list) ? list : [])
+            .ToArray();
+
+        var totalCarbs = carbEntities.Sum(c => c.Carbs);
+        var attributedCarbs = (double)foods.Sum(f => f.Carbs);
+        var totalInsulin = boluses.Sum(b => b.Insulin);
+
+        // The event timestamp is the earliest point across carb intakes and
+        // boluses in the group — easy to reason about for chronological rendering.
+        var earliestCarb = carbEntities.Min(c => c.Timestamp);
+        var timestamp = boluses.Length > 0
+            ? (boluses.Min(b => b.Timestamp) < earliestCarb ? boluses.Min(b => b.Timestamp) : earliestCarb)
+            : earliestCarb;
+
+        return new MealEvent
+        {
+            CorrelationId = correlationId,
+            Timestamp = timestamp,
+            CarbIntakes = carbModels,
+            Boluses = boluses,
+            Foods = foods,
+            TotalCarbs = totalCarbs,
+            AttributedCarbs = attributedCarbs,
+            UnspecifiedCarbs = totalCarbs - attributedCarbs,
+            TotalInsulin = totalInsulin,
+            IsAttributed = foods.Length > 0,
+        };
     }
 
     #endregion
