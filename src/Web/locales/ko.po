@@ -24326,3 +24326,85 @@ msgstr ""
 #: src/routes/(fullscreen)/setup/patient/+page.svelte
 msgid "Weight (kg)"
 msgstr ""
+
+#: src/routes/(fullscreen)/connect/xdrip/+page.svelte
+msgid "Opening xDrip+"
+msgstr ""
+
+#: src/routes/(fullscreen)/connect/xdrip/+page.svelte
+msgid "Redirecting to xDrip+ to start the connection..."
+msgstr ""
+
+#: src/routes/(fullscreen)/connect/xdrip/+page.svelte
+msgid "Connect xDrip+"
+msgstr ""
+
+#: src/routes/(fullscreen)/connect/xdrip/+page.svelte
+msgid "xDrip+ didn't open automatically. You can try these options:"
+msgstr ""
+
+#: src/lib/components/XdripQuickConnect.svelte
+#: src/routes/(fullscreen)/connect/xdrip/+page.svelte
+msgid "<0/> Open in xDrip+"
+msgstr ""
+
+#: src/routes/(fullscreen)/connect/xdrip/+page.svelte
+msgid "Manual setup"
+msgstr ""
+
+#: src/routes/(fullscreen)/connect/xdrip/+page.svelte
+msgid "In xDrip+, go to Settings > Cloud Upload > Nocturne, enter this URL:"
+msgstr ""
+
+#: src/routes/(fullscreen)/connect/xdrip/+page.svelte
+msgid "Then tap \"Connect to Nocturne\" to authorize."
+msgstr ""
+
+#: src/routes/(fullscreen)/connect/xdrip/+page.svelte
+msgid "Don't have xDrip+ installed?"
+msgstr ""
+
+#: src/routes/(fullscreen)/connect/xdrip/+page.svelte
+msgid "<0/> Download xDrip+"
+msgstr ""
+
+#: src/lib/components/XdripQuickConnect.svelte
+msgid "Quick Connect"
+msgstr ""
+
+#: src/lib/components/XdripQuickConnect.svelte
+msgid "Automatically configure xDrip+ with your Nocturne instance."
+msgstr ""
+
+#: src/lib/components/XdripQuickConnect.svelte
+msgid "Or scan from another device"
+msgstr ""
+
+#: src/lib/components/XdripQuickConnect.svelte
+#: src/lib/components/XdripQuickConnect.svelte
+msgid "QR code to connect xDrip+"
+msgstr ""
+
+#: src/lib/components/XdripQuickConnect.svelte
+msgid "Scan this QR code with your phone's camera"
+msgstr ""
+
+#: src/lib/components/XdripQuickConnect.svelte
+msgid "Or open this link on your phone"
+msgstr ""
+
+#: src/lib/components/XdripQuickConnect.svelte
+msgid "<0/> Waiting for data from xDrip+..."
+msgstr ""
+
+#: src/lib/components/XdripQuickConnect.svelte
+msgid "<0/> Connected! Data is flowing from xDrip+."
+msgstr ""
+
+#: src/lib/components/XdripQuickConnect.svelte
+msgid "No data from xDrip+ yet. This is normal if xDrip+ hasn't had a new reading."
+msgstr ""
+
+#: src/lib/components/XdripQuickConnect.svelte
+msgid "Check now"
+msgstr ""
