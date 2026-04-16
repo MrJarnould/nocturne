@@ -264,7 +264,9 @@ public class BolusRepository : IBolusRepository
                 .Where(e => sources.Contains(e.DataSource!) && syncIds.Contains(e.SyncIdentifier!))
                 .ToListAsync(ct);
 
-            var existingByKey = existingRows.ToDictionary(e => $"{e.DataSource}|{e.SyncIdentifier}");
+            var existingByKey = existingRows
+                .GroupBy(e => $"{e.DataSource}|{e.SyncIdentifier}")
+                .ToDictionary(g => g.Key, g => g.First());
 
             var toInsert = new List<BolusEntity>();
             foreach (var entity in entities)

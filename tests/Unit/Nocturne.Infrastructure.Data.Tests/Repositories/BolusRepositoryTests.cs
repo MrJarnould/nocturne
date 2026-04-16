@@ -1,11 +1,13 @@
+using System.Data.Common;
 using FluentAssertions;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Nocturne.Core.Contracts;
 using Nocturne.Core.Models.V4;
+using Nocturne.Infrastructure.Data.Entities;
 using Nocturne.Infrastructure.Data.Repositories.V4;
-using Nocturne.Tests.Shared.Infrastructure;
 using Xunit;
 
 namespace Nocturne.Infrastructure.Data.Tests.Repositories;
@@ -16,13 +18,35 @@ namespace Nocturne.Infrastructure.Data.Tests.Repositories;
 public class BolusRepositoryTests : IDisposable
 {
     private static readonly Guid TestTenantId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+    private readonly DbConnection _connection;
+    private readonly DbContextOptions<NocturneDbContext> _contextOptions;
     private readonly NocturneDbContext _context;
     private readonly Mock<IDeduplicationService> _mockDeduplicationService;
     private readonly BolusRepository _repo;
 
     public BolusRepositoryTests()
     {
-        _context = TestDbContextFactory.CreateInMemoryContext();
+        // Create in-memory SQLite database for testing — mirrors the pattern in
+        // TreatmentRepositoryTests so partial unique indexes (e.g. on
+        // (tenant_id, data_source, sync_identifier)) are enforced end-to-end.
+        _connection = new SqliteConnection("Filename=:memory:");
+        _connection.Open();
+
+        _contextOptions = new DbContextOptionsBuilder<NocturneDbContext>()
+            .UseSqlite(_connection)
+            .EnableSensitiveDataLogging()
+            .Options;
+
+        // Create the database schema and seed the tenant.
+        using (var seedContext = new NocturneDbContext(_contextOptions))
+        {
+            seedContext.TenantId = TestTenantId;
+            seedContext.Database.EnsureCreated();
+            seedContext.Tenants.Add(new TenantEntity { Id = TestTenantId, Slug = "test" });
+            seedContext.SaveChanges();
+        }
+
+        _context = new NocturneDbContext(_contextOptions);
         _context.TenantId = TestTenantId;
 
         _mockDeduplicationService = new Mock<IDeduplicationService>();
@@ -52,6 +76,7 @@ public class BolusRepositoryTests : IDisposable
     public void Dispose()
     {
         _context.Dispose();
+        _connection.Dispose();
         GC.SuppressFinalize(this);
     }
 
@@ -144,11 +169,11 @@ public class BolusRepositoryTests : IDisposable
         });
 
         // Bulk insert with one colliding SyncIdentifier + one new
-        var results = await _repo.BulkCreateAsync(new[]
+        var results = (await _repo.BulkCreateAsync(new[]
         {
             new Bolus { Timestamp = timestamp, DataSource = "aaps", SyncIdentifier = "sync-1", Insulin = 6.4 },
             new Bolus { Timestamp = timestamp, DataSource = "aaps", SyncIdentifier = "sync-2", Insulin = 3.0 },
-        });
+        })).ToList();
 
         results.Should().HaveCount(2);
         var dbCount = await _context.Boluses.CountAsync();
@@ -157,6 +182,22 @@ public class BolusRepositoryTests : IDisposable
         // Original row was updated in place
         var updated = await _context.Boluses.FindAsync(existing.Id);
         updated!.Insulin.Should().Be(6.4);
+
+        // The returned enumerable contains the updated row with the new payload
+        results.Should().ContainSingle(r => r.Id == existing.Id && r.Insulin == 6.4);
+        // And the new insert
+        results.Should().ContainSingle(r => r.SyncIdentifier == "sync-2" && r.Insulin == 3.0);
+
+        // LinkRecordAsync was NOT called for the updated-in-place row
+        _mockDeduplicationService.Verify(
+            d => d.LinkRecordAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<RecordType>(),
+                existing.Id,
+                It.IsAny<long>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 
     [Fact]
