@@ -34,8 +34,8 @@
         margin: 2,
         color: { dark: "#000000", light: "#ffffff" },
       });
-    } catch {
-      // QR generation failed — users can still copy the connect URL below.
+    } catch (err) {
+      console.warn("[XdripQuickConnect] QR code generation failed:", err);
     }
     startPolling();
   });
@@ -60,8 +60,8 @@
         connectionState = "timeout";
         stopPolling();
       }
-    } catch {
-      // Network errors — keep polling until the timeout fires
+    } catch (err) {
+      console.warn("[XdripQuickConnect] Data source poll failed:", err);
     }
   }
 
@@ -87,17 +87,32 @@
 
 <div class="space-y-4">
   {#if connectionState === "waiting"}
-    <div class="bg-muted text-muted-foreground flex items-center gap-2 rounded p-3 text-sm">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      class="bg-muted text-muted-foreground flex items-center gap-2 rounded p-3 text-sm"
+    >
       <Loader2 class="h-4 w-4 animate-spin" />
       Waiting for data from xDrip+...
     </div>
   {:else if connectionState === "connected"}
-    <div class="flex items-center gap-2 rounded bg-green-50 p-3 text-sm text-green-900 dark:bg-green-950 dark:text-green-100">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      class="flex items-center gap-2 rounded bg-green-50 p-3 text-sm text-green-900 dark:bg-green-950 dark:text-green-100"
+    >
       <CheckCircle class="h-4 w-4" />
       Connected! Data is flowing from xDrip+.
     </div>
   {:else if connectionState === "timeout"}
-    <div class="bg-muted space-y-2 rounded p-3 text-sm">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      class="bg-muted space-y-2 rounded p-3 text-sm"
+    >
       <p>No data from xDrip+ yet. This is normal if xDrip+ hasn't had a new reading.</p>
       <Button variant="outline" size="sm" onclick={retryCheck}>
         Check now
