@@ -1,9 +1,11 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import { browser } from "$app/environment";
   import QRCode from "qrcode";
+  import { getActiveDataSources } from "$api/generated/services.generated.remote";
+  import type { DataSourceInfo } from "$lib/api/generated/nocturne-api-client";
   import { Button } from "$lib/components/ui/button";
-  import { Smartphone } from "lucide-svelte";
+  import { Smartphone, CheckCircle, Loader2 } from "lucide-svelte";
   import { buildXdripDeepLink, buildConnectPageUrl } from "$lib/utils/xdrip-links";
 
   /** Origin URL of the Nocturne instance (trailing slash tolerated). */
@@ -11,6 +13,13 @@
 
   let qrDataUrl = $state<string | null>(null);
   let isAndroid = $state(false);
+
+  type ConnectionState = "waiting" | "connected" | "timeout";
+  let connectionState = $state<ConnectionState>("waiting");
+  let pollInterval: ReturnType<typeof setInterval> | null = null;
+  let pollStartTime = 0;
+  const POLL_INTERVAL_MS = 10_000;
+  const POLL_TIMEOUT_MS = 60_000;
 
   const connectPageUrl = $derived(buildConnectPageUrl(instanceUrl));
   const deepLink = $derived(buildXdripDeepLink(instanceUrl));
@@ -28,10 +37,74 @@
     } catch {
       // QR generation failed — users can still copy the connect URL below.
     }
+    startPolling();
   });
+
+  onDestroy(() => {
+    stopPolling();
+  });
+
+  function isXdripDetected(sources: DataSourceInfo[]): boolean {
+    return sources.some((ds) => ds.sourceType?.toLowerCase() === "xdrip");
+  }
+
+  async function checkStatus() {
+    try {
+      const sources = (await getActiveDataSources()) ?? [];
+      if (isXdripDetected(sources)) {
+        connectionState = "connected";
+        stopPolling();
+        return;
+      }
+      if (Date.now() - pollStartTime > POLL_TIMEOUT_MS) {
+        connectionState = "timeout";
+        stopPolling();
+      }
+    } catch {
+      // Network errors — keep polling until the timeout fires
+    }
+  }
+
+  function startPolling() {
+    stopPolling();
+    connectionState = "waiting";
+    pollStartTime = Date.now();
+    checkStatus();
+    pollInterval = setInterval(checkStatus, POLL_INTERVAL_MS);
+  }
+
+  function stopPolling() {
+    if (pollInterval !== null) {
+      clearInterval(pollInterval);
+      pollInterval = null;
+    }
+  }
+
+  function retryCheck() {
+    startPolling();
+  }
 </script>
 
 <div class="space-y-4">
+  {#if connectionState === "waiting"}
+    <div class="bg-muted text-muted-foreground flex items-center gap-2 rounded p-3 text-sm">
+      <Loader2 class="h-4 w-4 animate-spin" />
+      Waiting for data from xDrip+...
+    </div>
+  {:else if connectionState === "connected"}
+    <div class="flex items-center gap-2 rounded bg-green-50 p-3 text-sm text-green-900 dark:bg-green-950 dark:text-green-100">
+      <CheckCircle class="h-4 w-4" />
+      Connected! Data is flowing from xDrip+.
+    </div>
+  {:else if connectionState === "timeout"}
+    <div class="bg-muted space-y-2 rounded p-3 text-sm">
+      <p>No data from xDrip+ yet. This is normal if xDrip+ hasn't had a new reading.</p>
+      <Button variant="outline" size="sm" onclick={retryCheck}>
+        Check now
+      </Button>
+    </div>
+  {/if}
+
   <div>
     <p class="text-sm font-medium">Quick Connect</p>
     <p class="text-muted-foreground text-sm">
