@@ -11,6 +11,7 @@
     DataSourceInfo,
   } from "$lib/api/generated/nocturne-api-client";
   import WizardShell from "$lib/components/setup/WizardShell.svelte";
+  import XdripQuickConnect from "$lib/components/XdripQuickConnect.svelte";
   import {
     Card,
     CardContent,
@@ -389,6 +390,14 @@
             </p>
           {/if}
         </div>
+
+        {#if selectedApp?.id === "xdrip"}
+          <Card>
+            <CardContent class="pt-6">
+              <XdripQuickConnect instanceUrl={window.location.origin} />
+            </CardContent>
+          </Card>
+        {/if}
 
         <!-- API URLs to copy -->
         <Card>
