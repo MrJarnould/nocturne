@@ -26,17 +26,20 @@ namespace Nocturne.API.Controllers.V4.Treatments;
 public class NutritionController : ControllerBase
 {
     private readonly ICarbIntakeRepository _carbIntakeRepo;
+    private readonly IBolusRepository _bolusRepo;
     private readonly ITreatmentFoodService _treatmentFoodService;
     private readonly IDemoModeService _demoModeService;
     private readonly NocturneDbContext _context;
 
     public NutritionController(
         ICarbIntakeRepository carbIntakeRepo,
+        IBolusRepository bolusRepo,
         ITreatmentFoodService treatmentFoodService,
         IDemoModeService demoModeService,
         NocturneDbContext context)
     {
         _carbIntakeRepo = carbIntakeRepo;
+        _bolusRepo = bolusRepo;
         _treatmentFoodService = treatmentFoodService;
         _demoModeService = demoModeService;
         _context = context;
@@ -285,6 +288,104 @@ public class NutritionController : ControllerBase
     #region Meals
 
     /// <summary>
+    /// Atomically create a correlated Bolus + CarbIntake for a meal event.
+    /// Both records share a single CorrelationId and are persisted within a
+    /// single transaction. When an existing row matches on
+    /// (DataSource, SyncIdentifier), the idempotent upsert applies and the
+    /// response returns 200 instead of 201.
+    /// </summary>
+    [HttpPost("meals")]
+    [RemoteForm(Invalidates = ["GetCarbIntakes", "GetMeals"])]
+    [ProducesResponseType(typeof(CreateMealResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(CreateMealResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<CreateMealResponse>> CreateMeal(
+        [FromBody] CreateMealRequest request,
+        CancellationToken ct = default)
+    {
+        if (request.Timestamp == default)
+            return Problem(detail: "Timestamp must be set", statusCode: 400, title: "Bad Request");
+
+        var correlationId = request.CorrelationId ?? Guid.CreateVersion7();
+        var timestamp = request.Timestamp.UtcDateTime;
+
+        var bolusModel = new Bolus
+        {
+            Timestamp = timestamp,
+            UtcOffset = request.UtcOffset,
+            Device = request.Device,
+            App = request.App,
+            DataSource = request.DataSource,
+            Insulin = request.Insulin,
+            BolusType = request.BolusType,
+            Kind = BolusKind.Manual,
+            Duration = request.Duration,
+            SyncIdentifier = request.SyncIdentifier,
+            InsulinType = request.InsulinType,
+            BolusCalculationId = request.BolusCalculationId,
+            CorrelationId = correlationId,
+        };
+
+        var carbModel = new CarbIntake
+        {
+            Timestamp = timestamp,
+            UtcOffset = request.UtcOffset,
+            Device = request.Device,
+            App = request.App,
+            DataSource = request.DataSource,
+            Carbs = request.Carbs,
+            SyncIdentifier = request.SyncIdentifier,
+            CarbTime = request.CarbTime,
+            AbsorptionTime = request.AbsorptionTime,
+            CorrelationId = correlationId,
+        };
+
+        await using var tx = await _context.Database.BeginTransactionAsync(ct);
+
+        // Peek at an existing bolus with the same (DataSource, SyncIdentifier) BEFORE
+        // the upsert. If one exists, its CorrelationId is authoritative and must be
+        // propagated to both records (the upsert itself will overwrite it in-place).
+        Guid? existingBolusCorrelationId = null;
+        if (!string.IsNullOrEmpty(bolusModel.DataSource) && !string.IsNullOrEmpty(bolusModel.SyncIdentifier))
+        {
+            var existingEntity = await _context.Boluses
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    e => e.DataSource == bolusModel.DataSource
+                      && e.SyncIdentifier == bolusModel.SyncIdentifier,
+                    ct);
+            existingBolusCorrelationId = existingEntity?.CorrelationId;
+        }
+
+        if (existingBolusCorrelationId.HasValue)
+        {
+            bolusModel.CorrelationId = existingBolusCorrelationId;
+            carbModel.CorrelationId = existingBolusCorrelationId;
+        }
+
+        var bolusBefore = await _context.Boluses.CountAsync(ct);
+        var createdBolus = await _bolusRepo.CreateAsync(bolusModel, ct);
+        var bolusWasNew = (await _context.Boluses.CountAsync(ct)) > bolusBefore;
+
+        var carbBefore = await _context.CarbIntakes.CountAsync(ct);
+        var createdCarb = await _carbIntakeRepo.CreateAsync(carbModel, ct);
+        var carbWasNew = (await _context.CarbIntakes.CountAsync(ct)) > carbBefore;
+
+        await tx.CommitAsync(ct);
+
+        var response = new CreateMealResponse
+        {
+            CorrelationId = createdBolus.CorrelationId ?? createdCarb.CorrelationId ?? correlationId,
+            Bolus = createdBolus,
+            CarbIntake = createdCarb,
+        };
+
+        return (bolusWasNew || carbWasNew)
+            ? StatusCode(StatusCodes.Status201Created, response)
+            : Ok(response);
+    }
+
+    /// <summary>
     /// Get carb intake records with food attribution status for the meals view.
     /// </summary>
     [HttpGet("meals")]
@@ -497,4 +598,15 @@ public enum CarbIntakeFoodInputMode
 {
     Portions,
     Carbs,
+}
+
+/// <summary>
+/// Response for <c>POST /api/v4/nutrition/meals</c>. Carries the shared
+/// correlation id along with both halves of the persisted meal event.
+/// </summary>
+public class CreateMealResponse
+{
+    public Guid CorrelationId { get; set; }
+    public Bolus Bolus { get; set; } = null!;
+    public CarbIntake CarbIntake { get; set; } = null!;
 }

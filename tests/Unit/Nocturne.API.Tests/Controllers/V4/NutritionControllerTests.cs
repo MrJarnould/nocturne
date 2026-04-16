@@ -22,6 +22,7 @@ public class NutritionControllerTests : IDisposable
     private readonly SqliteConnection _connection;
     private readonly NocturneDbContext _dbContext;
     private readonly Mock<ICarbIntakeRepository> _repoMock = new();
+    private readonly Mock<IBolusRepository> _bolusRepoMock = new();
     private readonly Mock<ITreatmentFoodService> _foodServiceMock = new();
     private readonly Mock<IDemoModeService> _demoModeMock = new();
 
@@ -49,6 +50,7 @@ public class NutritionControllerTests : IDisposable
     {
         var controller = new NutritionController(
             _repoMock.Object,
+            _bolusRepoMock.Object,
             _foodServiceMock.Object,
             _demoModeMock.Object,
             _dbContext);
