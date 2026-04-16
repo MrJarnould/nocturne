@@ -112,13 +112,30 @@ public class BolusRepository : IBolusRepository
     }
 
     /// <summary>
-    /// Creates a new bolus record.
+    /// Creates a new bolus record. When <c>DataSource</c> and <c>SyncIdentifier</c>
+    /// match an existing row for this tenant, the record is updated in place rather
+    /// than inserted — making the operation idempotent for connector replays.
+    /// Tenant scoping is implicit via the DbContext's RLS-equivalent query filter.
     /// </summary>
     /// <param name="model">The bolus to create.</param>
     /// <param name="ct">The cancellation token.</param>
-    /// <returns>The created bolus record.</returns>
+    /// <returns>The created or updated bolus record.</returns>
     public async Task<Bolus> CreateAsync(Bolus model, CancellationToken ct = default)
     {
+        if (!string.IsNullOrEmpty(model.DataSource) && !string.IsNullOrEmpty(model.SyncIdentifier))
+        {
+            var existing = await _context.Boluses
+                .FirstOrDefaultAsync(
+                    e => e.DataSource == model.DataSource && e.SyncIdentifier == model.SyncIdentifier,
+                    ct);
+            if (existing != null)
+            {
+                BolusMapper.UpdateEntity(existing, model);
+                await _context.SaveChangesAsync(ct);
+                return BolusMapper.ToDomainModel(existing);
+            }
+        }
+
         var entity = BolusMapper.ToEntity(model);
         _context.Boluses.Add(entity);
         await _context.SaveChangesAsync(ct);
