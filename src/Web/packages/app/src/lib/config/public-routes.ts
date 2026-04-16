@@ -8,6 +8,7 @@ export const PUBLIC_ROUTE_PREFIXES = [
   "/setup",
   "/clock",
   "/invite",
+  "/connect",
 ] as const;
 
 /**
