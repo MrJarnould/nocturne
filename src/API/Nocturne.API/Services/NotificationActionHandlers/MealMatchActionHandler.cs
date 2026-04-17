@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Nocturne.Core.Contracts;
 using Nocturne.Core.Models;
 
@@ -7,7 +8,7 @@ namespace Nocturne.API.Services.NotificationActionHandlers;
 /// Handles actions on suggested meal match notifications.
 /// </summary>
 public class MealMatchActionHandler(
-    IInAppNotificationService notificationService,
+    IServiceProvider serviceProvider,
     IConnectorFoodEntryRepository foodEntryRepository,
     ILogger<MealMatchActionHandler> logger
 ) : INotificationActionHandler
@@ -27,6 +28,7 @@ public class MealMatchActionHandler(
             case "accept":
                 // Accept action is handled via MealMatchingController
                 // Just archive the notification here
+                var notificationService = serviceProvider.GetRequiredService<IInAppNotificationService>();
                 return await notificationService.ArchiveNotificationAsync(
                     notificationId,
                     NotificationArchiveReason.Completed,
@@ -42,7 +44,8 @@ public class MealMatchActionHandler(
                         null,
                         cancellationToken);
                 }
-                return await notificationService.ArchiveNotificationAsync(
+                var dismissNotificationService = serviceProvider.GetRequiredService<IInAppNotificationService>();
+                return await dismissNotificationService.ArchiveNotificationAsync(
                     notificationId,
                     NotificationArchiveReason.Dismissed,
                     cancellationToken);

@@ -24564,3 +24564,45 @@ msgstr ""
 #: src/routes/(fullscreen)/setup/connect/+page.svelte
 msgid "Continue to Dashboard"
 msgstr ""
+
+#~ msgid "Invalid or expired device code."
+#~ msgstr ""
+
+#~ msgid "Invalid or expired device code. Please check and try again."
+#~ msgstr ""
+
+#~ msgid "Failed to approve. The code may have expired."
+#~ msgstr ""
+
+#~ msgid "Failed to deny the request."
+#~ msgstr ""
+
+#~ msgid "{0} is now connected. You can return to your device."
+#~ msgstr ""
+
+#~ msgid "Receiving Data"
+#~ msgstr ""
+
+#~ msgid "It can take a few minutes for the first glucose reading to arrive. This page will update automatically."
+#~ msgstr ""
+
+#~ msgid "This application is not in the Nocturne known app directory. Only approve if you trust it."
+#~ msgstr ""
+
+#~ msgid "This app is requesting full access, including the ability to delete data."
+#~ msgstr ""
+
+#~ msgid "Scan to Connect"
+#~ msgstr ""
+
+#~ msgid "Scan this QR code with your phone's camera to open {0} and start the connection."
+#~ msgstr ""
+
+#~ msgid "QR code to connect {0}"
+#~ msgstr ""
+
+#~ msgid "Enter Authorization Code"
+#~ msgstr ""
+
+#~ msgid "After scanning, {0} will show an 8-character code. Enter it here to approve the connection."
+#~ msgstr ""

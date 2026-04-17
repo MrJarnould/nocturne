@@ -9,6 +9,9 @@ import {
   HelpCircle,
   AlertTriangle,
 } from "lucide-svelte";
+import {
+  Direction,
+} from "$lib/api";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SvelteComponent = any;
@@ -65,56 +68,58 @@ export function calculateDirection(delta: number): string {
   return "Flat";
 }
 
+
 /** Get BG trend direction information */
-export function getDirectionInfo(direction?: string) {
-  const directions: Record<
-    string,
+export function getDirectionInfo(direction?: Direction | string) {
+  const directions: Partial<Record<
+    Direction,
     { label: string; icon: SvelteComponent; css: string }
-  > = {
-    DoubleUp: {
+  >> = {
+    [Direction.DoubleUp]: {
       label: "rising very fast",
       icon: ArrowUp,
       css: "text-red-500",
     },
-    SingleUp: {
+    [Direction.SingleUp]: {
       label: "rising",
       icon: ArrowUpRight,
       css: "text-orange-500",
     },
-    FortyFiveUp: {
+    [Direction.FortyFiveUp]: {
       label: "rising slowly",
       icon: ArrowUpRight,
       css: "text-yellow-500",
     },
-    Flat: { label: "stable", icon: Minus, css: "text-green-500" },
-    FortyFiveDown: {
+    [Direction.Flat]: { label: "stable", icon: Minus, css: "text-green-500" },
+    [Direction.FortyFiveDown]: {
       label: "falling slowly",
       icon: ArrowDownRight,
       css: "text-yellow-500",
     },
-    SingleDown: {
+    [Direction.SingleDown]: {
       label: "falling",
       icon: ArrowDownRight,
       css: "text-orange-500",
     },
-    DoubleDown: {
+    [Direction.DoubleDown]: {
       label: "falling very fast",
       icon: ArrowDown,
       css: "text-red-500",
     },
-    "NOT COMPUTABLE": {
+    [Direction.NotComputable]: {
       label: "unknown",
       icon: HelpCircle,
       css: "text-gray-500",
     },
-    "RATE OUT OF RANGE": {
+    [Direction.RateOutOfRange]: {
       label: "out of range",
       icon: AlertTriangle,
       css: "text-gray-500",
     },
   };
 
-  return directions[direction || "Flat"] || directions["Flat"];
+  const dirValue = typeof direction === 'string' ? direction as Direction : direction;
+  return directions[dirValue || Direction.Flat] || directions[Direction.Flat]!;
 }
 
 /** Determine BG status level based on thresholds */

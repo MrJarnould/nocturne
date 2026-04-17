@@ -21350,3 +21350,45 @@ msgstr "<0/> Back to data sources"
 #: src/routes/(fullscreen)/setup/connect/+page.svelte
 msgid "Continue to Dashboard"
 msgstr "Continue to Dashboard"
+
+#~ msgid "Invalid or expired device code."
+#~ msgstr "Invalid or expired device code."
+
+#~ msgid "Invalid or expired device code. Please check and try again."
+#~ msgstr "Invalid or expired device code. Please check and try again."
+
+#~ msgid "Failed to approve. The code may have expired."
+#~ msgstr "Failed to approve. The code may have expired."
+
+#~ msgid "Failed to deny the request."
+#~ msgstr "Failed to deny the request."
+
+#~ msgid "{0} is now connected. You can return to your device."
+#~ msgstr "{0} is now connected. You can return to your device."
+
+#~ msgid "Receiving Data"
+#~ msgstr "Receiving Data"
+
+#~ msgid "It can take a few minutes for the first glucose reading to arrive. This page will update automatically."
+#~ msgstr "It can take a few minutes for the first glucose reading to arrive. This page will update automatically."
+
+#~ msgid "This application is not in the Nocturne known app directory. Only approve if you trust it."
+#~ msgstr "This application is not in the Nocturne known app directory. Only approve if you trust it."
+
+#~ msgid "This app is requesting full access, including the ability to delete data."
+#~ msgstr "This app is requesting full access, including the ability to delete data."
+
+#~ msgid "Scan to Connect"
+#~ msgstr "Scan to Connect"
+
+#~ msgid "Scan this QR code with your phone's camera to open {0} and start the connection."
+#~ msgstr "Scan this QR code with your phone's camera to open {0} and start the connection."
+
+#~ msgid "QR code to connect {0}"
+#~ msgstr "QR code to connect {0}"
+
+#~ msgid "Enter Authorization Code"
+#~ msgstr "Enter Authorization Code"
+
+#~ msgid "After scanning, {0} will show an 8-character code. Enter it here to approve the connection."
+#~ msgstr "After scanning, {0} will show an 8-character code. Enter it here to approve the connection."

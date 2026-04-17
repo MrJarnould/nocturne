@@ -100,7 +100,7 @@ function getOverrideColor(state: string): string {
  * Map activity category to CSS color variable
  */
 function getActivityColor(category: StateSpanCategory): string {
-  const categoryColors: Record<string, string> = {
+  const categoryColors: Partial<Record<StateSpanCategory, string>> = {
     [StateSpanCategory.Sleep]: "var(--pump-mode-sleep)",
     [StateSpanCategory.Exercise]: "var(--pump-mode-exercise)",
     [StateSpanCategory.Illness]: "var(--system-event-warning)",

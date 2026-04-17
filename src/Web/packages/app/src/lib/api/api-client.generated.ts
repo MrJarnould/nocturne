@@ -32,6 +32,7 @@ import {
   DataOverviewClient,
   DebugClient,
   DeduplicationClient,
+  DevAdminClient,
   DeviceAgeClient,
   DeviceCatalogClient,
   DeviceEventClient,
@@ -121,6 +122,7 @@ export class ApiClient {
   public readonly dataOverview: DataOverviewClient;
   public readonly debug: DebugClient;
   public readonly deduplication: DeduplicationClient;
+  public readonly devAdmin: DevAdminClient;
   public readonly deviceAge: DeviceAgeClient;
   public readonly deviceCatalog: DeviceCatalogClient;
   public readonly deviceEvent: DeviceEventClient;
@@ -210,6 +212,7 @@ export class ApiClient {
     this.dataOverview = new DataOverviewClient(apiBaseUrl, http);
     this.debug = new DebugClient(apiBaseUrl, http);
     this.deduplication = new DeduplicationClient(apiBaseUrl, http);
+    this.devAdmin = new DevAdminClient(apiBaseUrl, http);
     this.deviceAge = new DeviceAgeClient(apiBaseUrl, http);
     this.deviceCatalog = new DeviceCatalogClient(apiBaseUrl, http);
     this.deviceEvent = new DeviceEventClient(apiBaseUrl, http);
