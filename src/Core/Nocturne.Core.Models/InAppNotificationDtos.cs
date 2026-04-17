@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Nocturne.Core.Models;
 
 /// <summary>
@@ -153,4 +155,36 @@ public class NotificationEvent
     /// Why the notification was archived (for archived events)
     /// </summary>
     public NotificationArchiveReason? ArchiveReason { get; set; }
+}
+
+/// <summary>
+/// Request to create a notification programmatically (for third-party integrations)
+/// </summary>
+public class CreateNotificationRequest
+{
+    /// <summary>
+    /// Structured type string (e.g., "dexcom.connection_lost")
+    /// </summary>
+    [Required]
+    public string Type { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Notification title
+    /// </summary>
+    [Required]
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Rendering category. Required if no template is registered for the type.
+    /// </summary>
+    public NotificationCategory? Category { get; set; }
+
+    public NotificationUrgency? Urgency { get; set; }
+    public string? Subtitle { get; set; }
+    public string? SourceId { get; set; }
+    public string? Icon { get; set; }
+    public string? Source { get; set; }
+    public List<NotificationActionDto>? Actions { get; set; }
+    public ResolutionConditions? ResolutionConditions { get; set; }
+    public Dictionary<string, object>? Metadata { get; set; }
 }
