@@ -93,7 +93,7 @@
   }
 
   function handleContinueToSetup() {
-    goto("/setup", { replaceState: true });
+    goto("/setup", { replaceState: true, invalidateAll: true });
   }
 </script>
 
