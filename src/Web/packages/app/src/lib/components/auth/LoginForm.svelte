@@ -10,6 +10,7 @@
     KeyRound,
     AlertTriangle,
     Smartphone,
+    ShieldAlert,
   } from "lucide-svelte";
   import * as InputOTP from "$lib/components/ui/input-otp";
   import { login as totpLogin } from "$lib/api/generated/totps.generated.remote";
@@ -39,6 +40,9 @@
   let errorMessage = $state<string | null>(null);
   let isRedirecting = $state(false);
   let selectedProvider = $state<string | null>(null);
+
+  // Browser support
+  let passkeysSupported = $state(typeof window !== "undefined" && window.PublicKeyCredential !== undefined);
 
   // Form fields
   let username = $state("");
@@ -198,6 +202,15 @@
   {@const hasOidc = oidc?.enabled && oidc.providers.length > 0}
 
   <div class="space-y-4">
+    {#if !passkeysSupported}
+      <div class="flex items-start gap-3 rounded-md border border-yellow-500/30 bg-yellow-500/5 p-3">
+        <ShieldAlert class="mt-0.5 h-4 w-4 shrink-0 text-yellow-600 dark:text-yellow-500" />
+        <p class="text-sm text-yellow-700 dark:text-yellow-400">
+          Your browser does not support passkeys. Use an authenticator app, a recovery code, or try a different browser.
+        </p>
+      </div>
+    {/if}
+
     {#if errorMessage}
       <div class="flex items-start gap-3 rounded-md border border-destructive/20 bg-destructive/5 p-3">
         <AlertTriangle class="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
@@ -210,7 +223,7 @@
       <Button
         class="w-full h-12"
         size="lg"
-        disabled={isLoading || isRedirecting}
+        disabled={isLoading || isRedirecting || !passkeysSupported}
         onclick={handleDiscoverableLogin}
       >
         {#if isLoading}
@@ -226,7 +239,7 @@
       <Button
         variant="outline"
         class="w-full"
-        disabled={isLoading || isRedirecting}
+        disabled={isLoading || isRedirecting || !passkeysSupported}
         onclick={() => switchMode("username")}
       >
         <User class="mr-2 h-4 w-4" />
@@ -306,7 +319,7 @@
 
         <Button
           class="w-full"
-          disabled={isLoading || !username.trim()}
+          disabled={isLoading || !username.trim() || !passkeysSupported}
           onclick={handleUsernameLogin}
         >
           {#if isLoading}

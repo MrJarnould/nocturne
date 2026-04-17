@@ -137,7 +137,9 @@ public class DataSourceService : IDataSourceService
     }
 
     /// <inheritdoc />
-    public List<AvailableConnector> GetAvailableConnectors()
+    public Task<List<AvailableConnector>> GetAvailableConnectorsAsync(
+        CancellationToken cancellationToken = default
+    )
     {
         var connectors = ConnectorMetadataService.GetAll()
             .Select(connector => new AvailableConnector
@@ -162,7 +164,7 @@ public class DataSourceService : IDataSourceService
             connector.IsConfigured = ConnectorMetadataService.GetByConnectorId(connector.Id) != null;
         }
 
-        return connectors;
+        return Task.FromResult(connectors);
     }
 
     private static string? GetConnectorDocumentationUrl(string connectorName)
@@ -304,7 +306,7 @@ public class DataSourceService : IDataSourceService
         return new ServicesOverview
         {
             ActiveDataSources = dataSources,
-            AvailableConnectors = GetAvailableConnectors(),
+            AvailableConnectors = await GetAvailableConnectorsAsync(cancellationToken),
             UploaderApps = GetUploaderApps(),
             ApiEndpoint = new ApiEndpointInfo
             {
