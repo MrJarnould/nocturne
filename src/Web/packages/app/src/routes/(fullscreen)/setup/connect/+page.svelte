@@ -7,6 +7,10 @@
     getActiveDataSources,
     getServicesOverview,
   } from "$api/generated/services.generated.remote";
+  import {
+    UploaderPlatform,
+    UploaderCategory,
+  } from "$lib/api/generated/nocturne-api-client";
   import type {
     UploaderApp,
     UploaderSetupResponse,
@@ -89,18 +93,18 @@
 
   // ── Platform filter ──────────────────────────────────────────────
 
-  type PlatformFilter = "all" | "ios" | "android";
+  type PlatformFilter = "all" | UploaderPlatform;
   let platformFilter = $state<PlatformFilter>("all");
 
   // ── Categories ────────────────────────────────────────────────────
 
   const categoryLabels: Record<string, string> = {
-    cgm: "CGM Apps",
-    "aid-system": "AID Systems",
-    uploader: "General Uploaders",
+    [UploaderCategory.Cgm]: "CGM Apps",
+    [UploaderCategory.AidSystem]: "AID Systems",
+    [UploaderCategory.Uploader]: "General Uploaders",
   };
 
-  const categoryOrder = ["cgm", "aid-system", "uploader"];
+  const categoryOrder = [UploaderCategory.Cgm, UploaderCategory.AidSystem, UploaderCategory.Uploader];
 
   const filteredApps = $derived(
     platformFilter === "all"
@@ -111,7 +115,7 @@
   const groupedApps = $derived.by(() => {
     const groups: Record<string, UploaderApp[]> = {};
     for (const app of filteredApps) {
-      const cat = app.category ?? "uploader";
+      const cat = app.category ?? UploaderCategory.Uploader as string;
       if (!groups[cat]) groups[cat] = [];
       groups[cat].push(app);
     }
@@ -337,28 +341,27 @@
 
   // ── Platform icon helper ──────────────────────────────────────────
 
-  function getPlatformLabel(platform: string | undefined): string {
+  function getPlatformLabel(platform: UploaderPlatform | undefined): string {
     switch (platform) {
-      case "ios":
+      case UploaderPlatform.IOS:
         return "iOS";
-      case "android":
+      case UploaderPlatform.Android:
         return "Android";
-      case "desktop":
+      case UploaderPlatform.Desktop:
         return "Desktop";
-      case "web":
+      case UploaderPlatform.Web:
         return "Web";
       default:
-        return platform ?? "Unknown";
+        return "Unknown";
     }
   }
 
-  function getCategoryIcon(category: string | undefined) {
+  function getCategoryIcon(category: UploaderCategory | undefined) {
     switch (category) {
-      case "cgm":
+      case UploaderCategory.Cgm:
+      case UploaderCategory.AidSystem:
         return Activity;
-      case "aid-system":
-        return Activity;
-      case "uploader":
+      case UploaderCategory.Uploader:
         return Upload;
       default:
         return Upload;
@@ -465,19 +468,19 @@
                   All
                 </Button>
                 <Button
-                  variant={platformFilter === "ios" ? "default" : "outline"}
+                  variant={platformFilter === UploaderPlatform.IOS ? "default" : "outline"}
                   size="sm"
                   class="gap-1.5"
-                  onclick={() => (platformFilter = "ios")}
+                  onclick={() => (platformFilter = UploaderPlatform.IOS)}
                 >
                   <Apple class="h-3.5 w-3.5" />
                   iOS
                 </Button>
                 <Button
-                  variant={platformFilter === "android" ? "default" : "outline"}
+                  variant={platformFilter === UploaderPlatform.Android ? "default" : "outline"}
                   size="sm"
                   class="gap-1.5"
-                  onclick={() => (platformFilter = "android")}
+                  onclick={() => (platformFilter = UploaderPlatform.Android)}
                 >
                   <Smartphone class="h-3.5 w-3.5" />
                   Android
