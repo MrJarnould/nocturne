@@ -17,7 +17,7 @@ import {
   getProvidersInfo,
   refreshSession as refreshSessionRemote,
   logoutSession as logoutSessionRemote,
-} from "../../routes/(fullscreen)/auth/auth.remote";
+} from "../../routes/(unauthenticated)/auth/auth.remote";
 
 const AUTH_STORE_KEY = Symbol("auth-store");
 

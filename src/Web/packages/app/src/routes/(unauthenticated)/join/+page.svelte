@@ -28,7 +28,7 @@
     getAuthState,
     getOidcProviders,
     setAuthCookies,
-  } from "$routes/(fullscreen)/auth/auth.remote";
+  } from "$routes/(unauthenticated)/auth/auth.remote";
 
   // ── URL params ────────────────────────────────────────────────────
   const token = $derived(page.url.searchParams.get("token") ?? "");
