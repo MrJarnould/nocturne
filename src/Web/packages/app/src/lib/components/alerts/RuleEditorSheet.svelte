@@ -39,6 +39,7 @@
   } from "lucide-svelte";
   import GeneralTab from "./GeneralTab.svelte";
   import AudioSection from "./AudioSection.svelte";
+  import VisualSection from "./VisualSection.svelte";
 
   interface Props {
     open: boolean;
@@ -592,37 +593,7 @@
 
           <Separator />
 
-          <!-- Visual Section -->
-          <div class="space-y-4">
-            <h3 class="text-sm font-medium">Visual</h3>
-
-            <div class="flex items-center justify-between">
-              <Label>Screen Flash</Label>
-              <Switch bind:checked={clientConfig.visual.flashEnabled} />
-            </div>
-
-            {#if clientConfig.visual.flashEnabled}
-              <div class="space-y-2">
-                <Label for="flash-color">Flash Color</Label>
-                <input
-                  id="flash-color"
-                  type="color"
-                  bind:value={clientConfig.visual.flashColor}
-                  class="h-9 w-16 rounded-md border cursor-pointer"
-                />
-              </div>
-            {/if}
-
-            <div class="flex items-center justify-between">
-              <Label>Persistent Banner</Label>
-              <Switch bind:checked={clientConfig.visual.persistentBanner} />
-            </div>
-
-            <div class="flex items-center justify-between">
-              <Label>Wake Screen</Label>
-              <Switch bind:checked={clientConfig.visual.wakeScreen} />
-            </div>
-          </div>
+          <VisualSection bind:visual={clientConfig.visual} />
         </Tabs.Content>
 
         <!-- Snooze Tab -->
