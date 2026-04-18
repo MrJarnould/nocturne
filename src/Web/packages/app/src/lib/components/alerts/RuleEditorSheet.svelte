@@ -87,7 +87,7 @@
 
   // --- Schedule editing types ---
   interface EditableChannel {
-    channelType: string;
+    channelType: ChannelType | string;
     destination: string;
     destinationLabel: string;
   }
@@ -152,7 +152,7 @@
           delaySeconds: 0,
           channels: [
             {
-              channelType: "web_push",
+              channelType: ChannelType.WebPush,
               destination: "",
               destinationLabel: "",
             },
@@ -174,8 +174,8 @@
   // General tab
   let name = $state("");
   let description = $state("");
-  let severity = $state("normal");
-  let conditionType = $state("threshold");
+  let severity = $state<AlertRuleSeverity>(AlertRuleSeverity.Normal);
+  let conditionType = $state<AlertConditionType>(AlertConditionType.Threshold);
   let isComposite = $state(false);
 
   // Condition params
@@ -231,45 +231,45 @@
     if (r) {
       name = r.name ?? "";
       description = r.description ?? "";
-      severity = r.severity ?? "normal";
+      severity = (r.severity as AlertRuleSeverity) ?? AlertRuleSeverity.Normal;
       isEnabled = r.isEnabled ?? true;
       hysteresisMinutes = r.hysteresisMinutes ?? 5;
       confirmationReadings = r.confirmationReadings ?? 1;
       sortOrder = r.sortOrder ?? 0;
 
       // Condition type
-      const ct = r.conditionType ?? "threshold";
-      if (ct === "composite") {
+      const ct = r.conditionType ?? AlertConditionType.Threshold;
+      if (ct === AlertConditionType.Composite) {
         isComposite = true;
-        conditionType = "composite";
-      } else if (ct === "threshold_low" || ct === "threshold_high") {
+        conditionType = AlertConditionType.Composite;
+      } else if (ct === AlertConditionType.Threshold || (ct as string) === "threshold_low" || (ct as string) === "threshold_high") {
         isComposite = false;
-        conditionType = "threshold";
-      } else if (ct === "rate_of_change") {
+        conditionType = AlertConditionType.Threshold;
+      } else if (ct === AlertConditionType.RateOfChange) {
         isComposite = false;
-        conditionType = "rate_of_change";
-      } else if (ct === "signal_loss") {
+        conditionType = AlertConditionType.RateOfChange;
+      } else if (ct === AlertConditionType.SignalLoss) {
         isComposite = false;
-        conditionType = "signal_loss";
+        conditionType = AlertConditionType.SignalLoss;
       } else {
         isComposite = false;
-        conditionType = ct;
+        conditionType = ct as AlertConditionType;
       }
 
       // Condition params
       const params = r.conditionParams;
       if (params) {
-        if (conditionType === "threshold") {
-          if (r.conditionType === "threshold_high") {
+        if (conditionType === AlertConditionType.Threshold) {
+          if (params.direction === "above") {
             thresholdDirection = "above";
           } else {
             thresholdDirection = "below";
           }
           thresholdValue = params.threshold ?? params.value ?? 70;
-        } else if (conditionType === "rate_of_change") {
+        } else if (conditionType === AlertConditionType.RateOfChange) {
           rocDirection = params.direction ?? "falling";
           rocRate = params.rateThreshold ?? params.rate ?? 3.0;
-        } else if (conditionType === "signal_loss") {
+        } else if (conditionType === AlertConditionType.SignalLoss) {
           signalLossTimeout = params.minutes ?? params.timeout_minutes ?? 15;
         }
       }
@@ -322,7 +322,7 @@
               stepOrder: step.stepOrder ?? 0,
               delaySeconds: step.delaySeconds ?? 0,
               channels: (step.channels ?? []).map((ch) => ({
-                channelType: ch.channelType ?? "web_push",
+                channelType: ch.channelType ?? ChannelType.WebPush,
                 destination: ch.destination ?? "",
                 destinationLabel: ch.destinationLabel ?? "",
               })),
@@ -336,8 +336,8 @@
       // Create mode defaults
       name = "";
       description = "";
-      severity = "normal";
-      conditionType = "threshold";
+      severity = AlertRuleSeverity.Normal;
+      conditionType = AlertConditionType.Threshold;
       isComposite = false;
       thresholdDirection = "below";
       thresholdValue = 70;
@@ -380,7 +380,7 @@
 
   // --- Condition type mapping ---
   function getApiConditionType(): string {
-    if (conditionType === "threshold") {
+    if (conditionType === AlertConditionType.Threshold) {
       return thresholdDirection === "above" ? "threshold_high" : "threshold_low";
     }
     return conditionType;
@@ -388,11 +388,11 @@
 
   function getConditionParams(): Record<string, unknown> {
     switch (conditionType) {
-      case "threshold":
+      case AlertConditionType.Threshold:
         return { direction: thresholdDirection, value: thresholdValue, threshold: thresholdValue };
-      case "rate_of_change":
+      case AlertConditionType.RateOfChange:
         return { direction: rocDirection, rate: rocRate, rateThreshold: rocRate };
-      case "signal_loss":
+      case AlertConditionType.SignalLoss:
         return { timeout_minutes: signalLossTimeout, minutes: signalLossTimeout };
       default:
         return {};
@@ -420,7 +420,7 @@
               delaySeconds: step.delaySeconds,
               channels: step.channels.map(
                 (ch): CreateAlertStepChannelRequest => ({
-                  channelType: ch.channelType,
+                  channelType: ch.channelType as ChannelType,
                   destination: ch.destination || undefined,
                   destinationLabel: ch.destinationLabel || undefined,
                 }),
@@ -433,7 +433,7 @@
       const payload = {
         name,
         description: description || undefined,
-        conditionType: isComposite ? "composite" : getApiConditionType(),
+        conditionType: isComposite ? AlertConditionType.Composite : getApiConditionType(),
         conditionParams: isComposite ? rule?.conditionParams : getConditionParams(),
         hysteresisMinutes,
         confirmationReadings,
@@ -615,7 +615,7 @@
 
   function addChannel(schedIndex: number, stepIndex: number) {
     const step = schedules[schedIndex].escalationSteps[stepIndex];
-    const defaultType = availableChannels[0]?.channelType ?? "web_push";
+    const defaultType = availableChannels[0]?.channelType ?? ChannelType.WebPush;
     step.channels = [
       ...step.channels,
       { channelType: defaultType, destination: "", destinationLabel: "" },
@@ -686,7 +686,7 @@
     [ChannelType.DiscordDm]: "Discord DM",
     [ChannelType.SlackDm]: "Slack DM",
     [ChannelType.Telegram]: "Telegram",
-    [ChannelType.Whatsapp]: "WhatsApp",
+    [ChannelType.WhatsApp]: "WhatsApp",
   };
 </script>
 
@@ -734,14 +734,14 @@
             <Label for="rule-severity">Severity</Label>
             <Select.Root type="single" bind:value={severity}>
               <Select.Trigger id="rule-severity">
-                {severityLabels[severity as AlertRuleSeverity] ?? severity}
+                {severityLabels[severity] ?? severity}
               </Select.Trigger>
               <Select.Content>
-                <Select.Item value="normal" label="Normal" />
-                <Select.Item value="critical" label="Critical" />
+                <Select.Item value={AlertRuleSeverity.Normal} label="Normal" />
+                <Select.Item value={AlertRuleSeverity.Critical} label="Critical" />
               </Select.Content>
             </Select.Root>
-            {#if severity === "critical"}
+            {#if severity === AlertRuleSeverity.Critical}
               <p class="text-xs text-muted-foreground">
                 Critical alerts bypass quiet hours
               </p>
@@ -761,15 +761,15 @@
             {:else}
               <Select.Root type="single" bind:value={conditionType}>
                 <Select.Trigger id="rule-condition-type">
-                  {conditionTypeLabels[conditionType as AlertConditionType] ?? conditionType}
+                  {conditionTypeLabels[conditionType] ?? conditionType}
                 </Select.Trigger>
                 <Select.Content>
-                  <Select.Item value="threshold" label="Threshold" />
+                  <Select.Item value={AlertConditionType.Threshold} label="Threshold" />
                   <Select.Item
-                    value="rate_of_change"
+                    value={AlertConditionType.RateOfChange}
                     label="Rate of Change"
                   />
-                  <Select.Item value="signal_loss" label="Signal Loss" />
+                  <Select.Item value={AlertConditionType.SignalLoss} label="Signal Loss" />
                 </Select.Content>
               </Select.Root>
             {/if}
@@ -777,7 +777,7 @@
 
           {#if !isComposite}
             <div class="space-y-3 rounded-md border p-3 bg-muted/30">
-              {#if conditionType === "threshold"}
+              {#if conditionType === AlertConditionType.Threshold}
                 <div class="space-y-2">
                   <Label for="threshold-direction">Direction</Label>
                   <Select.Root
@@ -802,7 +802,7 @@
                     bind:value={thresholdValue}
                   />
                 </div>
-              {:else if conditionType === "rate_of_change"}
+              {:else if conditionType === AlertConditionType.RateOfChange}
                 <div class="space-y-2">
                   <Label for="roc-direction">Direction</Label>
                   <Select.Root type="single" bind:value={rocDirection}>
@@ -819,7 +819,7 @@
                   <Label for="roc-rate">Rate (mg/dL/min)</Label>
                   <Input id="roc-rate" type="number" step="0.1" bind:value={rocRate} />
                 </div>
-              {:else if conditionType === "signal_loss"}
+              {:else if conditionType === AlertConditionType.SignalLoss}
                 <div class="space-y-2">
                   <Label for="signal-loss-timeout">Timeout (minutes)</Label>
                   <Input
@@ -1303,8 +1303,8 @@
                                         />
                                       {/each}
                                       {#if availableChannels.length === 0}
-                                        <Select.Item value="web_push" label="Web Push" />
-                                        <Select.Item value="webhook" label="Webhook" />
+                                        <Select.Item value={ChannelType.WebPush} label="Web Push" />
+                                        <Select.Item value={ChannelType.Webhook} label="Webhook" />
                                       {/if}
                                     </Select.Content>
                                   </Select.Root>
