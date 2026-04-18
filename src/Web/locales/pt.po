@@ -826,7 +826,7 @@ msgstr ""
 #~ msgstr ""
 
 #: src/lib/components/alerts/SchedulesTab.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/DayOfWeekPicker.svelte
 #: src/routes/(authenticated)/calendar/+page.svelte
 #: src/routes/(authenticated)/reports/week-to-week/+page.svelte
 #: src/routes/(authenticated)/settings/alerts/+page.svelte
@@ -837,7 +837,7 @@ msgid "Sun"
 msgstr ""
 
 #: src/lib/components/alerts/SchedulesTab.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/DayOfWeekPicker.svelte
 #: src/routes/(authenticated)/calendar/+page.svelte
 #: src/routes/(authenticated)/reports/week-to-week/+page.svelte
 #: src/routes/(authenticated)/settings/alerts/+page.svelte
@@ -848,7 +848,7 @@ msgid "Mon"
 msgstr ""
 
 #: src/lib/components/alerts/SchedulesTab.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/DayOfWeekPicker.svelte
 #: src/routes/(authenticated)/calendar/+page.svelte
 #: src/routes/(authenticated)/reports/week-to-week/+page.svelte
 #: src/routes/(authenticated)/settings/alerts/+page.svelte
@@ -859,7 +859,7 @@ msgid "Tue"
 msgstr ""
 
 #: src/lib/components/alerts/SchedulesTab.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/DayOfWeekPicker.svelte
 #: src/routes/(authenticated)/calendar/+page.svelte
 #: src/routes/(authenticated)/reports/week-to-week/+page.svelte
 #: src/routes/(authenticated)/settings/alerts/+page.svelte
@@ -870,7 +870,7 @@ msgid "Wed"
 msgstr ""
 
 #: src/lib/components/alerts/SchedulesTab.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/DayOfWeekPicker.svelte
 #: src/routes/(authenticated)/calendar/+page.svelte
 #: src/routes/(authenticated)/reports/week-to-week/+page.svelte
 #: src/routes/(authenticated)/settings/alerts/+page.svelte
@@ -881,7 +881,7 @@ msgid "Thu"
 msgstr ""
 
 #: src/lib/components/alerts/SchedulesTab.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/DayOfWeekPicker.svelte
 #: src/routes/(authenticated)/calendar/+page.svelte
 #: src/routes/(authenticated)/reports/week-to-week/+page.svelte
 #: src/routes/(authenticated)/settings/alerts/+page.svelte
@@ -892,7 +892,7 @@ msgid "Fri"
 msgstr ""
 
 #: src/lib/components/alerts/SchedulesTab.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/DayOfWeekPicker.svelte
 #: src/routes/(authenticated)/calendar/+page.svelte
 #: src/routes/(authenticated)/reports/week-to-week/+page.svelte
 #: src/routes/(authenticated)/settings/alerts/+page.svelte
@@ -1009,10 +1009,10 @@ msgstr ""
 #: src/lib/components/dashboard/glucose-chart/dialogs/GlucoseInspectionDialog.svelte
 #: src/lib/components/reports/TIRStackedChart.svelte
 #: src/lib/components/reports/year-overview/HeatmapLegend.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 #: src/lib/components/setup/TargetRangeEditor.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 #: src/lib/stores/alarm-state.svelte.ts
 #: src/lib/stores/alarm-state.svelte.ts
 #: src/lib/stores/alarm-state.svelte.ts
@@ -1042,10 +1042,10 @@ msgstr ""
 #: src/lib/components/dashboard/glucose-chart/dialogs/GlucoseInspectionDialog.svelte
 #: src/lib/components/reports/TIRStackedChart.svelte
 #: src/lib/components/reports/year-overview/HeatmapLegend.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 #: src/lib/components/setup/TargetRangeEditor.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 #: src/lib/stores/alarm-state.svelte.ts
 #: src/lib/stores/alarm-state.svelte.ts
 #: src/routes/(authenticated)/reports/data-quality/compression-lows/+page.svelte
@@ -1196,7 +1196,7 @@ msgstr ""
 #: src/lib/components/treatments/TreatmentFoodBreakdown.svelte
 #: src/lib/components/treatments/TreatmentFoodEntryEditDialog.svelte
 #: src/lib/components/treatments/TreatmentFoodEntryEditDialog.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/TreatmentPortionsForm.svelte
 #: src/lib/components/treatments/TreatmentStatsCard.svelte
 #: src/routes/(authenticated)/food/FoodList.svelte
 #: src/routes/(authenticated)/food/QuickPickItem.svelte
@@ -1685,7 +1685,7 @@ msgstr ""
 #: src/lib/components/alerts/GeneralTab.svelte
 #: src/lib/components/alerts/GeneralTab.svelte
 #: src/lib/components/reports/GlucoseScoreCard.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 #: src/routes/(authenticated)/compatibility/+page.svelte
 #: src/routes/(authenticated)/compatibility/+page.svelte
 #: src/routes/(authenticated)/compatibility/[id]/+page.svelte
@@ -2063,7 +2063,7 @@ msgstr ""
 #: src/lib/components/food/AddFoodDialog.svelte
 #: src/lib/components/food/AddFoodDialog.svelte
 #: src/lib/components/trackers/TrackerEditorDialog.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 #: src/routes/(authenticated)/food/FoodEditor.svelte
 #: src/routes/(authenticated)/food/FoodFilters.svelte
 #: src/routes/(authenticated)/food/FoodList.svelte
@@ -2099,9 +2099,9 @@ msgstr ""
 #: src/lib/components/food/AddFoodDialog.svelte
 #: src/lib/components/food/AddFoodDialog.svelte
 #: src/lib/components/meal-matching/MealMatchReviewDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 #: src/lib/components/treatments/TreatmentFoodEntryEditDialog.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/TreatmentPortionsForm.svelte
 #: src/routes/(authenticated)/food/FoodEditor.svelte
 #: src/routes/food/FoodEditor.svelte
 msgid "Carbs (g)"
@@ -2125,7 +2125,7 @@ msgstr ""
 
 #: src/lib/components/food/AddFoodDialog.svelte
 #: src/lib/components/food/AddFoodDialog.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 #: src/routes/(authenticated)/food/FoodEditor.svelte
 #: src/routes/food/FoodEditor.svelte
 msgid "Unit"
@@ -2152,7 +2152,7 @@ msgstr ""
 
 #: src/lib/components/food/AddFoodDialog.svelte
 #: src/lib/components/food/AddFoodDialog.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 #: src/routes/(authenticated)/food/FoodEditor.svelte
 #: src/routes/food/FoodEditor.svelte
 msgid "Fat (g)"
@@ -2160,7 +2160,7 @@ msgstr ""
 
 #: src/lib/components/food/AddFoodDialog.svelte
 #: src/lib/components/food/AddFoodDialog.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 #: src/routes/(authenticated)/food/FoodEditor.svelte
 #: src/routes/food/FoodEditor.svelte
 msgid "Protein (g)"
@@ -2168,7 +2168,7 @@ msgstr ""
 
 #: src/lib/components/food/AddFoodDialog.svelte
 #: src/lib/components/food/AddFoodDialog.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 #: src/routes/(authenticated)/food/FoodEditor.svelte
 #: src/routes/food/FoodEditor.svelte
 msgid "Energy (kJ)"
@@ -2232,7 +2232,7 @@ msgstr ""
 msgid "Carbs"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 #: src/routes/(authenticated)/food/FoodList.svelte
 #: src/routes/(authenticated)/food/QuickPickItem.svelte
 #: src/routes/food/FoodList.svelte
@@ -2338,7 +2338,7 @@ msgstr ""
 #: src/lib/components/layout/AppSidebar.svelte
 #: src/lib/components/meal-matching/MealMatchReviewDialog.svelte
 #: src/lib/components/status-pills/COBPill.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodSearchCombobox.svelte
 #: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
 #: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
 #: src/routes/(authenticated)/food/QuickPickItem.svelte
@@ -2789,7 +2789,7 @@ msgstr ""
 msgid "<0/> Foods <1/> <2/>"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodSearchCombobox.svelte
 #: src/routes/(authenticated)/meals/+page.svelte
 #: src/routes/meals/+page.svelte
 msgid "Search foods..."
@@ -4205,18 +4205,19 @@ msgstr ""
 #. placeholder {0}: food.displayCarbs
 #. placeholder {0}: foodEntry.carbs
 #. placeholder {0}: d.linkedCarbs
-#. placeholder {0}: food.carbs
-#. placeholder {0}: food.carbs
-#. placeholder {0}: food.carbs
 #. placeholder {0}: foodCarbs
+#. placeholder {0}: food.carbs
+#. placeholder {0}: food.carbs
+#. placeholder {0}: food.carbs
+#. placeholder {0}: (insulinStats.totalCarbs ?? 0).toFixed(0)
 #. placeholder {0}: (insulinStats.totalCarbs ?? 0).toFixed(0)
 #: src/lib/components/entries/CarbIntakeSection.svelte
 #: src/lib/components/meal-matching/MealMatchReviewDialog.svelte
 #: src/lib/components/reports/InsulinDonutChart.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
+#: src/lib/components/treatments/FoodSearchCombobox.svelte
+#: src/lib/components/treatments/FoodSearchCombobox.svelte
+#: src/lib/components/treatments/FoodSearchCombobox.svelte
 #: src/routes/(authenticated)/reports/insulin-delivery/+page.svelte
 #: src/routes/reports/insulin-delivery/+page.svelte
 msgid "{0}g carbs"
@@ -4318,8 +4319,8 @@ msgstr ""
 #: src/lib/components/patient/PatientInsulinManager.svelte
 #: src/lib/components/patient/PatientInsulinManager.svelte
 #: src/lib/components/patient/PatientInsulinManager.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 #: src/lib/components/trackers/TrackerEditorDialog.svelte
 #: src/routes/(authenticated)/settings/trackers/+page.svelte
 #: src/routes/(authenticated)/tools/packing/list/+page.svelte
@@ -4510,7 +4511,7 @@ msgstr ""
 
 #: src/lib/components/food/AddFoodDialog.svelte
 #: src/lib/components/food/AddFoodDialog.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 msgid "Category & Subcategory"
 msgstr ""
 
@@ -4569,17 +4570,17 @@ msgid "Glucose (mg/dL)"
 msgstr ""
 
 #: src/lib/components/food/UnitCombobox.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 msgid "Select unit..."
 msgstr ""
 
 #: src/lib/components/food/UnitCombobox.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 msgid "Search units..."
 msgstr ""
 
 #: src/lib/components/food/UnitCombobox.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 msgid "No unit found."
 msgstr ""
 
@@ -4602,12 +4603,12 @@ msgid "Low ({0})"
 msgstr ""
 
 #: src/lib/components/food/GiCombobox.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 msgid "Select GI..."
 msgstr ""
 
 #: src/lib/components/food/GiCombobox.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 msgid "Search GI..."
 msgstr ""
 
@@ -4798,7 +4799,7 @@ msgid "Sign in"
 msgstr ""
 
 #: src/lib/components/layout/SidebarNotifications.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Manage"
 msgstr ""
 
@@ -5553,7 +5554,7 @@ msgstr ""
 
 #: src/lib/components/reports/SiteChangeImpactChart.svelte
 #: src/lib/components/reports/SiteChangeImpactChart.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 #: src/lib/components/treatments/TreatmentEditDialog.svelte
 #: src/routes/(authenticated)/settings/appearance/+page.svelte
 #: src/routes/settings/appearance/+page.svelte
@@ -6214,63 +6215,63 @@ msgid "Sound disabled for this alarm"
 msgstr ""
 
 #: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 #: src/lib/stores/alarm-state.svelte.ts
 #: src/lib/stores/alarm-state.svelte.ts
 msgid "UrgentLow"
 msgstr ""
 
 #: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 #: src/lib/stores/alarm-state.svelte.ts
 msgid "UrgentHigh"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Select sound"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "ForecastLow"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "RisingFast"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "FallingFast"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
 #: src/lib/components/settings/alarm-preview/AlarmActiveView.svelte
 #: src/lib/components/settings/alarm-preview/AlarmActiveView.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "StaleData"
 msgstr ""
 
 #: src/lib/components/alerts/GeneralTab.svelte
 #: src/lib/components/alerts/GeneralTab.svelte
 #: src/lib/components/entries/BolusSection.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 #: src/lib/components/treatments/TreatmentEditDialog.svelte
 msgid "Normal"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Short"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Long"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Continuous"
 msgstr ""
 
@@ -6304,275 +6305,270 @@ msgstr ""
 msgid "<0/> Schedule"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "Alarm Name"
 msgstr ""
 
 #: src/lib/components/docs/EnvVarReference.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
+#: src/lib/components/treatments/TreatmentPortionsForm.svelte
 msgid "Description"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 #: src/lib/components/trackers/TrackerEditorDialog.svelte
 #: src/routes/settings/trackers/+page.svelte
 msgid "Optional description"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "Alarm Type"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "Administer carbs ONLY if they are conscious and able to swallow by themselves."
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "Priority"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "Threshold Settings"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "Minutes without data"
 msgstr ""
 
 #: src/lib/components/alerts/GeneralTab.svelte
 #: src/lib/components/alerts/GeneralTab.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 #: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/(authenticated)/settings/alerts/setup/+page.svelte
 #: src/routes/settings/alerts/setup/+page.svelte
 msgid "Threshold"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "Upper Threshold"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "Lead Time"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmSettings.svelte
-#: src/lib/components/settings/AlarmSettings.svelte
-#: src/routes/settings/algorithm/+page.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "minutes"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "How far ahead to predict (5-60 min). Alarm triggers if glucose is forecast to drop below threshold within this time."
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "Delayed Raise (Persistence)"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "Only trigger alarm if condition persists for this long"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "minutes (0 = immediate)"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "Override Quiet Hours"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 msgid "This alarm will sound even during quiet hours"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Sound Enabled"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Play audio when alarm triggers"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Alarm Sound"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 #: src/routes/(authenticated)/reports/glucose-distribution/+page.svelte
 #: src/routes/reports/glucose-distribution/+page.svelte
 msgid "Hide"
 msgstr ""
 
 #. placeholder {0}: showCustomSoundUpload ? "Hide" : "Manage"
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "<0/> {0} Custom Sounds"
 msgstr ""
 
 #: src/lib/components/alerts/AudioSection.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Built-in Sounds"
 msgstr ""
 
 #: src/lib/components/alerts/AudioSection.svelte
 #: src/lib/components/alerts/AudioSection.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
 #: src/lib/components/settings/CustomSoundUpload.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Custom Sounds"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
+#: src/lib/components/settings/alarm-profile/AlarmVisualTab.svelte
 msgid "Test Alarm"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
+#: src/lib/components/settings/alarm-profile/AlarmVisualTab.svelte
 msgid "Preview sound and visual effects"
 msgstr ""
 
 #: src/lib/components/alerts/AudioSection.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Ascending Volume"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Start quiet and gradually get louder"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Start Volume"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Max Volume"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Ramp Duration"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "sec"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Volume"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
 #: src/lib/components/settings/BrowserCapabilities.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Vibration"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/CapabilityBadge.svelte
 msgid "Not on this device"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Vibrate device when alarm triggers"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmAudioTab.svelte
 msgid "Vibration Pattern"
 msgstr ""
 
 #: src/lib/components/alerts/VisualSection.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmVisualTab.svelte
 msgid "Screen Flash"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmVisualTab.svelte
 msgid "Flash the screen to get attention"
 msgstr ""
 
 #: src/lib/components/alerts/VisualSection.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmVisualTab.svelte
 msgid "Flash Color"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmVisualTab.svelte
 msgid "Flash Interval"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmVisualTab.svelte
 msgid "ms"
 msgstr ""
 
 #: src/lib/components/alerts/VisualSection.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmVisualTab.svelte
 msgid "Persistent Banner"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/CapabilityBadge.svelte
 msgid "Blocked on this device"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
 #: src/lib/components/settings/BrowserCapabilities.svelte
+#: src/lib/components/settings/alarm-profile/CapabilityBadge.svelte
 msgid "Needs Permission"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmVisualTab.svelte
 msgid "Show notification banner until acknowledged"
 msgstr ""
 
 #: src/lib/components/alerts/VisualSection.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmVisualTab.svelte
 msgid "Wake Screen"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmVisualTab.svelte
 msgid "Turn on the screen when alarm triggers"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmVisualTab.svelte
 msgid "Show Emergency Contacts"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmVisualTab.svelte
 msgid "Display \"In Case of Emergency, Contact:\" info during alarm"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmVisualTab.svelte
 msgid "Specific Instructions"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmVisualTab.svelte
 msgid "Instructions to display to your emergency contacts."
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "<0/> Snooze Settings"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "Default Snooze"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "Maximum Snooze"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "Quick Snooze Options"
 msgstr ""
 
 #. placeholder {0}: opt
 #. placeholder {0}: minutes
 #: src/lib/components/alerts/SnoozeTab.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "{0}m <0/>"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "+ Add"
 msgstr ""
 
@@ -6582,103 +6578,103 @@ msgstr ""
 #. placeholder {0}: therapy.delay ?? "-"
 #: src/lib/components/clock-builder/ElementInspector.svelte
 #: src/lib/components/dashboard/glucose-chart/dialogs/TreatmentInspectionDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 #: src/routes/(authenticated)/settings/profile/+page.svelte
 #: src/routes/settings/profile/+page.svelte
 msgid "{0} min"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "Re-raise if Unacknowledged"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "Repeat alarm if not acknowledged"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "Re-raise every"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "Escalate Volume"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "Get louder each time"
 msgstr ""
 
 #: src/lib/components/alerts/SnoozeTab.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "Smart Snooze"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "Auto-extend snooze if trending in correct direction"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "For high alarms: extend if glucose is falling. <0/> For low alarms: extend if glucose is rising."
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "Min Delta"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "mg/dL/5min"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "Extend by"
 msgstr ""
 
 #: src/lib/components/patient/PatientInsulinManager.svelte
 #: src/lib/components/patient/PatientInsulinManager.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "min"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "Max Total"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmScheduleTab.svelte
 msgid "Time-Based Schedule"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmScheduleTab.svelte
 msgid "Only activate alarm during specific times"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmScheduleTab.svelte
 msgid "Active Days"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmScheduleTab.svelte
 msgid "Click to toggle. If none selected, alarm is active every day."
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmScheduleTab.svelte
 msgid "Active Time Ranges"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmScheduleTab.svelte
 msgid "+ Add Range"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmScheduleTab.svelte
 #: src/routes/(authenticated)/reports/site-change-impact/+page.svelte
 #: src/routes/reports/site-change-impact/+page.svelte
 msgid "to"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmScheduleTab.svelte
 msgid "This alarm is always active"
 msgstr ""
 
-#: src/lib/components/settings/AlarmProfileDialog.svelte
+#: src/lib/components/settings/alarm-profile/AlarmScheduleTab.svelte
 msgid "Enable scheduling to restrict when this alarm can trigger"
 msgstr ""
 
@@ -7278,7 +7274,7 @@ msgid "<0/> Delete"
 msgstr ""
 
 #: src/lib/components/clock-builder/TextStyleControls.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 #: src/routes/(authenticated)/reports/data-quality/compression-lows/+page.svelte
 #: src/routes/(authenticated)/settings/nightscout-transition/+page.svelte
 #: src/routes/reports/data-quality/compression-lows/+page.svelte
@@ -7300,32 +7296,32 @@ msgstr ""
 msgid "Search for an existing food or create a new one."
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodSearchCombobox.svelte
 msgid "Loading foods..."
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodSearchCombobox.svelte
 msgid "<0/> Favorites"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodSearchCombobox.svelte
 msgid "<0/> Recent"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodSearchCombobox.svelte
 msgid "Type to search foods or create a new one."
 msgstr ""
 
 #. placeholder {0}: searchQuery.trim()
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodSearchCombobox.svelte
 msgid "<0/> Create \"{0}\""
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodSearchCombobox.svelte
 msgid "<0/> Log without saving food"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodSearchCombobox.svelte
 msgid "No additional matches found."
 msgstr ""
 
@@ -7337,55 +7333,55 @@ msgstr ""
 
 #. placeholder {0}: foodFat
 #. placeholder {1}: foodProtein
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 msgid "{0}g fat • {1}g protein"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 msgid "Nutritional Details"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 msgid "Portion Size"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/FoodNutritionalForm.svelte
 msgid "No GI found."
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/TreatmentPortionsForm.svelte
 msgid "How much did you eat?"
 msgstr ""
 
 #: src/lib/components/treatments/TreatmentFoodEntryEditDialog.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/TreatmentPortionsForm.svelte
 msgid "Remaining to attribute"
 msgstr ""
 
 #: src/lib/components/treatments/TreatmentFoodEntryEditDialog.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/TreatmentPortionsForm.svelte
 msgid "Portions"
 msgstr ""
 
 #: src/lib/components/treatments/TreatmentFoodEntryEditDialog.svelte
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/TreatmentPortionsForm.svelte
 msgid "Time offset (min)"
 msgstr ""
 
 #. placeholder {0}: unspecifiedCarbs
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/TreatmentPortionsForm.svelte
 msgid "<0/> Scale to fill remaining {0}g"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/TreatmentPortionsForm.svelte
 msgid "Note (optional)"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/TreatmentPortionsForm.svelte
 msgid "What did you eat?"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentFoodSelectorDialog.svelte
+#: src/lib/components/treatments/TreatmentPortionsForm.svelte
 msgid "Add a note..."
 msgstr ""
 
