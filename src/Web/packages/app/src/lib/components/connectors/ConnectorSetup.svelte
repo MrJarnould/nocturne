@@ -16,7 +16,6 @@
     getSchema as getConnectorSchema,
     getEffectiveConfiguration as getConnectorEffectiveConfig,
     setActive as setConnectorActive,
-    deleteConfiguration as deleteConnectorConfiguration,
   } from "$lib/api/generated/configurations.generated.remote";
   import { normalizeConnectorJsonSchema, type JsonSchema } from "$lib/utils/connector-json-schema";
   import {
@@ -25,7 +24,6 @@
   } from "$lib/api/generated/configurations.generated.remote";
   import {
     getServicesOverview,
-    deleteConnectorData,
     getConnectorCapabilities,
     getConnectorDataSummary,
   } from "$lib/api/generated/services.generated.remote";
@@ -40,26 +38,17 @@
   import { Badge } from "$lib/components/ui/badge";
   import { Switch } from "$lib/components/ui/switch";
   import { Label } from "$lib/components/ui/label";
-  import { Separator } from "$lib/components/ui/separator";
-  import { DangerZoneDialog } from "$lib/components/ui/danger-zone-dialog";
   import ConnectorConfigForm from "$lib/components/settings/ConnectorConfigForm.svelte";
   import SettingsPageSkeleton from "$lib/components/settings/SettingsPageSkeleton.svelte";
 
   import {
     AlertCircle,
-    CheckCircle,
-    ChevronRight,
-    Cloud,
-    Activity,
-    Database,
-    Settings,
-    Smartphone,
-    Sparkles,
-    Plug,
     Loader2,
     ExternalLink,
-    Trash2,
   } from "lucide-svelte";
+  import ConnectorSelectionGrid from "$lib/components/connectors/ConnectorSelectionGrid.svelte";
+  import ConnectorDangerZone from "$lib/components/connectors/ConnectorDangerZone.svelte";
+  import SyncResultCard from "$lib/components/connectors/SyncResultCard.svelte";
 
   interface Props {
     /** Pre-select a specific connector (skips selection grid) */
@@ -123,22 +112,6 @@
   let saveMessage = $state<{ type: "success" | "error"; text: string } | null>(
     null
   );
-
-  // Delete dialog state
-  let showDeleteConfigDialog = $state(false);
-  let deleteConfigResult = $state<{
-    success: boolean;
-    error?: string;
-  } | null>(null);
-
-  let showDeleteDataDialog = $state(false);
-  let deleteDataResult = $state<{
-    success?: boolean;
-    deletedCounts?: { [key: string]: number };
-    totalDeleted?: number;
-    dataSource?: string;
-    error?: string;
-  } | null>(null);
 
   // --- Derived ---
   const displayName = $derived(connectorInfo?.name || connectorId || "");
@@ -265,25 +238,6 @@
   }
 
   // --- Selection ---
-  function getCategoryIcon(category: string | undefined) {
-    switch (category) {
-      case "cgm":
-        return Activity;
-      case "pump":
-        return Database;
-      case "aid-system":
-        return Settings;
-      case "connector":
-        return Cloud;
-      case "uploader":
-        return Smartphone;
-      case "demo":
-        return Sparkles;
-      default:
-        return Plug;
-    }
-  }
-
   async function selectConnector(connector: AvailableConnector) {
     connectorInfo = connector;
     step = "configuring";
@@ -357,38 +311,6 @@
     clearMessageAfterDelay();
   }
 
-  // --- Danger zone ---
-  async function handleDeleteConfiguration() {
-    if (!connectorInfo?.id) return;
-
-    try {
-      const result = await deleteConnectorConfiguration(connectorInfo.id);
-      deleteConfigResult = result;
-    } catch (e) {
-      deleteConfigResult = {
-        success: false,
-        error: e instanceof Error ? e.message : "Failed to delete configuration",
-      };
-    }
-
-    if (deleteConfigResult?.success && onCancel) {
-      setTimeout(() => {
-        onCancel!();
-      }, 1500);
-    }
-  }
-
-  async function handleDeleteData() {
-    if (!connectorInfo?.id) return;
-
-    const result = await deleteConnectorData(connectorInfo.id);
-    deleteDataResult = result;
-
-    if (result.success) {
-      dataSummary = await getConnectorDataSummary(connectorInfo.id);
-    }
-  }
-
   // --- Utility ---
   function clearMessageAfterDelay() {
     setTimeout(() => {
@@ -415,88 +337,13 @@
 
 <!-- SELECTION STEP -->
 {#if step === "selection"}
-  {#if isLoading}
-    <SettingsPageSkeleton cardCount={2} />
-  {:else if error}
-    <Card class="border-destructive">
-      <CardContent class="flex items-center gap-3 pt-6">
-        <AlertCircle class="h-5 w-5 text-destructive" />
-        <div>
-          <p class="font-medium">Error</p>
-          <p class="text-sm text-muted-foreground">{error}</p>
-        </div>
-      </CardContent>
-    </Card>
-  {:else if servicesOverview?.availableConnectors}
-    <div class="space-y-4">
-      <div>
-        <h3 class="text-lg font-semibold">Choose a connector</h3>
-        <p class="text-sm text-muted-foreground">
-          Select a data source to configure
-        </p>
-      </div>
-      <div class="grid gap-3 sm:grid-cols-2">
-        {#each servicesOverview.availableConnectors as connector}
-          {@const Icon = getCategoryIcon(connector.category)}
-          <button
-            class="flex items-center gap-4 p-4 rounded-lg border hover:border-primary/50 hover:bg-accent/50 transition-colors text-left group {connector.isConfigured
-              ? 'border-green-300 dark:border-green-700 bg-green-50/50 dark:bg-green-950/20'
-              : ''}"
-            onclick={() => selectConnector(connector)}
-          >
-            <div
-              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg {connector.isConfigured
-                ? 'bg-green-100 dark:bg-green-900/30'
-                : 'bg-primary/10'}"
-            >
-              <Icon
-                class="h-5 w-5 {connector.isConfigured
-                  ? 'text-green-600 dark:text-green-400'
-                  : 'text-primary'}"
-              />
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="font-medium">{connector.name}</span>
-                {#if connector.isConfigured}
-                  <Badge
-                    class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 text-xs"
-                  >
-                    <CheckCircle class="h-3 w-3 mr-1" />
-                    Configured
-                  </Badge>
-                {/if}
-              </div>
-              {#if connector.description}
-                <p class="text-sm text-muted-foreground truncate">
-                  {connector.description}
-                </p>
-              {/if}
-            </div>
-            <ChevronRight
-              class="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors"
-            />
-          </button>
-        {/each}
-      </div>
-    </div>
-  {:else}
-    <Card>
-      <CardContent class="py-8 text-center">
-        <Plug class="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-        <p class="font-medium">No connectors available</p>
-        <p class="text-sm text-muted-foreground mt-2">
-          No server-side connectors are registered in this installation.
-        </p>
-      </CardContent>
-    </Card>
-  {/if}
-
-  {#if onCancel}
-    <div class="flex justify-start pt-2">
-      <Button variant="ghost" onclick={onCancel}>Cancel</Button>
-    </div>
-  {/if}
+  <ConnectorSelectionGrid
+    {servicesOverview}
+    {isLoading}
+    {error}
+    onSelect={selectConnector}
+    {onCancel}
+  />
 
 <!-- CONFIGURING STEP -->
 {:else if step === "configuring"}
@@ -707,81 +554,21 @@
       {/if}
 
       <!-- Danger Zone -->
-      {#if showDangerZone && (hasExistingConfig || hasData)}
-        <Separator class="my-6" />
-
-        <Card class="border-destructive/50">
-          <CardHeader>
-            <CardTitle class="text-destructive">Danger Zone</CardTitle>
-            <CardDescription>
-              Irreversible actions that affect this connector
-            </CardDescription>
-          </CardHeader>
-          <CardContent class="space-y-4">
-            {#if hasExistingConfig}
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="font-medium">Delete Configuration</p>
-                  <p class="text-sm text-muted-foreground">
-                    Remove this connector's configuration. The connector will
-                    need to be set up again to resume syncing.
-                  </p>
-                </div>
-                <Button
-                  variant="destructive"
-                  onclick={() => {
-                    deleteConfigResult = null;
-                    showDeleteConfigDialog = true;
-                  }}
-                >
-                  <Trash2 class="mr-2 h-4 w-4" />
-                  Delete Config
-                </Button>
-              </div>
-            {/if}
-
-            {#if hasExistingConfig && hasData}
-              <Separator />
-            {/if}
-
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="font-medium">Delete Synced Data</p>
-                <p class="text-sm text-muted-foreground">
-                  Permanently delete all data synced by this connector.
-                </p>
-                {#if dataSummary}
-                  <div
-                    class="flex items-center gap-4 mt-2 text-xs text-muted-foreground"
-                  >
-                    <span class="flex items-center gap-1">
-                      <Database class="h-3 w-3" />
-                      {(dataSummary.recordCounts?.['entries'] ?? 0).toLocaleString()} entries
-                    </span>
-                    <span>
-                      {(dataSummary.recordCounts?.['treatments'] ?? 0).toLocaleString()} treatments
-                    </span>
-                    <span>
-                      {(dataSummary.recordCounts?.['deviceStatuses'] ?? 0).toLocaleString()} device
-                      statuses
-                    </span>
-                  </div>
-                {/if}
-              </div>
-              <Button
-                variant="destructive"
-                disabled={!hasData}
-                onclick={() => {
-                  deleteDataResult = null;
-                  showDeleteDataDialog = true;
-                }}
-              >
-                <Trash2 class="mr-2 h-4 w-4" />
-                Delete Data
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+      {#if showDangerZone && connectorInfo?.id}
+        <ConnectorDangerZone
+          connectorId={connectorInfo.id}
+          displayName={displayName}
+          {hasExistingConfig}
+          hasData={hasData ?? false}
+          {dataSummary}
+          onConfigDeleted={onCancel}
+          onDataDeleted={() => {
+            // Refresh data summary after deletion
+            if (connectorInfo?.id) {
+              loadConnectorData(connectorInfo.id);
+            }
+          }}
+        />
       {/if}
 
       <!-- Navigation for wizard flow -->
@@ -809,199 +596,16 @@
 
 <!-- RESULTS STEP -->
 {:else if step === "results" && syncResult}
-  <div class="space-y-6">
-    {#if syncResult.success}
-      <Card class="border-green-500">
-        <CardContent class="pt-6">
-          <div class="flex items-start gap-4">
-            <div
-              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30"
-            >
-              <CheckCircle class="h-5 w-5 text-green-600 dark:text-green-400" />
-            </div>
-            <div>
-              <p class="font-medium text-lg">Sync completed</p>
-              <p class="text-sm text-muted-foreground mt-1">
-                {syncResult.message || `${displayName} synced successfully.`}
-              </p>
-              {#if syncResult.itemsSynced}
-                {@const syncedItems = Object.keys(syncResult.itemsSynced) as Array<keyof typeof syncResult.itemsSynced>}
-                <div class="flex flex-wrap gap-3 mt-3">
-                  {#each syncedItems as key}
-                    {@const count = syncResult.itemsSynced?.[key]}
-                    {#if count != null}
-                      <Badge variant="outline">
-                        {count}
-                        {key.toLowerCase()}
-                      </Badge>
-                    {/if}
-                  {/each}
-                </div>
-              {/if}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    {:else}
-      <Card class="border-destructive">
-        <CardContent class="pt-6">
-          <div class="flex items-start gap-4">
-            <div
-              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30"
-            >
-              <AlertCircle class="h-5 w-5 text-red-600 dark:text-red-400" />
-            </div>
-            <div>
-              <p class="font-medium text-lg">Sync failed</p>
-              <p class="text-sm text-muted-foreground mt-1">
-                {syncResult.message || "An error occurred during sync."}
-              </p>
-              {#if syncResult.errors && syncResult.errors.length > 0}
-                <ul
-                  class="text-sm text-destructive mt-2 list-disc list-inside"
-                >
-                  {#each syncResult.errors as err}
-                    <li>{err}</li>
-                  {/each}
-                </ul>
-              {/if}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    {/if}
-
-    <div class="flex items-center gap-3">
-      {#if onComplete && syncResult.success}
-        <Button onclick={() => onComplete!(syncResult!)}>Done</Button>
-      {/if}
-      {#if resultActions && syncResult}
-        {@render resultActions({
-          result: syncResult,
-          reset: resetToSelection,
-        })}
-      {/if}
-    </div>
-  </div>
+  <SyncResultCard
+    {syncResult}
+    {displayName}
+    onComplete={() => {
+      if (syncResult) {
+        onComplete?.(syncResult);
+      }
+    }}
+    {resultActions}
+    onReset={resetToSelection}
+  />
 {/if}
 
-<!-- Delete Configuration Dialog -->
-<DangerZoneDialog
-  bind:open={showDeleteConfigDialog}
-  title="Delete {displayName} Configuration"
-  description="You are about to permanently delete all configuration and credentials for this connector. The connector will stop syncing data."
-  confirmationPhrase="DELETE CONFIGURATION"
-  confirmButtonText="Delete Configuration"
-  onConfirm={handleDeleteConfiguration}
->
-  {#snippet result()}
-    {#if deleteConfigResult}
-      {#if deleteConfigResult.success}
-        <div
-          class="rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20 p-4 mt-4"
-        >
-          <div
-            class="flex items-center gap-2 text-green-800 dark:text-green-200"
-          >
-            <CheckCircle class="h-5 w-5" />
-            <span class="font-medium">Configuration deleted successfully</span>
-          </div>
-          <p class="text-sm text-green-700 dark:text-green-300 mt-1">
-            Redirecting...
-          </p>
-        </div>
-      {:else}
-        <div
-          class="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/20 p-4 mt-4"
-        >
-          <div class="flex items-center gap-2 text-red-800 dark:text-red-200">
-            <AlertCircle class="h-5 w-5" />
-            <span class="font-medium">Failed to delete configuration</span>
-          </div>
-          <p class="text-sm text-red-700 dark:text-red-300 mt-1">
-            {deleteConfigResult.error}
-          </p>
-        </div>
-      {/if}
-    {/if}
-  {/snippet}
-</DangerZoneDialog>
-
-<!-- Delete Data Dialog -->
-<DangerZoneDialog
-  bind:open={showDeleteDataDialog}
-  title="Delete {displayName} Data"
-  description="You are about to permanently delete all data synchronized by this connector."
-  confirmationPhrase="DELETE DATA"
-  confirmButtonText="Delete All Data"
-  onConfirm={handleDeleteData}
->
-  {#snippet content()}
-    {#if dataSummary && (dataSummary.total ?? 0) > 0}
-      <div class="mt-4 rounded-lg border bg-muted/50 p-4">
-        <p class="text-sm font-medium mb-2">Data to be deleted:</p>
-        <ul class="text-sm text-muted-foreground space-y-1">
-          <li>{(dataSummary.recordCounts?.['entries'] ?? 0).toLocaleString()} glucose entries</li>
-          <li>
-            {(dataSummary.recordCounts?.['treatments'] ?? 0).toLocaleString()} treatments
-          </li>
-          <li>
-            {(dataSummary.recordCounts?.['deviceStatuses'] ?? 0).toLocaleString()} device status records
-          </li>
-        </ul>
-        <p class="text-sm font-medium mt-2">
-          Total: {dataSummary.total?.toLocaleString() ?? 0} records
-        </p>
-      </div>
-    {/if}
-  {/snippet}
-
-  {#snippet result()}
-    {#if deleteDataResult}
-      {#if deleteDataResult.success}
-        <div
-          class="rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20 p-4 mt-4"
-        >
-          <div
-            class="flex items-center gap-2 text-green-800 dark:text-green-200"
-          >
-            <CheckCircle class="h-5 w-5" />
-            <span class="font-medium">Data deleted successfully</span>
-          </div>
-          <ul
-            class="text-sm text-green-700 dark:text-green-300 mt-2 space-y-1"
-          >
-            <li>
-              {(deleteDataResult.deletedCounts?.['entries'] ?? 0).toLocaleString()} entries
-            </li>
-            <li>
-              {(deleteDataResult.deletedCounts?.['treatments'] ?? 0).toLocaleString()} treatments
-            </li>
-            <li>
-              {(deleteDataResult.deletedCounts?.['deviceStatuses'] ?? 0).toLocaleString()} device
-              statuses
-            </li>
-          </ul>
-          <p
-            class="text-sm font-medium text-green-700 dark:text-green-300 mt-2"
-          >
-            Total: {deleteDataResult.totalDeleted?.toLocaleString() ?? 0} records
-            deleted
-          </p>
-        </div>
-      {:else}
-        <div
-          class="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/20 p-4 mt-4"
-        >
-          <div class="flex items-center gap-2 text-red-800 dark:text-red-200">
-            <AlertCircle class="h-5 w-5" />
-            <span class="font-medium">Failed to delete data</span>
-          </div>
-          <p class="text-sm text-red-700 dark:text-red-300 mt-1">
-            {deleteDataResult.error}
-          </p>
-        </div>
-      {/if}
-    {/if}
-  {/snippet}
-</DangerZoneDialog>
