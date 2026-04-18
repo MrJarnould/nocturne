@@ -3,7 +3,7 @@
   import { scaleTime, scaleLinear } from "d3-scale";
   import { PumpModeIcon, ActivityCategoryIcon } from "$lib/components/icons";
   import { BasalRateTrack } from "$lib/components/charts";
-  import type { ProcessedSpan } from "../../../../routes/time-spans/data.remote";
+  import type { ProcessedSpan } from "../../../../routes/(authenticated)/time-spans/data.remote";
   import { BasalDeliveryOrigin } from "$lib/api";
 
   interface BasalDeliveryChartData {

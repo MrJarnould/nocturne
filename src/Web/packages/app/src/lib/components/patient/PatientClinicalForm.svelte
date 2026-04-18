@@ -35,7 +35,7 @@
     <Select.Root type="single" bind:value={state.diabetesType}>
       <Select.Trigger id="diabetes-type">
         {state.diabetesType
-          ? (diabetesTypeLabels[state.diabetesType] ?? state.diabetesType)
+          ? (diabetesTypeLabels[state.diabetesType as DiabetesType] ?? state.diabetesType)
           : "Select type"}
       </Select.Trigger>
       <Select.Content>

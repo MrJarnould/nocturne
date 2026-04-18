@@ -31,7 +31,7 @@
   const clientId = $derived(page.url.searchParams.get("client_id") ?? "");
   const redirectUri = $derived(page.url.searchParams.get("redirect_uri") ?? "");
   const scope = $derived(page.url.searchParams.get("scope") ?? "");
-  const state = $derived(page.url.searchParams.get("state") ?? "");
+  const oauthState = $derived(page.url.searchParams.get("state") ?? "");
   const codeChallenge = $derived(page.url.searchParams.get("code_challenge") ?? "");
   const existingScopes = $derived(page.url.searchParams.get("existing_scopes") ?? "");
 
@@ -289,7 +289,7 @@
             <input type="hidden" name="client_id" value={clientId} />
             <input type="hidden" name="redirect_uri" value={redirectUri} />
             <input type="hidden" name="scope" value={scope} />
-            <input type="hidden" name="state" value={state} />
+            <input type="hidden" name="state" value={oauthState} />
             <input type="hidden" name="code_challenge" value={codeChallenge} />
             <input type="hidden" name="approved" value="false" />
             <input
@@ -318,7 +318,7 @@
             <input type="hidden" name="client_id" value={clientId} />
             <input type="hidden" name="redirect_uri" value={redirectUri} />
             <input type="hidden" name="scope" value={scope} />
-            <input type="hidden" name="state" value={state} />
+            <input type="hidden" name="state" value={oauthState} />
             <input type="hidden" name="code_challenge" value={codeChallenge} />
             <input type="hidden" name="approved" value="true" />
             <input

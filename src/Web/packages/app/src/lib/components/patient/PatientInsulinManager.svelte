@@ -294,7 +294,7 @@
               >
                 <Select.Trigger id="insulin-category">
                   {inlineCategory
-                    ? (insulinCategoryLabels[inlineCategory] ?? inlineCategory)
+                    ? (insulinCategoryLabels[inlineCategory as InsulinCategory] ?? inlineCategory)
                     : "Select category"}
                 </Select.Trigger>
                 <Select.Content>
@@ -360,7 +360,7 @@
               <Label for="insulin-role">Role</Label>
               <Select.Root type="single" name="role" bind:value={inlineRole}>
                 <Select.Trigger id="insulin-role">
-                  {insulinRoleLabels[inlineRole] ?? inlineRole}
+                  {insulinRoleLabels[inlineRole as InsulinRole] ?? inlineRole}
                 </Select.Trigger>
                 <Select.Content>
                   {#each Object.entries(insulinRoleLabels) as [value, label]}
@@ -368,7 +368,7 @@
                       <div>
                         <div>{label}</div>
                         <div class="text-xs text-muted-foreground">
-                          {insulinRoleDescriptions[value] ?? ""}
+                          {insulinRoleDescriptions[value as InsulinRole] ?? ""}
                         </div>
                       </div>
                     </Select.Item>
@@ -477,12 +477,12 @@
                 {insulin.name ?? "Unnamed"}
               </span>
               <Badge variant="secondary" class="text-xs">
-                {insulinCategoryLabels[insulin.insulinCategory ?? ""] ??
+                {insulinCategoryLabels[(insulin.insulinCategory ?? "") as InsulinCategory] ??
                   insulin.insulinCategory}
               </Badge>
               {#if insulin.role}
                 <Badge variant="outline" class="text-xs">
-                  {insulinRoleLabels[insulin.role] ?? insulin.role}
+                  {insulinRoleLabels[insulin.role as InsulinRole] ?? insulin.role}
                 </Badge>
               {/if}
               {#if insulin.isCurrent}
@@ -576,7 +576,7 @@
               onValueChange={() => onDialogCategoryChange()}
             >
               <Select.Trigger id="insulin-category">
-                {insulinCategoryLabels[insulinCategory] ?? insulinCategory}
+                {insulinCategoryLabels[insulinCategory as InsulinCategory] ?? insulinCategory}
               </Select.Trigger>
               <Select.Content>
                 {#each Object.entries(insulinCategoryLabels) as [value, label]}
@@ -636,7 +636,7 @@
             <Label for="insulin-role">Role</Label>
             <Select.Root type="single" name="role" bind:value={insulinRole}>
               <Select.Trigger id="insulin-role">
-                {insulinRoleLabels[insulinRole] ?? insulinRole}
+                {insulinRoleLabels[insulinRole as InsulinRole] ?? insulinRole}
               </Select.Trigger>
               <Select.Content>
                 {#each Object.entries(insulinRoleLabels) as [value, label]}
@@ -644,7 +644,7 @@
                     <div>
                       <div>{label}</div>
                       <div class="text-xs text-muted-foreground">
-                        {insulinRoleDescriptions[value] ?? ""}
+                        {insulinRoleDescriptions[value as InsulinRole] ?? ""}
                       </div>
                     </div>
                   </Select.Item>

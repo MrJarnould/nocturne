@@ -13,7 +13,6 @@
     ShieldAlert,
     Info,
     ListChecks,
-    Loader2,
   } from "lucide-svelte";
   import SupplyCategory from "$lib/components/tools/packing/supply-category.svelte";
   import { categories } from "$lib/components/tools/packing/packing-config";
@@ -109,8 +108,8 @@
       config={category}
       icon={iconMap[category.icon]}
       {tripDays}
-      avgTdd={hints?.avgTdd}
-      eventIntervals={hints?.eventIntervals}
+      avgTdd={hints?.avgTdd ?? null}
+      eventIntervals={hints?.eventIntervals ?? {}}
       bind:itemStates={categoryStates[ci]}
     />
   {/each}

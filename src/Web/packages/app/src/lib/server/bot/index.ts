@@ -39,7 +39,7 @@ export function getBot(): Bot {
 		}
 		registerAllCommands(botInstance, baseDomain);
 
-		const enabledPlatforms = Object.entries(options.platforms ?? {})
+		const enabledPlatforms = (Object.entries(options.platforms ?? {}) as [string, boolean][])
 			.filter(([, enabled]) => enabled)
 			.map(([name]) => name);
 

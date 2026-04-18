@@ -18,6 +18,7 @@
     AvailableConnector,
     SyncResult,
   } from "$lib/api/generated/nocturne-api-client";
+  import { getUploaderName, getUploaderDescription } from "$lib/utils/uploader-labels";
   import { markSetupComplete } from "../setup.remote";
   import ConnectorSetup from "$lib/components/connectors/ConnectorSetup.svelte";
   import * as Card from "$lib/components/ui/card";
@@ -516,7 +517,7 @@
                         </div>
                         <div class="flex-1 min-w-0">
                           <div class="flex items-center gap-2 flex-wrap">
-                            <span class="font-medium">{app.name}</span>
+                            <span class="font-medium">{getUploaderName(app)}</span>
                             <Badge variant="outline" class="text-xs gap-1">
                               {getPlatformLabel(app.platform)}
                             </Badge>
@@ -526,9 +527,9 @@
                               </Badge>
                             {/if}
                           </div>
-                          {#if app.description}
+                          {#if getUploaderDescription(app)}
                             <p class="text-sm text-muted-foreground line-clamp-1">
-                              {app.description}
+                              {getUploaderDescription(app)}
                             </p>
                           {/if}
                         </div>
@@ -613,10 +614,10 @@
         </div>
       {:else if setupResponse}
         <div>
-          <h2 class="text-lg font-semibold">{selectedApp?.name}</h2>
-          {#if selectedApp?.description}
+          <h2 class="text-lg font-semibold">{selectedApp ? getUploaderName(selectedApp) : ''}</h2>
+          {#if selectedApp && getUploaderDescription(selectedApp)}
             <p class="text-sm text-muted-foreground">
-              {selectedApp.description}
+              {getUploaderDescription(selectedApp)}
             </p>
           {/if}
         </div>
@@ -634,7 +635,7 @@
                   <div>
                     <p class="font-medium text-green-600">Device Authorized</p>
                     <p class="text-sm text-muted-foreground">
-                      {selectedApp?.name} is now connected. You can return to your device.
+                      {selectedApp ? getUploaderName(selectedApp) : ''} is now connected. You can return to your device.
                     </p>
                   </div>
                 </div>
@@ -651,7 +652,7 @@
                   <div>
                     <p class="font-medium text-green-600">Receiving Data</p>
                     <p class="text-sm text-muted-foreground">
-                      {selectedApp?.name} is sending data. {ds.entriesLast24h ?? 0} entries in the last 24 hours.
+                      {selectedApp ? getUploaderName(selectedApp) : ''} is sending data. {ds.entriesLast24h ?? 0} entries in the last 24 hours.
                     </p>
                   </div>
                 </Card.Content>
@@ -778,13 +779,13 @@
               <Card.Header class="text-center pb-3">
                 <Card.Title class="text-sm">Scan to Connect</Card.Title>
                 <Card.Description>
-                  Scan this QR code with your phone's camera to open {selectedApp?.name} and start the connection.
+                  Scan this QR code with your phone's camera to open {selectedApp ? getUploaderName(selectedApp) : ''} and start the connection.
                 </Card.Description>
               </Card.Header>
               <Card.Content class="flex flex-col items-center gap-4">
                 {#if qrCodeDataUrl}
                   <div class="rounded-lg border bg-white p-2">
-                    <img src={qrCodeDataUrl} alt="QR code to connect {selectedApp?.name}" class="h-48 w-48" />
+                    <img src={qrCodeDataUrl} alt="QR code to connect {selectedApp ? getUploaderName(selectedApp) : ''}" class="h-48 w-48" />
                   </div>
                 {:else}
                   <div class="flex h-48 w-48 items-center justify-center rounded-lg border bg-muted">
@@ -798,7 +799,7 @@
               <Card.Header class="pb-3">
                 <Card.Title class="text-sm">Enter Authorization Code</Card.Title>
                 <Card.Description>
-                  After scanning, {selectedApp?.name} will show an 8-character code. Enter it here to approve the connection.
+                  After scanning, {selectedApp ? getUploaderName(selectedApp) : ''} will show an 8-character code. Enter it here to approve the connection.
                 </Card.Description>
               </Card.Header>
               <Card.Content class="space-y-4">
@@ -845,7 +846,7 @@
             <div>
               <p class="font-medium">Failed to load setup instructions</p>
               <p class="text-sm text-muted-foreground">
-                Could not load setup details for {selectedApp?.name}. Please try again.
+                Could not load setup details for {selectedApp ? getUploaderName(selectedApp) : ''}. Please try again.
               </p>
             </div>
           </Card.Content>

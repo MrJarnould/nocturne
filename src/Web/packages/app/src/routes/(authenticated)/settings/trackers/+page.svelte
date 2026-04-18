@@ -2,9 +2,6 @@
   import {
     Card,
     CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
   } from "$lib/components/ui/card";
   import { Button } from "$lib/components/ui/button";
   import { Badge } from "$lib/components/ui/badge";
@@ -15,30 +12,25 @@
   import { Label } from "$lib/components/ui/label";
   import * as Select from "$lib/components/ui/select";
   import { Textarea } from "$lib/components/ui/textarea";
-  import { DurationInput } from "$lib/components/ui/duration-input";
   import {
-    TrackerNotificationEditor,
     TrackerCompletionDialog,
     TrackerStartDialog,
     type TrackerNotification,
   } from "$lib/components/trackers";
-  import EventTypeCombobox from "$lib/components/treatments/EventTypeCombobox.svelte";
-  import { TrackerCategoryIcon } from "$lib/components/icons";
+  import ActiveTrackersTab from "$lib/components/trackers/ActiveTrackersTab.svelte";
+  import TrackerHistoryTab from "$lib/components/trackers/TrackerHistoryTab.svelte";
+  import TrackerDefinitionsTab from "$lib/components/trackers/TrackerDefinitionsTab.svelte";
+  import TrackerPresetsTab from "$lib/components/trackers/TrackerPresetsTab.svelte";
+  import TrackerEditorDialog from "$lib/components/trackers/TrackerEditorDialog.svelte";
   import {
     Timer,
-    Plus,
-    Play,
-    Check,
     AlertTriangle,
     History,
     Settings2,
     Bookmark,
-    Trash2,
-    Pencil,
     Loader2,
     Activity,
   } from "lucide-svelte";
-  import { cn } from "$lib/utils";
   import { tick, onMount } from "svelte";
   import { goto } from "$app/navigation";
   import { getAuthStore } from "$lib/stores/auth-store.svelte";
@@ -90,8 +82,6 @@
   let formPresetDefaultStartNotes = $state("");
 
   // Form references for form()-based remote functions
-  const createForm = trackersRemote.createDefinition;
-  const updateForm = trackersRemote.updateDefinition;
 
   // Form state for definition
   let formName = $state("");
@@ -125,18 +115,6 @@
     }
 
     return [];
-  }
-
-  // Helper to convert notifications array to API format
-  function notificationsToApiFormat(notifications: TrackerNotification[]) {
-    return notifications
-      .filter((n) => n.hours !== undefined)
-      .map((n, i) => ({
-        urgency: n.urgency,
-        hours: n.hours!,
-        description: n.description || undefined,
-        displayOrder: n.displayOrder ?? i,
-      }));
   }
 
   // Start instance dialog
@@ -247,7 +225,7 @@
   }
 
   // Format date
-  function formatDate(dateStr: Date | undefined): string {
+  function formatDate(dateStr: any): string {
     if (!dateStr) return "";
     return new Date(dateStr).toLocaleDateString(undefined, {
       month: "short",
@@ -533,659 +511,73 @@
       </Tabs.List>
 
       <!-- Active Instances Tab -->
-      <Tabs.Content value="active">
-        <Card>
-          <CardHeader class="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Active Trackers</CardTitle>
-              <CardDescription>
-                Currently running tracker instances
-              </CardDescription>
-            </div>
-            {#if definitions.length > 0}
-              <Select.Root type="single">
-                <Select.Trigger class="w-[200px]">
-                  <Plus class="h-4 w-4 mr-2" />
-                  Start Tracker
-                </Select.Trigger>
-                <Select.Content>
-                  {#each definitions as def}
-                    <Select.Item
-                      value={def.id ?? ""}
-                      label={def.name ?? ""}
-                      onclick={() => openStartDialog(def)}
-                    />
-                  {/each}
-                </Select.Content>
-              </Select.Root>
-            {/if}
-          </CardHeader>
-          <CardContent>
-            {#if activeInstances.length === 0}
-              <div class="text-center py-8 text-muted-foreground">
-                <Timer class="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p>No active trackers</p>
-                <p class="text-sm">Start a tracker from your definitions</p>
-              </div>
-            {:else}
-              <div class="space-y-3">
-                {#each activeInstances as instance}
-                  {@const level = getInstanceLevel(instance)}
-                  {@const remaining = getTimeRemaining(instance)}
-                  <div
-                    class={cn(
-                      "flex items-center justify-between p-4 rounded-lg border",
-                      getLevelStyle(level)
-                    )}
-                  >
-                    <div class="flex items-center gap-3">
-                      <div
-                        class={cn(
-                          "text-2xl font-bold tabular-nums",
-                          remaining !== undefined && remaining <= 0
-                            ? "text-destructive"
-                            : remaining !== undefined && remaining < 6
-                              ? "text-yellow-600 dark:text-yellow-400"
-                              : ""
-                        )}
-                      >
-                        {#if remaining !== undefined}
-                          {remaining <= 0 ? "Overdue" : formatAge(remaining)}
-                        {:else}
-                          {formatAge(instance.ageHours ?? 0)}
-                        {/if}
-                      </div>
-                      <div>
-                        <div class="font-medium">{instance.definitionName}</div>
-                        <div
-                          class="text-sm text-muted-foreground flex items-center gap-1.5"
-                        >
-                          {formatAge(instance.ageHours ?? 0)} old · Started {formatDate(
-                            instance.startedAt
-                          )}
-                          {#if instance.startNotes}
-                            · {instance.startNotes}
-                          {/if}
-                        </div>
-                      </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onclick={() => openCompleteDialog(instance.id!)}
-                      >
-                        <Check class="h-4 w-4 mr-1" />
-                        Complete
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onclick={() => openDeleteInstanceDialog(instance.id!)}
-                      >
-                        <Trash2 class="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                {/each}
-              </div>
-            {/if}
-          </CardContent>
-        </Card>
-      </Tabs.Content>
+            <ActiveTrackersTab
+        {definitions}
+        {activeInstances}
+        {openStartDialog}
+        {openCompleteDialog}
+        {openDeleteInstanceDialog}
+        {getInstanceLevel}
+        {getTimeRemaining}
+        {getLevelStyle}
+        {formatAge}
+        {formatDate}
+      />
 
       <!-- History Tab -->
-      <Tabs.Content value="history">
-        <Card>
-          <CardHeader>
-            <CardTitle>History</CardTitle>
-            <CardDescription>Completed tracker instances</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {#if historyInstances.length === 0}
-              <div class="text-center py-8 text-muted-foreground">
-                <History class="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p>No history yet</p>
-              </div>
-            {:else}
-              <div class="space-y-2">
-                {#each historyInstances as instance}
-                  <div
-                    class="flex items-center justify-between p-3 rounded-lg border"
-                  >
-                    <div>
-                      <div class="font-medium">{instance.definitionName}</div>
-                      <div class="text-sm text-muted-foreground">
-                        {formatAge(instance.ageHours ?? 0)} ·
-                        {completionReasonLabels[
-                          instance.completionReason ??
-                            CompletionReason.Completed
-                        ]}
-                        {#if instance.completionNotes}
-                          · {instance.completionNotes}
-                        {/if}
-                      </div>
-                    </div>
-                    <div class="text-sm text-muted-foreground">
-                      {formatDate(instance.completedAt ?? instance.startedAt)}
-                    </div>
-                  </div>
-                {/each}
-              </div>
-            {/if}
-          </CardContent>
-        </Card>
-      </Tabs.Content>
+            <TrackerHistoryTab
+        {historyInstances}
+        {completionReasonLabels}
+        {formatAge}
+        {formatDate}
+      />
 
       <!-- Definitions Tab -->
-      <Tabs.Content value="definitions">
-        <Card>
-          <CardHeader class="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Tracker Definitions</CardTitle>
-              <CardDescription>
-                Reusable tracker templates with notification thresholds
-              </CardDescription>
-            </div>
-            <Button onclick={openNewDefinition}>
-              <Plus class="h-4 w-4 mr-2" />
-              New Definition
-            </Button>
-          </CardHeader>
-          <CardContent>
-            {#if definitions.length === 0}
-              <div class="text-center py-8 text-muted-foreground">
-                <Settings2 class="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p>No definitions yet</p>
-                <p class="text-sm">
-                  Create a tracker definition to get started
-                </p>
-              </div>
-            {:else}
-              <div class="space-y-3">
-                {#each definitions as def}
-                  {@const category = def.category ?? TrackerCategory.Consumable}
-                  <div
-                    class="flex items-center justify-between p-4 rounded-lg border"
-                  >
-                    <div class="flex items-center gap-3">
-                      <div
-                        class={cn(
-                          "p-2 rounded-lg bg-muted",
-                          categoryColors[category]
-                        )}
-                      >
-                        <TrackerCategoryIcon {category} class="h-5 w-5" />
-                      </div>
-                      <div>
-                        <div class="font-medium flex items-center gap-2">
-                          {def.name}
-                          {#if def.isFavorite}
-                            <Badge variant="secondary">★ Favorite</Badge>
-                          {/if}
-                        </div>
-                        <div class="text-sm text-muted-foreground">
-                          {categoryLabels[
-                            def.category ?? TrackerCategory.Consumable
-                          ]}
-                          {#if def.lifespanHours}
-                            · {def.lifespanHours}h lifespan
-                          {/if}
-                          {#if def.notificationThresholds && def.notificationThresholds.length > 0}
-                            · {def.notificationThresholds.length} threshold{def
-                              .notificationThresholds.length > 1
-                              ? "s"
-                              : ""}
-                          {/if}
-                        </div>
-                      </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onclick={() => openStartDialog(def)}
-                      >
-                        <Play class="h-4 w-4 mr-1" />
-                        Start
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onclick={() => openEditDefinition(def)}
-                      >
-                        <Pencil class="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onclick={() => openDeleteDefinitionDialog(def.id!)}
-                      >
-                        <Trash2 class="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                {/each}
-              </div>
-            {/if}
-          </CardContent>
-        </Card>
-      </Tabs.Content>
+            <TrackerDefinitionsTab
+        {definitions}
+        {categoryLabels}
+        {categoryColors}
+        {openNewDefinition}
+        {openStartDialog}
+        {openEditDefinition}
+        {openDeleteDefinitionDialog}
+      />
 
       <!-- Presets Tab -->
-      <Tabs.Content value="presets">
-        <Card>
-          <CardHeader class="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Quick Presets</CardTitle>
-              <CardDescription>One-click tracker activation</CardDescription>
-            </div>
-            {#if definitions.length > 0}
-              <Button onclick={openNewPreset}>
-                <Plus class="h-4 w-4 mr-2" />
-                New Preset
-              </Button>
-            {/if}
-          </CardHeader>
-          <CardContent>
-            {#if presets.length === 0}
-              <div class="text-center py-8 text-muted-foreground">
-                <Bookmark class="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p>No presets yet</p>
-                <p class="text-sm">
-                  Create presets for one-click tracker activation
-                </p>
-                {#if definitions.length > 0}
-                  <Button
-                    variant="outline"
-                    class="mt-4"
-                    onclick={openNewPreset}
-                  >
-                    <Plus class="h-4 w-4 mr-2" />
-                    Create Preset
-                  </Button>
-                {/if}
-              </div>
-            {:else}
-              <div class="space-y-3">
-                {#each presets as preset}
-                  <div
-                    class="flex items-center justify-between p-4 rounded-lg border"
-                  >
-                    <div class="flex-1">
-                      <div class="font-medium">{preset.name}</div>
-                      <div class="text-sm text-muted-foreground">
-                        {preset.definitionName}
-                        {#if preset.defaultStartNotes}
-                          · {preset.defaultStartNotes}
-                        {/if}
-                      </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <Button
-                        variant="default"
-                        size="sm"
-                        onclick={() => applyPresetHandler(preset.id!)}
-                      >
-                        <Play class="h-4 w-4 mr-1" />
-                        Apply
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onclick={() => openDeletePresetDialog(preset.id!)}
-                      >
-                        <Trash2 class="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                {/each}
-              </div>
-            {/if}
-          </CardContent>
-        </Card>
-      </Tabs.Content>
+            <TrackerPresetsTab
+        {definitions}
+        {presets}
+        {openNewPreset}
+        {applyPresetHandler}
+        {openDeletePresetDialog}
+      />
     </Tabs.Root>
   {/if}
 </div>
 
-{#snippet definitionFormFields(prefix: string)}
-  <div class="grid grid-cols-2 gap-4">
-    <div class="space-y-2">
-      <Label for="name">Name</Label>
-      <Input
-        id="name"
-        name="{prefix}name"
-        bind:value={formName}
-        placeholder="e.g., G7 Sensor"
-      />
-    </div>
-    <div class="space-y-2">
-      <Label for="category">Category</Label>
-      <Select.Root
-        type="single"
-        name="{prefix}category"
-        bind:value={formCategory}
-      >
-        <Select.Trigger>{categoryLabels[formCategory]}</Select.Trigger>
-        <Select.Content>
-          <Select.Item value={TrackerCategory.Sensor} label="Sensor" />
-          <Select.Item value={TrackerCategory.Cannula} label="Cannula" />
-          <Select.Item value={TrackerCategory.Battery} label="Battery" />
-          <Select.Item value={TrackerCategory.Reservoir} label="Reservoir" />
-          <Select.Item
-            value={TrackerCategory.Appointment}
-            label="Appointment"
-          />
-          <Select.Item value={TrackerCategory.Reminder} label="Reminder" />
-          <Select.Item value={TrackerCategory.Consumable} label="Consumable" />
-          <Select.Item value={TrackerCategory.Custom} label="Custom" />
-        </Select.Content>
-      </Select.Root>
-    </div>
-  </div>
 
-  <div class="space-y-2">
-    <Label for="description">Description (optional)</Label>
-    <Input
-      id="description"
-      name="{prefix}description"
-      bind:value={formDescription}
-      placeholder="Optional description"
-    />
-  </div>
-
-  <div class="space-y-2">
-    <Label>Tracker Mode</Label>
-    <Select.Root type="single" name="{prefix}mode" bind:value={formMode}>
-      <Select.Trigger>
-        {#if formMode === TrackerMode.Duration}
-          Duration - runs for a time period
-        {:else}
-          Event - scheduled for specific datetime
-        {/if}
-      </Select.Trigger>
-      <Select.Content>
-        <Select.Item
-          value={TrackerMode.Duration}
-          label="Duration - runs for a time period"
-        />
-        <Select.Item
-          value={TrackerMode.Event}
-          label="Event - scheduled for specific datetime"
-        />
-      </Select.Content>
-    </Select.Root>
-    <p class="text-xs text-muted-foreground">
-      {#if formMode === TrackerMode.Duration}
-        Duration trackers run from a start time for a specified lifespan.
-      {:else}
-        Event trackers are scheduled for a specific date and time.
-      {/if}
-    </p>
-  </div>
-
-  {#if formMode === TrackerMode.Duration}
-    <div class="space-y-2">
-      <Label for="lifespan">Expected Lifespan</Label>
-      <DurationInput
-        id="lifespan"
-        bind:value={formLifespanHours}
-        placeholder="e.g., 10x24 or 10d"
-      />
-      <input
-        type="hidden"
-        name="n:{prefix}lifespanHours"
-        value={formLifespanHours ?? ""}
-      />
-    </div>
-  {/if}
-
-  <TrackerNotificationEditor
-    bind:notifications={formNotifications}
-    mode={formMode === TrackerMode.Duration ? "Duration" : "Event"}
-    lifespanHours={formMode === TrackerMode.Duration
-      ? formLifespanHours
-      : undefined}
-  />
-
-  <!-- Hidden inputs for notification thresholds -->
-  {#each notificationsToApiFormat(formNotifications) as threshold, i}
-    <input
-      type="hidden"
-      name="{prefix}notificationThresholds[{i}].urgency"
-      value={threshold.urgency}
-    />
-    <input
-      type="hidden"
-      name="n:{prefix}notificationThresholds[{i}].hours"
-      value={threshold.hours}
-    />
-    <input
-      type="hidden"
-      name="{prefix}notificationThresholds[{i}].description"
-      value={threshold.description ?? ""}
-    />
-    <input
-      type="hidden"
-      name="n:{prefix}notificationThresholds[{i}].displayOrder"
-      value={threshold.displayOrder ?? i}
-    />
-  {/each}
-
-  <input
-    type="hidden"
-    name="b:{prefix}isFavorite"
-    value={formIsFavorite ? "on" : ""}
-  />
-  <input type="hidden" name="{prefix}icon" value={formIcon} />
-  <input
-    type="hidden"
-    name="{prefix}startEventType"
-    value={formStartEventType ?? ""}
-  />
-  <input
-    type="hidden"
-    name="{prefix}completionEventType"
-    value={formCompletionEventType ?? ""}
-  />
-
-  <div class="space-y-2">
-    <Label for="dashboardVisibility">Dashboard Visibility</Label>
-    <Select.Root
-      type="single"
-      name="{prefix}dashboardVisibility"
-      bind:value={formDashboardVisibility}
-    >
-      <Select.Trigger>
-        {#if formDashboardVisibility === DashboardVisibility.Off}
-          Off - Don't show on dashboard
-        {:else if formDashboardVisibility === DashboardVisibility.Always}
-          Always show
-        {:else if formDashboardVisibility === DashboardVisibility.Info}
-          Show after Info threshold
-        {:else if formDashboardVisibility === DashboardVisibility.Warn}
-          Show after Warn threshold
-        {:else if formDashboardVisibility === DashboardVisibility.Hazard}
-          Show after Hazard threshold
-        {:else if formDashboardVisibility === DashboardVisibility.Urgent}
-          Show after Urgent threshold
-        {:else}
-          Always show
-        {/if}
-      </Select.Trigger>
-      <Select.Content>
-        <Select.Item
-          value={DashboardVisibility.Off}
-          label="Off - Don't show on dashboard"
-        />
-        <Select.Item value={DashboardVisibility.Always} label="Always show" />
-        <Select.Item
-          value={DashboardVisibility.Info}
-          label="Show after Info threshold"
-        />
-        <Select.Item
-          value={DashboardVisibility.Warn}
-          label="Show after Warn threshold"
-        />
-        <Select.Item
-          value={DashboardVisibility.Hazard}
-          label="Show after Hazard threshold"
-        />
-        <Select.Item
-          value={DashboardVisibility.Urgent}
-          label="Show after Urgent threshold"
-        />
-      </Select.Content>
-    </Select.Root>
-    <p class="text-xs text-muted-foreground">
-      When to show this tracker as a pill on the dashboard
-    </p>
-  </div>
-
-  <!-- Visibility (Public/Private) -->
-  <div class="space-y-2">
-    <Label for="visibility">Public Visibility</Label>
-    <Select.Root
-      type="single"
-      name="{prefix}visibility"
-      bind:value={formVisibility}
-    >
-      <Select.Trigger>
-        {#if formVisibility === TrackerVisibility.Public}
-          Public - Visible to everyone
-        {:else if formVisibility === TrackerVisibility.Private}
-          Private - Only you can see
-        {:else}
-          Public - Visible to everyone
-        {/if}
-      </Select.Trigger>
-      <Select.Content>
-        <Select.Item
-          value={TrackerVisibility.Public}
-          label="Public - Visible to everyone"
-        />
-        <Select.Item
-          value={TrackerVisibility.Private}
-          label="Private - Only you can see"
-        />
-      </Select.Content>
-    </Select.Root>
-    <p class="text-xs text-muted-foreground">
-      Controls whether this tracker is visible to unauthenticated users
-    </p>
-  </div>
-
-  <!-- Event Integration (Nightscout compatibility) -->
-  <div class="space-y-3 pt-2 border-t">
-    <Label class="text-sm font-medium">Event Integration (Nightscout)</Label>
-    <p class="text-xs text-muted-foreground -mt-1">
-      Optionally create treatment events when this tracker starts or completes.
-      This maintains compatibility with existing CAGE/SAGE pills.
-    </p>
-
-    <div class="space-y-2">
-      <Label for="startEventType" class="text-xs">Create event on start</Label>
-      <EventTypeCombobox
-        bind:value={formStartEventType}
-        onSelect={(type) => (formStartEventType = type)}
-        placeholder="None - don't create event"
-      />
-    </div>
-
-    <div class="space-y-2">
-      <Label for="completionEventType" class="text-xs">
-        Create event on completion
-      </Label>
-      <EventTypeCombobox
-        bind:value={formCompletionEventType}
-        onSelect={(type) => (formCompletionEventType = type)}
-        placeholder="None - don't create event"
-      />
-    </div>
-  </div>
-{/snippet}
 
 <!-- Definition Dialog -->
-<Dialog.Root bind:open={isDefinitionDialogOpen}>
-  <Dialog.Content class="max-w-2xl max-h-[90vh] overflow-y-auto">
-    <Dialog.Header>
-      <Dialog.Title>
-        {isNewDefinition ? "New Tracker Definition" : "Edit Definition"}
-      </Dialog.Title>
-    </Dialog.Header>
-
-    {#if isNewDefinition}
-      <form
-        {...createForm.for("create").enhance(async ({ submit }) => {
-          await submit();
-          if (createForm.for("create").result) {
-            await loadData();
-            await tick();
-            isDefinitionDialogOpen = false;
-          }
-        })}
-      >
-        <div class="space-y-6 py-4">
-          {@render definitionFormFields("")}
-        </div>
-
-        <Dialog.Footer>
-          <Button
-            type="button"
-            variant="outline"
-            onclick={() => (isDefinitionDialogOpen = false)}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            disabled={!formName || !!createForm.for("create").pending}
-          >
-            {createForm.for("create").pending ? "Saving..." : "Save"}
-          </Button>
-        </Dialog.Footer>
-      </form>
-    {:else}
-      <form
-        {...updateForm
-          .for(editingDefinition?.id ?? "")
-          .enhance(async ({ submit }) => {
-            await submit();
-            if (updateForm.for(editingDefinition?.id ?? "").result) {
-              await loadData();
-              await tick();
-              isDefinitionDialogOpen = false;
-            }
-          })}
-      >
-        <input type="hidden" name="id" value={editingDefinition?.id ?? ""} />
-        <div class="space-y-6 py-4">
-          {@render definitionFormFields("request.")}
-        </div>
-
-        <Dialog.Footer>
-          <Button
-            type="button"
-            variant="outline"
-            onclick={() => (isDefinitionDialogOpen = false)}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            disabled={!formName ||
-              !!updateForm.for(editingDefinition?.id ?? "").pending}
-          >
-            {updateForm.for(editingDefinition?.id ?? "").pending
-              ? "Saving..."
-              : "Save"}
-          </Button>
-        </Dialog.Footer>
-      </form>
-    {/if}
-  </Dialog.Content>
-</Dialog.Root>
+<!-- Tracker Editor Dialog -->
+<TrackerEditorDialog
+  bind:open={isDefinitionDialogOpen}
+  {isNewDefinition}
+  {editingDefinition}
+  bind:formName
+  bind:formDescription
+  bind:formCategory
+  bind:formIcon
+  bind:formLifespanHours
+  bind:formNotifications
+  bind:formIsFavorite
+  bind:formDashboardVisibility
+  bind:formVisibility
+  bind:formMode
+  bind:formStartEventType
+  bind:formCompletionEventType
+  {categoryLabels}
+  {loadData}
+/>
 
 <!-- Start Instance Dialog -->
 <TrackerStartDialog

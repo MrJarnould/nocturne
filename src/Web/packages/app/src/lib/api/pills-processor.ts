@@ -246,7 +246,7 @@ export function processIOB(
 		// Check pump IOB
 		const pumpIob = status.pump?.iob;
 		if (pumpIob) {
-			const iobValue = pumpIob.iob ?? pumpIob.bolusiob;
+			const iobValue = typeof pumpIob === 'number' ? pumpIob : (pumpIob.iob ?? pumpIob.bolusiob);
 			if (typeof iobValue === 'number') {
 				iobFromDevice = {
 					iob: iobValue,

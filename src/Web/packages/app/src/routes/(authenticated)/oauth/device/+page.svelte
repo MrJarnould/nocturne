@@ -32,7 +32,13 @@
   // Read the prefilled code from URL instead of server data
   const prefilledCode = $derived(page.url.searchParams.get("user_code") ?? "");
 
-  let codeInput = $state(prefilledCode);
+  let codeInput = $state("");
+
+  $effect(() => {
+    if (prefilledCode) {
+      codeInput = prefilledCode;
+    }
+  });
 
   // Get device info from lookup form result
   const deviceInfo = $derived(

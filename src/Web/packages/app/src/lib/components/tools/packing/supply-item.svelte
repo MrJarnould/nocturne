@@ -24,9 +24,10 @@
     onenablechange,
   }: Props = $props();
 
-  let interval = $state(config.defaultInterval ?? 0);
-  let buffer = $state(config.defaultBuffer);
-  let containerSize = $state(config.defaultContainerSize ?? 300);
+  const { defaultInterval = 0, defaultBuffer, defaultContainerSize = 300 } = config;
+  let interval = $state(defaultInterval);
+  let buffer = $state(defaultBuffer);
+  let containerSize = $state(defaultContainerSize);
   let flatQuantity = $state(1);
 
   $effect(() => {

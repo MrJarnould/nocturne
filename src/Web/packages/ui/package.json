@@ -10,6 +10,7 @@
     "./theme.css": "./src/theme.css"
   },
   "peerDependencies": {
+    "layerchart": ">=2.0.0",
     "svelte": ">=5.0.0",
     "tailwindcss": ">=4.0.0"
   },
@@ -20,6 +21,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@internationalized/date": "^3.11.0",
     "bits-ui": "^2.15.5",
+    "layerchart": "2.0.0-next.43",
     "clsx": "^2.1.1",
     "svelte": "^5.50.0",
     "svelte-check": "^4.3.6",

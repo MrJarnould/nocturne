@@ -16,7 +16,6 @@
   import { Checkbox } from "$lib/components/ui/checkbox";
   import {
     Shield,
-    ShieldCheck,
     Users,
     KeyRound,
     Plus,
@@ -30,7 +29,6 @@
     Globe,
     TriangleAlert,
     Smartphone,
-    Monitor,
     ToggleLeft,
     ToggleRight,
   } from "lucide-svelte";
@@ -41,6 +39,9 @@
   import * as adminSubjectsRemote from "./admin-subjects.remote";
   import type { PageProps } from "./$types";
   import ProviderIcon from "$lib/components/auth/ProviderIcon.svelte";
+  import UsersTabContent from "$lib/components/admin/UsersTabContent.svelte";
+  import DevicesTabContent from "$lib/components/admin/DevicesTabContent.svelte";
+  import RoleDialog from "$lib/components/admin/RoleDialog.svelte";
   import type {
     TenantMemberDto,
     TenantRoleDto,
@@ -107,7 +108,6 @@
   let roleFormName = $state("");
   let roleFormNotes = $state("");
   let roleFormPermissions = $state<string[]>([]);
-  let customPermission = $state("");
   let roleSaving = $state(false);
   let roleCreatedFromSubjectDialog = $state(false); // Track if we opened role dialog from subject dialog
 
@@ -473,24 +473,6 @@
     }
   }
 
-  function togglePermission(permission: string) {
-    if (roleFormPermissions.includes(permission)) {
-      roleFormPermissions = roleFormPermissions.filter((p) => p !== permission);
-    } else {
-      roleFormPermissions = [...roleFormPermissions, permission];
-    }
-  }
-
-  function addCustomPermission() {
-    if (
-      customPermission.trim() &&
-      !roleFormPermissions.includes(customPermission.trim())
-    ) {
-      roleFormPermissions = [...roleFormPermissions, customPermission.trim()];
-      customPermission = "";
-    }
-  }
-
   // ============================================================================
   // Grant handlers
   // ============================================================================
@@ -520,65 +502,6 @@
   }
 
   // Known permission categories for the picker
-  const permissionCategories = [
-    {
-      name: "API - Entries",
-      permissions: [
-        "api:entries:read",
-        "api:entries:create",
-        "api:entries:update",
-        "api:entries:delete",
-        "api:entries:*",
-      ],
-    },
-    {
-      name: "API - Treatments",
-      permissions: [
-        "api:treatments:read",
-        "api:treatments:create",
-        "api:treatments:update",
-        "api:treatments:delete",
-        "api:treatments:*",
-      ],
-    },
-    {
-      name: "API - Device Status",
-      permissions: [
-        "api:devicestatus:read",
-        "api:devicestatus:create",
-        "api:devicestatus:update",
-        "api:devicestatus:delete",
-        "api:devicestatus:*",
-      ],
-    },
-    {
-      name: "API - Profile",
-      permissions: ["api:profile:read", "api:profile:create", "api:profile:*"],
-    },
-    {
-      name: "API - Food",
-      permissions: [
-        "api:food:read",
-        "api:food:create",
-        "api:food:update",
-        "api:food:delete",
-        "api:food:*",
-      ],
-    },
-    {
-      name: "Care Portal",
-      permissions: [
-        "careportal:read",
-        "careportal:create",
-        "careportal:update",
-        "careportal:*",
-      ],
-    },
-    {
-      name: "Admin",
-      permissions: ["admin", "*"],
-    },
-  ];
 </script>
 
 <svelte:head>
@@ -644,230 +567,22 @@
       </Tabs.List>
 
       <!-- Users Tab -->
-      <Tabs.Content value="users">
-        <Card>
-          <CardHeader class="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Users</CardTitle>
-              <CardDescription>
-                User accounts and their roles. For device access, use OAuth device authorization flow.
-              </CardDescription>
-            </div>
-            <Button onclick={openNewSubject}>
-              <Plus class="h-4 w-4 mr-2" />
-              New User
-            </Button>
-          </CardHeader>
-          <CardContent>
-            {#if platformAdminError}
-              <Alert.Root variant="destructive" class="mb-4">
-                <TriangleAlert class="h-4 w-4" />
-                <Alert.Description>{platformAdminError}</Alert.Description>
-              </Alert.Root>
-            {/if}
-            {#if subjects.length === 0}
-              <div class="text-center py-8 text-muted-foreground">
-                <Users class="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p>No users found</p>
-                <p class="text-sm">Create your first user account to get started</p>
-              </div>
-            {:else}
-              <div class="space-y-3">
-                {#each subjects as subject}
-                  {@const Icon = getSubjectIcon(subject)}
-                  {@const isPublicSubject =
-                    isSystemSubjectCheck(subject) && subject.name === "Public"}
-                  {@const isPlatformAdmin = (subject as TenantMemberDto & { isPlatformAdmin?: boolean }).isPlatformAdmin}
-                  <div
-                    class="flex items-center justify-between p-4 rounded-lg border {isPublicSubject
-                      ? 'bg-primary/5 border-primary/20'
-                      : ''}"
-                  >
-                    <div class="flex items-center gap-3">
-                      <div
-                        class="p-2 rounded-lg {isPublicSubject
-                          ? 'bg-primary/10'
-                          : 'bg-muted'}"
-                      >
-                        <Icon
-                          class="h-5 w-5 {isPublicSubject
-                            ? 'text-primary'
-                            : ''}"
-                        />
-                      </div>
-                      <div>
-                        <div class="font-medium flex items-center gap-2">
-                          {subject.name}
-                          {#if isPublicSubject}
-                            <Badge variant="secondary" class="text-xs">
-                              <Globe class="h-3 w-3 mr-1" />
-                              Unauthenticated Access
-                            </Badge>
-                          {/if}
-                          {#if subject.roles && subject.roles.some((r) => r.name === "admin")}
-                            <Badge variant="default" class="text-xs">
-                              Admin
-                            </Badge>
-                          {/if}
-                          {#if isPlatformAdmin}
-                            <Badge variant="default" class="text-xs">
-                              <ShieldCheck class="h-3 w-3 mr-1" />
-                              Platform Admin
-                            </Badge>
-                          {/if}
-                        </div>
-                        {#if isPublicSubject}
-                          <div class="text-sm text-muted-foreground">
-                            Defines what unauthenticated users can access
-                          </div>
-                        {/if}
-                        <div class="text-sm text-muted-foreground">
-                          {#if subject.roles && subject.roles.length > 0}
-                            Roles: {subject.roles.map((r) => r.name ?? "").filter((n) => n !== "admin").join(", ") || "Admin"}
-                          {:else}
-                            No roles assigned
-                          {/if}
-                        </div>
-                        <div class="text-xs text-muted-foreground mt-1">
-                          Created: {formatDate(subject.sysCreatedAt)}
-                        </div>
-                      </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      {#if !isSystemSubjectCheck(subject) && subject.id !== currentUserSubjectId}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          disabled={platformAdminSavingId === subject.id}
-                          onclick={() => togglePlatformAdmin(subject)}
-                          title={isPlatformAdmin
-                            ? "Revoke platform admin"
-                            : "Grant platform admin"}
-                          aria-label={isPlatformAdmin
-                            ? `Revoke platform admin from ${subject.name}`
-                            : `Grant platform admin to ${subject.name}`}
-                        >
-                          {#if isPlatformAdmin}
-                            <ShieldCheck class="h-4 w-4 text-primary" />
-                          {:else}
-                            <Shield class="h-4 w-4 text-muted-foreground" />
-                          {/if}
-                        </Button>
-                      {/if}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onclick={() => openEditSubject(subject)}
-                      >
-                        <Pencil class="h-4 w-4" />
-                      </Button>
-                      {#if !isSystemSubjectCheck(subject)}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onclick={() => deleteSubjectHandler(subject.id!)}
-                        >
-                          <Trash2 class="h-4 w-4" />
-                        </Button>
-                      {/if}
-                    </div>
-                  </div>
-                {/each}
-              </div>
-            {/if}
-          </CardContent>
-        </Card>
-      </Tabs.Content>
+            <UsersTabContent
+        {subjects}
+        {currentUserSubjectId}
+        {platformAdminError}
+        {platformAdminSavingId}
+        {openNewSubject}
+        {openEditSubject}
+        {togglePlatformAdmin}
+        {deleteSubjectHandler}
+        {getSubjectIcon}
+        {isSystemSubjectCheck}
+        {formatDate}
+      />
 
       <!-- Connected Devices Tab -->
-      <Tabs.Content value="devices">
-        <Card>
-          <CardHeader>
-            <CardTitle>Connected Devices</CardTitle>
-            <CardDescription>
-              Devices and applications connected via OAuth. Users authorize devices using the device flow at /oauth/device.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div class="space-y-4">
-              <!-- Info box about OAuth device flow -->
-              <Alert.Root>
-                <Smartphone class="h-4 w-4" />
-                <Alert.Title>Modern OAuth Device Authorization</Alert.Title>
-                <Alert.Description>
-                  <div class="space-y-2">
-                    <p>
-                      Devices connect using the OAuth Device Authorization Flow. Users visit <strong>/oauth/device</strong> to authorize devices with a simple code.
-                    </p>
-                    <p class="text-xs">
-                      This replaces manual API token generation. Devices get scoped access tokens that can be refreshed and revoked.
-                    </p>
-                  </div>
-                </Alert.Description>
-              </Alert.Root>
-
-              {#if grants.length === 0}
-                <div class="text-center py-8 text-muted-foreground">
-                  <Smartphone class="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p>No connected devices</p>
-                  <p class="text-sm">Devices will appear here after users authorize them</p>
-                </div>
-              {:else}
-                <div class="space-y-3">
-                  {#each grants as grant}
-                    <div
-                      class="flex items-center justify-between p-4 rounded-lg border"
-                    >
-                      <div class="flex items-center gap-3">
-                        <div class="p-2 rounded-lg bg-muted">
-                          {#if grant.isKnownClient}
-                            <Monitor class="h-5 w-5" />
-                          {:else}
-                            <Smartphone class="h-5 w-5" />
-                          {/if}
-                        </div>
-                        <div>
-                          <div class="font-medium flex items-center gap-2">
-                            {grant.clientDisplayName || grant.clientId || "Unknown Device"}
-                            {#if grant.isKnownClient}
-                              <Badge variant="secondary" class="text-xs">
-                                Verified
-                              </Badge>
-                            {/if}
-                          </div>
-                          <div class="text-sm text-muted-foreground">
-                            Client: {grant.clientId}
-                          </div>
-                          <div class="text-sm text-muted-foreground">
-                            Scopes: {(grant.scopes ?? []).join(", ")}
-                          </div>
-                          <div class="text-xs text-muted-foreground mt-1">
-                            Created: {formatDate(grant.createdAt)}
-                            {#if grant.lastUsedAt}
-                              • Last used: {formatDate(grant.lastUsedAt)}
-                            {/if}
-                          </div>
-                        </div>
-                      </div>
-                      <div class="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onclick={() => revokeGrant(grant.id ?? "")}
-                        >
-                          <Trash2 class="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  {/each}
-                </div>
-              {/if}
-
-              <!-- Legacy token section removed: access tokens are no longer exposed via TenantMemberDto -->
-            </div>
-          </CardContent>
-        </Card>
-      </Tabs.Content>
+            <DevicesTabContent {grants} {formatDate} {revokeGrant} />
 
       {#if !oidcConfigManaged}
         <Tabs.Content value="identity-providers">
@@ -1235,137 +950,17 @@
 </Dialog.Root>
 
 <!-- Role Dialog -->
-<Dialog.Root bind:open={isRoleDialogOpen}>
-  <Dialog.Content class="max-w-2xl max-h-[85vh] overflow-y-auto">
-    <Dialog.Header>
-      <Dialog.Title>
-        {isNewRole ? "New Role" : "Edit Role"}
-      </Dialog.Title>
-      <Dialog.Description>
-        {#if roleCreatedFromSubjectDialog}
-          Create a role with fine-grained permissions for your subject. After
-          saving, you'll return to the subject dialog with this role selected.
-        {:else if isNewRole}
-          Create a new role with specific permissions.
-        {:else}
-          Update role details and permissions.
-        {/if}
-      </Dialog.Description>
-    </Dialog.Header>
-
-    <div class="space-y-4 py-4">
-      <div class="space-y-2">
-        <Label for="role-name">Name</Label>
-        <Input
-          id="role-name"
-          bind:value={roleFormName}
-          placeholder="e.g., api-readonly"
-          disabled={editingRole?.isSystem}
-        />
-      </div>
-
-      <div class="space-y-2">
-        <Label for="role-notes">Notes (optional)</Label>
-        <Textarea
-          id="role-notes"
-          bind:value={roleFormNotes}
-          placeholder="Description of this role's purpose"
-          rows={2}
-          disabled={editingRole?.isSystem}
-        />
-      </div>
-
-      <div class="space-y-2">
-        <Label>Permissions</Label>
-
-        <div class="space-y-4">
-          {#each permissionCategories as category}
-            <div class="border rounded-lg p-3 bg-muted/50">
-              <h4 class="text-sm font-medium mb-2">{category.name}</h4>
-              <div class="grid grid-cols-2 gap-2">
-                {#each category.permissions as perm}
-                  <label class="flex items-center gap-2 cursor-pointer">
-                    <Checkbox
-                      checked={roleFormPermissions.includes(perm)}
-                      onCheckedChange={() => togglePermission(perm)}
-                      disabled={editingRole?.isSystem}
-                    />
-                    <span class="text-sm font-mono">{perm}</span>
-                  </label>
-                {/each}
-              </div>
-            </div>
-          {/each}
-
-          <!-- Custom permission input -->
-          <div class="border rounded-lg p-3">
-            <h4 class="text-sm font-medium mb-2">Custom Permission</h4>
-            <div class="flex gap-2">
-              <Input
-                bind:value={customPermission}
-                placeholder="e.g., api:custom:read"
-                class="font-mono"
-                disabled={editingRole?.isSystem}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                onclick={addCustomPermission}
-                disabled={!customPermission.trim() ||
-                  editingRole?.isSystem}
-              >
-                Add
-              </Button>
-            </div>
-          </div>
-
-          <!-- Selected permissions summary -->
-          {#if roleFormPermissions.length > 0}
-            <div class="border rounded-lg p-3">
-              <h4 class="text-sm font-medium mb-2">
-                Selected Permissions ({roleFormPermissions.length})
-              </h4>
-              <div class="flex flex-wrap gap-1">
-                {#each roleFormPermissions as perm}
-                  <Badge variant="secondary" class="font-mono text-xs">
-                    {perm}
-                    {#if !editingRole?.isSystem}
-                      <button
-                        class="ml-1 hover:text-destructive"
-                        onclick={() => togglePermission(perm)}
-                      >
-                        ×
-                      </button>
-                    {/if}
-                  </Badge>
-                {/each}
-              </div>
-            </div>
-          {/if}
-        </div>
-      </div>
-    </div>
-
-    <Dialog.Footer>
-      <Button
-        variant="outline"
-        onclick={() => (isRoleDialogOpen = false)}
-        disabled={roleSaving}
-      >
-        Cancel
-      </Button>
-      <Button
-        onclick={saveRole}
-        disabled={!roleFormName || roleSaving || editingRole?.isSystem}
-      >
-        {#if roleSaving}
-          <Loader2 class="h-4 w-4 mr-2 animate-spin" />
-        {/if}
-        {isNewRole ? "Create" : "Save"}
-      </Button>
-    </Dialog.Footer>
-  </Dialog.Content>
-</Dialog.Root>
+<RoleDialog
+  bind:open={isRoleDialogOpen}
+  bind:roleFormName
+  bind:roleFormNotes
+  bind:roleFormPermissions
+  {isNewRole}
+  {roleCreatedFromSubjectDialog}
+  {editingRole}
+  {roleSaving}
+  {saveRole}
+/>
 
 <!-- Legacy Token Dialog -->
 <Dialog.Root bind:open={isTokenDialogOpen}>
