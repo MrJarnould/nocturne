@@ -1,4 +1,6 @@
 using System.Collections.Concurrent;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -184,10 +186,10 @@ public class MigrationJobService : IMigrationJobService
         var httpClient = httpClientFactory.CreateClient();
         httpClient.BaseAddress = new Uri(request.NightscoutUrl.TrimEnd('/'));
 
-        // Add API secret header if provided
+        // Add API secret header if provided (Nightscout expects the SHA1 hash)
         if (!string.IsNullOrEmpty(request.NightscoutApiSecret))
         {
-            httpClient.DefaultRequestHeaders.Add("api-secret", request.NightscoutApiSecret);
+            httpClient.DefaultRequestHeaders.Add("api-secret", MigrationJob.HashApiSecret(request.NightscoutApiSecret));
         }
 
         try
@@ -206,7 +208,7 @@ public class MigrationJobService : IMigrationJobService
             {
                 IsSuccess = true,
                 SiteName = request.NightscoutUrl,
-                AvailableCollections = ["entries", "treatments", "profile", "devicestatus"],
+                AvailableCollections = ["entries", "treatments", "profile", "devicestatus", "food", "activity"],
             };
         }
         catch (HttpRequestException ex)
@@ -428,6 +430,9 @@ internal class MigrationJob
         }
     }
 
+    private long _totalDocumentsAllCollections;
+    private long _migratedDocumentsAllCollections; // computed by UpdateOverallProgress
+
     private async Task ExecuteApiMigrationAsync(CancellationToken ct)
     {
         _currentOperation = "Connecting to Nightscout";
@@ -437,25 +442,118 @@ internal class MigrationJob
         var httpClient = httpClientFactory.CreateClient();
         httpClient.BaseAddress = new Uri(_request.NightscoutUrl!.TrimEnd('/'));
 
-        // Add API secret header if provided
+        // Add API secret header if provided (Nightscout expects the SHA1 hash)
         if (!string.IsNullOrEmpty(_request.NightscoutApiSecret))
         {
-            httpClient.DefaultRequestHeaders.Add("api-secret", _request.NightscoutApiSecret);
+            httpClient.DefaultRequestHeaders.Add("api-secret", HashApiSecret(_request.NightscoutApiSecret));
         }
 
         var dbContext = scope.ServiceProvider.GetRequiredService<NocturneDbContext>();
 
-        // Migrate entries
-        if (_request.Collections.Count == 0 || _request.Collections.Contains("entries"))
+        // Build the list of collections to migrate
+        var allCollections = new (string name, Func<HttpClient, NocturneDbContext, CancellationToken, Task> migrate)[]
         {
-            await MigrateEntriesViaApiAsync(httpClient, dbContext, ct);
+            ("entries", MigrateEntriesViaApiAsync),
+            ("treatments", MigrateTreatmentsViaApiAsync),
+            ("devicestatus", MigrateDeviceStatusViaApiAsync),
+            ("profile", MigrateProfilesViaApiAsync),
+            ("food", MigrateFoodViaApiAsync),
+            ("activity", MigrateActivityViaApiAsync),
+        };
+
+        var collectionsToMigrate = allCollections
+            .Where(c => _request.Collections.Count == 0 || _request.Collections.Contains(c.name))
+            .ToList();
+
+        // Fetch counts upfront so we can show real X / Y progress
+        _currentOperation = "Counting records";
+        _totalDocumentsAllCollections = 0;
+
+        foreach (var (name, _) in collectionsToMigrate)
+        {
+            var count = await FetchCollectionCountAsync(httpClient, name, ct);
+            _collectionProgress[name] = new CollectionProgress
+            {
+                CollectionName = name,
+                TotalDocuments = count,
+                DocumentsMigrated = 0,
+                DocumentsFailed = 0,
+                IsComplete = false,
+            };
+            _totalDocumentsAllCollections += count;
         }
 
-        // Migrate treatments
-        if (_request.Collections.Count == 0 || _request.Collections.Contains("treatments"))
+        foreach (var (name, migrate) in collectionsToMigrate)
         {
-            await MigrateTreatmentsViaApiAsync(httpClient, dbContext, ct);
+            await migrate(httpClient, dbContext, ct);
         }
+    }
+
+    /// <summary>
+    /// Fetches the document count for a collection via the Nightscout count API.
+    /// Collections that don't support the count endpoint return 0.
+    /// </summary>
+    private async Task<long> FetchCollectionCountAsync(
+        HttpClient httpClient, string collectionName, CancellationToken ct)
+    {
+        // Only entries, treatments, devicestatus support the count endpoint
+        var countableCollections = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            { "entries", "treatments", "devicestatus" };
+
+        if (!countableCollections.Contains(collectionName))
+            return 0;
+
+        try
+        {
+            var response = await httpClient.GetAsync($"/api/v1/count/{collectionName}/where", ct);
+            if (!response.IsSuccessStatusCode)
+                return 0;
+
+            var content = await response.Content.ReadAsStringAsync(ct);
+            // Nightscout returns [{"_id": null, "count": N}]
+            var results = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement[]>(content);
+            if (results is { Length: > 0 })
+            {
+                return results[0].TryGetProperty("count", out var countProp)
+                    ? countProp.GetInt64()
+                    : 0;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to fetch count for {Collection}, continuing without total", collectionName);
+        }
+
+        return 0;
+    }
+
+    /// <summary>
+    /// Updates _totalDocumentsAllCollections by summing TotalDocuments across
+    /// all tracked collections, then computes _progressPercentage.
+    /// This handles both the upfront-count case and the fallback case where
+    /// totals are only known after each collection is fetched.
+    /// </summary>
+    private void UpdateOverallProgress()
+    {
+        _totalDocumentsAllCollections = _collectionProgress.Values.Sum(c => c.TotalDocuments);
+        _migratedDocumentsAllCollections = _collectionProgress.Values.Sum(c => c.DocumentsMigrated);
+
+        if (_totalDocumentsAllCollections > 0)
+        {
+            _progressPercentage = (double)_migratedDocumentsAllCollections / _totalDocumentsAllCollections * 100;
+        }
+    }
+
+    private void UpdateCollectionProgress(string collectionName, long totalDocuments, long migrated, long failed, bool isComplete)
+    {
+        _collectionProgress[collectionName] = new CollectionProgress
+        {
+            CollectionName = collectionName,
+            TotalDocuments = totalDocuments,
+            DocumentsMigrated = migrated,
+            DocumentsFailed = failed,
+            IsComplete = isComplete,
+        };
     }
 
     private async Task MigrateEntriesViaApiAsync(
@@ -466,22 +564,13 @@ internal class MigrationJob
     {
         _currentOperation = "Migrating entries";
         var collectionName = "entries";
-
-        _collectionProgress[collectionName] = new CollectionProgress
-        {
-            CollectionName = collectionName,
-            TotalDocuments = 0,
-            DocumentsMigrated = 0,
-            DocumentsFailed = 0,
-            IsComplete = false,
-        };
+        var knownTotal = _collectionProgress.TryGetValue(collectionName, out var existing) ? existing.TotalDocuments : 0;
 
         var totalMigrated = 0L;
         var totalFailed = 0L;
 
         try
         {
-            // Fetch entries from Nightscout API
             var response = await httpClient.GetAsync("/api/v1/entries.json?count=10000", ct);
             if (!response.IsSuccessStatusCode)
             {
@@ -492,6 +581,11 @@ internal class MigrationJob
             var content = await response.Content.ReadAsStringAsync(ct);
             var entries = System.Text.Json.JsonSerializer.Deserialize<Entry[]>(content) ?? [];
 
+            // If count endpoint wasn't available, use the fetched array length
+            if (knownTotal == 0) knownTotal = entries.Length;
+            UpdateCollectionProgress(collectionName, knownTotal, 0, 0, false);
+            UpdateOverallProgress();
+
             foreach (var entry in entries)
             {
                 ct.ThrowIfCancellationRequested();
@@ -500,7 +594,6 @@ internal class MigrationJob
                 {
                     var mills = entry.Mills;
 
-                    // Check for duplicates
                     var exists = await dbContext.Entries.AnyAsync(
                         e => e.Mills == mills && e.Sgv == entry.Sgv,
                         ct
@@ -521,8 +614,10 @@ internal class MigrationJob
                                 DataSource = DataSources.MongoDbImport,
                             }
                         );
-                        totalMigrated++;
                     }
+                    totalMigrated++;
+                    UpdateCollectionProgress(collectionName, knownTotal, totalMigrated, totalFailed, false);
+                    UpdateOverallProgress();
                 }
                 catch
                 {
@@ -531,15 +626,8 @@ internal class MigrationJob
             }
 
             await dbContext.SaveChangesAsync(ct);
-
-            _collectionProgress[collectionName] = new CollectionProgress
-            {
-                CollectionName = collectionName,
-                TotalDocuments = entries.Length,
-                DocumentsMigrated = totalMigrated,
-                DocumentsFailed = totalFailed,
-                IsComplete = true,
-            };
+            UpdateCollectionProgress(collectionName, knownTotal, totalMigrated, totalFailed, true);
+            UpdateOverallProgress();
         }
         catch (Exception ex)
         {
@@ -557,15 +645,7 @@ internal class MigrationJob
     {
         _currentOperation = "Migrating treatments";
         var collectionName = "treatments";
-
-        _collectionProgress[collectionName] = new CollectionProgress
-        {
-            CollectionName = collectionName,
-            TotalDocuments = 0,
-            DocumentsMigrated = 0,
-            DocumentsFailed = 0,
-            IsComplete = false,
-        };
+        var knownTotal = _collectionProgress.TryGetValue(collectionName, out var existing) ? existing.TotalDocuments : 0;
 
         var totalMigrated = 0L;
         var totalFailed = 0L;
@@ -583,6 +663,10 @@ internal class MigrationJob
             var treatments =
                 System.Text.Json.JsonSerializer.Deserialize<Treatment[]>(content) ?? [];
 
+            if (knownTotal == 0) knownTotal = treatments.Length;
+            UpdateCollectionProgress(collectionName, knownTotal, 0, 0, false);
+            UpdateOverallProgress();
+
             foreach (var treatment in treatments)
             {
                 ct.ThrowIfCancellationRequested();
@@ -591,7 +675,6 @@ internal class MigrationJob
                 {
                     var mills = treatment.CalculatedMills;
 
-                    // Check for duplicates
                     var exists = await dbContext.Treatments.AnyAsync(
                         t => t.Mills == mills && t.EventType == treatment.EventType,
                         ct
@@ -612,8 +695,10 @@ internal class MigrationJob
                                 DataSource = DataSources.MongoDbImport,
                             }
                         );
-                        totalMigrated++;
                     }
+                    totalMigrated++;
+                    UpdateCollectionProgress(collectionName, knownTotal, totalMigrated, totalFailed, false);
+                    UpdateOverallProgress();
                 }
                 catch
                 {
@@ -622,15 +707,8 @@ internal class MigrationJob
             }
 
             await dbContext.SaveChangesAsync(ct);
-
-            _collectionProgress[collectionName] = new CollectionProgress
-            {
-                CollectionName = collectionName,
-                TotalDocuments = treatments.Length,
-                DocumentsMigrated = totalMigrated,
-                DocumentsFailed = totalFailed,
-                IsComplete = true,
-            };
+            UpdateCollectionProgress(collectionName, knownTotal, totalMigrated, totalFailed, true);
+            UpdateOverallProgress();
         }
         catch (Exception ex)
         {
@@ -638,6 +716,328 @@ internal class MigrationJob
         }
 
         _logger.LogInformation("Migrated {Count} treatments via API", totalMigrated);
+    }
+
+    private async Task MigrateDeviceStatusViaApiAsync(
+        HttpClient httpClient,
+        NocturneDbContext dbContext,
+        CancellationToken ct
+    )
+    {
+        _currentOperation = "Migrating device statuses";
+        var collectionName = "devicestatus";
+        var knownTotal = _collectionProgress.TryGetValue(collectionName, out var existing) ? existing.TotalDocuments : 0;
+
+        var totalMigrated = 0L;
+        var totalFailed = 0L;
+
+        try
+        {
+            var response = await httpClient.GetAsync("/api/v1/devicestatus.json?count=10000", ct);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("Failed to fetch device statuses: {StatusCode}", response.StatusCode);
+                return;
+            }
+
+            var content = await response.Content.ReadAsStringAsync(ct);
+            var statuses = System.Text.Json.JsonSerializer.Deserialize<DeviceStatus[]>(content) ?? [];
+
+            if (knownTotal == 0) knownTotal = statuses.Length;
+            UpdateCollectionProgress(collectionName, knownTotal, 0, 0, false);
+            UpdateOverallProgress();
+
+            foreach (var status in statuses)
+            {
+                ct.ThrowIfCancellationRequested();
+
+                try
+                {
+                    var mills = status.Date ?? status.Mills;
+
+                    var exists = await dbContext.DeviceStatuses.AnyAsync(
+                        d => d.Mills == mills && d.Device == (status.Device ?? ""),
+                        ct
+                    );
+
+                    if (!exists)
+                    {
+                        dbContext.DeviceStatuses.Add(
+                            new Infrastructure.Data.Entities.DeviceStatusEntity
+                            {
+                                Id = Guid.CreateVersion7(),
+                                Mills = mills,
+                                CreatedAt = status.CreatedAt,
+                                Device = status.Device ?? "",
+                                IsCharging = status.IsCharging,
+                                UploaderJson = status.Uploader != null ? System.Text.Json.JsonSerializer.Serialize(status.Uploader) : null,
+                                PumpJson = status.Pump != null ? System.Text.Json.JsonSerializer.Serialize(status.Pump) : null,
+                                OpenApsJson = status.OpenAps != null ? System.Text.Json.JsonSerializer.Serialize(status.OpenAps) : null,
+                                LoopJson = status.Loop != null ? System.Text.Json.JsonSerializer.Serialize(status.Loop) : null,
+                                XDripJsJson = status.XDripJs != null ? System.Text.Json.JsonSerializer.Serialize(status.XDripJs) : null,
+                                OverrideJson = status.Override != null ? System.Text.Json.JsonSerializer.Serialize(status.Override) : null,
+                            }
+                        );
+                    }
+                    totalMigrated++;
+                    UpdateCollectionProgress(collectionName, knownTotal, totalMigrated, totalFailed, false);
+                    UpdateOverallProgress();
+                }
+                catch
+                {
+                    totalFailed++;
+                }
+            }
+
+            await dbContext.SaveChangesAsync(ct);
+            UpdateCollectionProgress(collectionName, knownTotal, totalMigrated, totalFailed, true);
+            UpdateOverallProgress();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error migrating device statuses via API");
+        }
+
+        _logger.LogInformation("Migrated {Count} device statuses via API", totalMigrated);
+    }
+
+    private async Task MigrateProfilesViaApiAsync(
+        HttpClient httpClient,
+        NocturneDbContext dbContext,
+        CancellationToken ct
+    )
+    {
+        _currentOperation = "Migrating profiles";
+        var collectionName = "profile";
+
+        var totalMigrated = 0L;
+        var totalFailed = 0L;
+
+        try
+        {
+            var response = await httpClient.GetAsync("/api/v1/profile.json", ct);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("Failed to fetch profiles: {StatusCode}", response.StatusCode);
+                return;
+            }
+
+            var content = await response.Content.ReadAsStringAsync(ct);
+            var profiles = System.Text.Json.JsonSerializer.Deserialize<Profile[]>(content) ?? [];
+
+            UpdateCollectionProgress(collectionName, profiles.Length, 0, 0, false);
+            UpdateOverallProgress();
+
+            foreach (var profile in profiles)
+            {
+                ct.ThrowIfCancellationRequested();
+
+                try
+                {
+                    var mills = profile.Mills;
+
+                    var exists = await dbContext.Profiles.AnyAsync(
+                        p => p.Mills == mills && p.DefaultProfile == (profile.DefaultProfile ?? "Default"),
+                        ct
+                    );
+
+                    if (!exists)
+                    {
+                        dbContext.Profiles.Add(
+                            new Infrastructure.Data.Entities.ProfileEntity
+                            {
+                                Id = Guid.CreateVersion7(),
+                                DefaultProfile = profile.DefaultProfile ?? "Default",
+                                StartDate = profile.StartDate ?? DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                                Mills = mills,
+                                CreatedAt = profile.CreatedAt,
+                                Units = profile.Units ?? "mg/dl",
+                                StoreJson = profile.Store != null ? System.Text.Json.JsonSerializer.Serialize(profile.Store) : "{}",
+                                EnteredBy = profile.EnteredBy,
+                                LoopSettingsJson = profile.LoopSettings != null ? System.Text.Json.JsonSerializer.Serialize(profile.LoopSettings) : null,
+                            }
+                        );
+                    }
+                    totalMigrated++;
+                }
+                catch
+                {
+                    totalFailed++;
+                }
+            }
+
+            await dbContext.SaveChangesAsync(ct);
+            UpdateCollectionProgress(collectionName, profiles.Length, totalMigrated, totalFailed, true);
+            UpdateOverallProgress();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error migrating profiles via API");
+        }
+
+        _logger.LogInformation("Migrated {Count} profiles via API", totalMigrated);
+    }
+
+    private async Task MigrateFoodViaApiAsync(
+        HttpClient httpClient,
+        NocturneDbContext dbContext,
+        CancellationToken ct
+    )
+    {
+        _currentOperation = "Migrating food";
+        var collectionName = "food";
+
+        var totalMigrated = 0L;
+        var totalFailed = 0L;
+
+        try
+        {
+            var response = await httpClient.GetAsync("/api/v1/food.json", ct);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("Failed to fetch food: {StatusCode}", response.StatusCode);
+                return;
+            }
+
+            var content = await response.Content.ReadAsStringAsync(ct);
+            var foods = System.Text.Json.JsonSerializer.Deserialize<Food[]>(content) ?? [];
+
+            UpdateCollectionProgress(collectionName, foods.Length, 0, 0, false);
+            UpdateOverallProgress();
+
+            foreach (var food in foods)
+            {
+                ct.ThrowIfCancellationRequested();
+
+                try
+                {
+                    var exists = await dbContext.Foods.AnyAsync(
+                        f => f.Name == (food.Name ?? "") && f.Type == (food.Type ?? "food"),
+                        ct
+                    );
+
+                    if (!exists)
+                    {
+                        dbContext.Foods.Add(
+                            new Infrastructure.Data.Entities.FoodEntity
+                            {
+                                Id = Guid.CreateVersion7(),
+                                Type = food.Type ?? "food",
+                                Category = food.Category ?? "",
+                                Subcategory = food.Subcategory ?? "",
+                                Name = food.Name ?? "",
+                                Portion = food.Portion,
+                                Carbs = food.Carbs,
+                                Fat = food.Fat,
+                                Protein = food.Protein,
+                                Energy = food.Energy,
+                                Gi = (Infrastructure.Data.Entities.GlycemicIndex)(food.Gi > 0 ? food.Gi : 2),
+                                Unit = food.Unit ?? "g",
+                                Foods = food.Foods != null ? System.Text.Json.JsonSerializer.Serialize(food.Foods) : null,
+                                HideAfterUse = food.HideAfterUse,
+                                Hidden = food.Hidden,
+                                Position = food.Position,
+                            }
+                        );
+                    }
+                    totalMigrated++;
+                }
+                catch
+                {
+                    totalFailed++;
+                }
+            }
+
+            await dbContext.SaveChangesAsync(ct);
+            UpdateCollectionProgress(collectionName, foods.Length, totalMigrated, totalFailed, true);
+            UpdateOverallProgress();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error migrating food via API");
+        }
+
+        _logger.LogInformation("Migrated {Count} food items via API", totalMigrated);
+    }
+
+    private async Task MigrateActivityViaApiAsync(
+        HttpClient httpClient,
+        NocturneDbContext dbContext,
+        CancellationToken ct
+    )
+    {
+        _currentOperation = "Migrating activities";
+        var collectionName = "activity";
+
+        var totalMigrated = 0L;
+        var totalFailed = 0L;
+
+        try
+        {
+            var response = await httpClient.GetAsync("/api/v1/activity.json?count=10000", ct);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("Failed to fetch activities: {StatusCode}", response.StatusCode);
+                return;
+            }
+
+            var content = await response.Content.ReadAsStringAsync(ct);
+            var activities = System.Text.Json.JsonSerializer.Deserialize<Activity[]>(content) ?? [];
+
+            UpdateCollectionProgress(collectionName, activities.Length, 0, 0, false);
+            UpdateOverallProgress();
+
+            foreach (var activity in activities)
+            {
+                ct.ThrowIfCancellationRequested();
+
+                try
+                {
+                    var mills = activity.Mills;
+
+                    var exists = await dbContext.Activities.AnyAsync(
+                        a => a.Mills == mills && a.Type == activity.Type,
+                        ct
+                    );
+
+                    if (!exists)
+                    {
+                        dbContext.Activities.Add(
+                            new Infrastructure.Data.Entities.ActivityEntity
+                            {
+                                Id = Guid.CreateVersion7(),
+                                Mills = mills,
+                                DateString = activity.DateString,
+                                Type = activity.Type,
+                                Description = activity.Description,
+                                Duration = activity.Duration,
+                                Intensity = activity.Intensity,
+                                Notes = activity.Notes,
+                                EnteredBy = activity.EnteredBy,
+                                UtcOffset = activity.UtcOffset,
+                                Timestamp = activity.Timestamp,
+                                CreatedAt = activity.CreatedAt,
+                            }
+                        );
+                    }
+                    totalMigrated++;
+                }
+                catch
+                {
+                    totalFailed++;
+                }
+            }
+
+            await dbContext.SaveChangesAsync(ct);
+            UpdateCollectionProgress(collectionName, activities.Length, totalMigrated, totalFailed, true);
+            UpdateOverallProgress();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error migrating activities via API");
+        }
+
+        _logger.LogInformation("Migrated {Count} activities via API", totalMigrated);
     }
 
     private async Task ExecuteMongoMigrationAsync(CancellationToken ct)
@@ -659,7 +1059,7 @@ internal class MigrationJob
             _request.Collections.Count > 0
                 ? collectionList.Where(c => _request.Collections.Contains(c)).ToList()
                 : collectionList
-                    .Where(c => c is "entries" or "treatments" or "devicestatus" or "profile")
+                    .Where(c => c is "entries" or "treatments" or "devicestatus" or "profile" or "food" or "activity")
                     .ToList();
 
         var totalCollections = collectionsToMigrate.Count;
@@ -771,6 +1171,18 @@ internal class MigrationJob
             case "treatments":
                 await TransformTreatmentAsync(doc, dbContext, ct);
                 break;
+            case "devicestatus":
+                await TransformDeviceStatusAsync(doc, dbContext, ct);
+                break;
+            case "profile":
+                await TransformProfileAsync(doc, dbContext, ct);
+                break;
+            case "food":
+                await TransformFoodAsync(doc, dbContext, ct);
+                break;
+            case "activity":
+                await TransformActivityAsync(doc, dbContext, ct);
+                break;
             default:
                 _logger.LogDebug("Skipping unsupported collection: {Collection}", collectionName);
                 break;
@@ -859,5 +1271,203 @@ internal class MigrationJob
         };
 
         dbContext.Treatments.Add(entity);
+    }
+
+    private async Task TransformDeviceStatusAsync(
+        BsonDocument doc,
+        NocturneDbContext dbContext,
+        CancellationToken ct
+    )
+    {
+        var mills =
+            doc.Contains("mills") ? doc["mills"].ToInt64()
+            : doc.Contains("date") ? doc["date"].ToInt64()
+            : doc.Contains("created_at")
+              && DateTime.TryParse(doc["created_at"].AsString, out var createdAt)
+                ? new DateTimeOffset(createdAt).ToUnixTimeMilliseconds()
+            : DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+        var device = doc.Contains("device") ? doc["device"].AsString : "";
+
+        var originalId = doc.Contains("_id") ? doc["_id"].AsObjectId.ToString() : null;
+        var exists = await dbContext.DeviceStatuses.AnyAsync(
+            d =>
+                (originalId != null && d.OriginalId == originalId)
+                || (d.Mills == mills && d.Device == device),
+            ct
+        );
+
+        if (exists)
+            return;
+
+        var entity = new Infrastructure.Data.Entities.DeviceStatusEntity
+        {
+            Id = Guid.CreateVersion7(),
+            OriginalId = originalId,
+            Mills = mills,
+            CreatedAt = doc.Contains("created_at") ? doc["created_at"].AsString : null,
+            Device = device,
+            IsCharging = doc.Contains("isCharging") ? doc["isCharging"].AsBoolean : null,
+            UploaderJson = doc.Contains("uploader") ? doc["uploader"].ToJson() : null,
+            PumpJson = doc.Contains("pump") ? doc["pump"].ToJson() : null,
+            OpenApsJson = doc.Contains("openaps") ? doc["openaps"].ToJson() : null,
+            LoopJson = doc.Contains("loop") ? doc["loop"].ToJson() : null,
+            XDripJsJson = doc.Contains("xdripjs") ? doc["xdripjs"].ToJson() : null,
+            RadioAdapterJson = doc.Contains("radioAdapter") ? doc["radioAdapter"].ToJson() : null,
+            ConnectJson = doc.Contains("connect") ? doc["connect"].ToJson() : null,
+            OverrideJson = doc.Contains("override") ? doc["override"].ToJson() : null,
+            CgmJson = doc.Contains("cgm") ? doc["cgm"].ToJson() : null,
+            MeterJson = doc.Contains("meter") ? doc["meter"].ToJson() : null,
+            InsulinPenJson = doc.Contains("insulinPen") ? doc["insulinPen"].ToJson() : null,
+        };
+
+        dbContext.DeviceStatuses.Add(entity);
+    }
+
+    private async Task TransformProfileAsync(
+        BsonDocument doc,
+        NocturneDbContext dbContext,
+        CancellationToken ct
+    )
+    {
+        var mills =
+            doc.Contains("mills") ? doc["mills"].ToInt64()
+            : doc.Contains("created_at")
+              && DateTime.TryParse(doc["created_at"].AsString, out var createdAt)
+                ? new DateTimeOffset(createdAt).ToUnixTimeMilliseconds()
+            : DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+        var defaultProfile = doc.Contains("defaultProfile") ? doc["defaultProfile"].AsString : "Default";
+
+        var originalId = doc.Contains("_id") ? doc["_id"].AsObjectId.ToString() : null;
+        var exists = await dbContext.Profiles.AnyAsync(
+            p =>
+                (originalId != null && p.OriginalId == originalId)
+                || (p.Mills == mills && p.DefaultProfile == defaultProfile),
+            ct
+        );
+
+        if (exists)
+            return;
+
+        var entity = new Infrastructure.Data.Entities.ProfileEntity
+        {
+            Id = Guid.CreateVersion7(),
+            OriginalId = originalId,
+            DefaultProfile = defaultProfile,
+            StartDate = doc.Contains("startDate") ? doc["startDate"].AsString : DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+            Mills = mills,
+            CreatedAt = doc.Contains("created_at") ? doc["created_at"].AsString : null,
+            Units = doc.Contains("units") ? doc["units"].AsString : "mg/dl",
+            StoreJson = doc.Contains("store") ? doc["store"].ToJson() : "{}",
+            EnteredBy = doc.Contains("enteredBy") ? doc["enteredBy"].AsString : null,
+            LoopSettingsJson = doc.Contains("loopSettings") ? doc["loopSettings"].ToJson() : null,
+        };
+
+        dbContext.Profiles.Add(entity);
+    }
+
+    private async Task TransformFoodAsync(
+        BsonDocument doc,
+        NocturneDbContext dbContext,
+        CancellationToken ct
+    )
+    {
+        var name = doc.Contains("name") ? doc["name"].AsString : "";
+        var type = doc.Contains("type") ? doc["type"].AsString : "food";
+
+        var originalId = doc.Contains("_id") ? doc["_id"].AsObjectId.ToString() : null;
+        var exists = await dbContext.Foods.AnyAsync(
+            f =>
+                (originalId != null && f.OriginalId == originalId)
+                || (f.Name == name && f.Type == type),
+            ct
+        );
+
+        if (exists)
+            return;
+
+        var entity = new Infrastructure.Data.Entities.FoodEntity
+        {
+            Id = Guid.CreateVersion7(),
+            OriginalId = originalId,
+            Type = type,
+            Category = doc.Contains("category") ? doc["category"].AsString : "",
+            Subcategory = doc.Contains("subcategory") ? doc["subcategory"].AsString : "",
+            Name = name,
+            Portion = doc.Contains("portion") ? doc["portion"].ToDouble() : 0,
+            Carbs = doc.Contains("carbs") ? doc["carbs"].ToDouble() : 0,
+            Fat = doc.Contains("fat") ? doc["fat"].ToDouble() : 0,
+            Protein = doc.Contains("protein") ? doc["protein"].ToDouble() : 0,
+            Energy = doc.Contains("energy") ? doc["energy"].ToDouble() : 0,
+            Gi = doc.Contains("gi") ? (Infrastructure.Data.Entities.GlycemicIndex)doc["gi"].ToInt32() : Infrastructure.Data.Entities.GlycemicIndex.Medium,
+            Unit = doc.Contains("unit") ? doc["unit"].AsString : "g",
+            Foods = doc.Contains("foods") ? doc["foods"].ToJson() : null,
+            HideAfterUse = doc.Contains("hideAfterUse") && doc["hideAfterUse"].AsBoolean,
+            Hidden = doc.Contains("hidden") && doc["hidden"].AsBoolean,
+            Position = doc.Contains("position") ? doc["position"].ToInt32() : 99999,
+        };
+
+        dbContext.Foods.Add(entity);
+    }
+
+    private async Task TransformActivityAsync(
+        BsonDocument doc,
+        NocturneDbContext dbContext,
+        CancellationToken ct
+    )
+    {
+        var mills =
+            doc.Contains("mills") ? doc["mills"].ToInt64()
+            : doc.Contains("created_at")
+              && DateTime.TryParse(doc["created_at"].AsString, out var createdAt)
+                ? new DateTimeOffset(createdAt).ToUnixTimeMilliseconds()
+            : DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+        var type = doc.Contains("type") ? doc["type"].AsString : null;
+
+        var originalId = doc.Contains("_id") ? doc["_id"].AsObjectId.ToString() : null;
+        var exists = await dbContext.Activities.AnyAsync(
+            a =>
+                (originalId != null && a.OriginalId == originalId)
+                || (a.Mills == mills && a.Type == type),
+            ct
+        );
+
+        if (exists)
+            return;
+
+        var entity = new Infrastructure.Data.Entities.ActivityEntity
+        {
+            Id = Guid.CreateVersion7(),
+            OriginalId = originalId,
+            Mills = mills,
+            DateString = doc.Contains("dateString") ? doc["dateString"].AsString : null,
+            Type = type,
+            Description = doc.Contains("description") ? doc["description"].AsString : null,
+            Duration = doc.Contains("duration") ? doc["duration"].ToDouble() : null,
+            Intensity = doc.Contains("intensity") ? doc["intensity"].AsString : null,
+            Notes = doc.Contains("notes") ? doc["notes"].AsString : null,
+            EnteredBy = doc.Contains("enteredBy") ? doc["enteredBy"].AsString : null,
+            UtcOffset = doc.Contains("utcOffset") ? doc["utcOffset"].ToInt32() : null,
+            Timestamp = doc.Contains("timestamp") ? doc["timestamp"].ToInt64() : null,
+            CreatedAt = doc.Contains("created_at") ? doc["created_at"].AsString : null,
+        };
+
+        dbContext.Activities.Add(entity);
+    }
+
+    /// <summary>
+    /// Nightscout expects the api-secret header to be the SHA1 hash of the
+    /// plaintext secret. If the value is already a 40-char hex string (i.e.
+    /// already hashed), it is returned as-is.
+    /// </summary>
+    internal static string HashApiSecret(string apiSecret)
+    {
+        if (apiSecret.Length == 40 && apiSecret.All(char.IsAsciiHexDigit))
+            return apiSecret.ToLowerInvariant();
+
+        var bytes = SHA1.HashData(Encoding.UTF8.GetBytes(apiSecret));
+        return Convert.ToHexStringLower(bytes);
     }
 }

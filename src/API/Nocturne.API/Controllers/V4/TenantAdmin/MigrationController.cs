@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using OpenApi.Remote.Attributes;
 using Nocturne.API.Services.Migration;
+using Nocturne.Core.Contracts;
 
 namespace Nocturne.API.Controllers.V4.TenantAdmin;
 
@@ -12,13 +13,16 @@ namespace Nocturne.API.Controllers.V4.TenantAdmin;
 public class MigrationController : ControllerBase
 {
     private readonly IMigrationJobService _migrationService;
+    private readonly IConnectorConfigurationService _connectorConfigService;
     private readonly ILogger<MigrationController> _logger;
 
     public MigrationController(
         IMigrationJobService migrationService,
+        IConnectorConfigurationService connectorConfigService,
         ILogger<MigrationController> logger)
     {
         _migrationService = migrationService;
+        _connectorConfigService = connectorConfigService;
         _logger = logger;
     }
 
@@ -63,6 +67,44 @@ public class MigrationController : ControllerBase
                 return Problem(detail: "MongoDB database name is required for MongoDB mode", statusCode: 400, title: "Bad Request");
             }
         }
+
+        var jobInfo = await _migrationService.StartMigrationAsync(request, ct);
+        return AcceptedAtAction(nameof(GetStatus), new { jobId = jobInfo.Id }, jobInfo);
+    }
+
+    /// <summary>
+    /// Start a migration using saved connector credentials (e.g., after Nightscout connector setup).
+    /// </summary>
+    [HttpPost("start-from-connector/{connectorName}")]
+    [RemoteCommand]
+    [ProducesResponseType(typeof(MigrationJobInfo), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<MigrationJobInfo>> StartFromConnector(
+        string connectorName, CancellationToken ct)
+    {
+        var config = await _connectorConfigService.GetConfigurationAsync(connectorName, ct);
+        if (config is null)
+        {
+            return Problem(detail: $"No saved configuration found for connector '{connectorName}'", statusCode: 400, title: "Bad Request");
+        }
+
+        var secrets = await _connectorConfigService.GetSecretsAsync(connectorName, ct);
+
+        var configJson = config.Configuration?.RootElement;
+        var url = configJson?.GetProperty("url").GetString();
+        var apiSecret = secrets.TryGetValue("apiSecret", out var s) ? s : null;
+
+        if (string.IsNullOrEmpty(url))
+        {
+            return Problem(detail: "Nightscout URL not found in connector configuration", statusCode: 400, title: "Bad Request");
+        }
+
+        var request = new StartMigrationRequest
+        {
+            Mode = MigrationMode.Api,
+            NightscoutUrl = url,
+            NightscoutApiSecret = apiSecret,
+        };
 
         var jobInfo = await _migrationService.StartMigrationAsync(request, ct);
         return AcceptedAtAction(nameof(GetStatus), new { jobId = jobInfo.Id }, jobInfo);

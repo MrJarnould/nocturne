@@ -36,11 +36,11 @@ dotnet build -p:GenerateNSwagClient=false
 dotnet ef migrations add <Name> -p src/Infrastructure/Nocturne.Infrastructure.Data -s src/API/Nocturne.API
 ```
 
-Aspire orchestrates everything: PostgreSQL, the API, the SvelteKit frontend, and background services. A YARP gateway is the single external HTTPS endpoint; API and Web run as plain HTTP behind it. You only need to restart Aspire if `apphost.cs` changes. The NSwag client is regenerated automatically on Aspire startup.
+Aspire orchestrates everything: PostgreSQL, the API, the SvelteKit frontend, and background services. A YARP gateway is the single external HTTPS endpoint; API and Web run as plain HTTP behind it. You only need to restart Aspire if its `Program.cs` changes. The NSwag client is regenerated automatically on Aspire startup. If you come across a roadblock from the `.dll`s being in use, just kill the dotnet processes.
 
 ### Worktrees
 
-Git worktrees are supported. In the main checkout, `aspire run` uses persistent Postgres (named volume, pgAdmin) and binds the gateway to `https://localhost:1612`. In a worktree, Postgres is automatically ephemeral (anonymous volume, no pgAdmin) and ports are dynamic.
+Git worktrees are supported. In the main checkout, `aspire start` uses persistent Postgres (named volume, pgAdmin) and binds the gateway to `https://localhost:1612`. In a worktree, Postgres is automatically ephemeral (anonymous volume, no pgAdmin) and ports are dynamic.
 
 **Always use `--isolated` when running Aspire from a worktree** to avoid dashboard port collisions with the main instance:
 

@@ -27,6 +27,7 @@ public class DevAdminController : ControllerBase
     private readonly ISecretEncryptionService _encryption;
     private readonly IConnectorSyncService _syncService;
     private readonly ITenantAccessor _tenantAccessor;
+    private readonly ITenantService _tenantService;
     private readonly ILogger<DevAdminController> _logger;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -39,6 +40,7 @@ public class DevAdminController : ControllerBase
         ISecretEncryptionService encryption,
         IConnectorSyncService syncService,
         ITenantAccessor tenantAccessor,
+        ITenantService tenantService,
         ILogger<DevAdminController> logger
     )
     {
@@ -46,6 +48,7 @@ public class DevAdminController : ControllerBase
         _encryption = encryption;
         _syncService = syncService;
         _tenantAccessor = tenantAccessor;
+        _tenantService = tenantService;
         _logger = logger;
     }
 
@@ -635,6 +638,433 @@ public class DevAdminController : ControllerBase
         return Ok(new { results });
     }
 
+    // ── Tenant listing ─────────────────────────────────────────────────────
+
+    /// <summary>
+    /// List all tenants with record counts and connector health (dev-only).
+    /// Used by the Aspire dashboard "List Tenants" command.
+    /// </summary>
+    [HttpGet("tenants")]
+    public async Task<ActionResult<List<DevTenantSummaryDto>>> ListTenants(CancellationToken ct)
+    {
+        var tenants = await _db.Tenants.AsNoTracking().ToListAsync(ct);
+        var summaries = new List<DevTenantSummaryDto>();
+
+        foreach (var tenant in tenants)
+        {
+            await SetTenantGuc(tenant.Id, ct);
+
+            var entryCount = await _db.Entries.LongCountAsync(ct);
+            var treatmentCount = await _db.Treatments.LongCountAsync(ct);
+            var deviceStatusCount = await _db.DeviceStatuses.LongCountAsync(ct);
+            var profileCount = await _db.Profiles.CountAsync(ct);
+            var memberCount = await _db.TenantMembers
+                .Where(m => m.TenantId == tenant.Id && m.RevokedAt == null)
+                .CountAsync(ct);
+
+            var connectors = await _db.ConnectorConfigurations
+                .Where(c => c.TenantId == tenant.Id)
+                .Select(c => new DevConnectorSummaryDto(
+                    c.ConnectorName,
+                    c.IsHealthy,
+                    c.LastSuccessfulSync,
+                    c.LastErrorMessage))
+                .ToListAsync(ct);
+
+            var latestEntry = await _db.Entries
+                .OrderByDescending(e => e.SysCreatedAt)
+                .Select(e => (DateTime?)e.SysCreatedAt)
+                .FirstOrDefaultAsync(ct);
+
+            summaries.Add(new DevTenantSummaryDto(
+                tenant.Id,
+                tenant.Slug,
+                tenant.DisplayName,
+                tenant.IsActive,
+                tenant.IsDefault,
+                tenant.Timezone,
+                tenant.SysCreatedAt,
+                entryCount,
+                treatmentCount,
+                deviceStatusCount,
+                profileCount,
+                memberCount,
+                latestEntry,
+                connectors));
+        }
+
+        return Ok(summaries);
+    }
+
+    // ── Tenant creation ────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Create a new tenant without authentication (dev-only).
+    /// Used by the Aspire dashboard "Create Tenant" command.
+    /// Copies all non-system memberships from the default tenant so that
+    /// existing passkeys work immediately on the new tenant.
+    /// </summary>
+    [HttpPost("tenants")]
+    public async Task<ActionResult<TenantCreatedDto>> CreateTenant(
+        [FromBody] DevCreateTenantRequest request, CancellationToken ct)
+    {
+        _logger.LogInformation("Dev tenant creation: slug={Slug}, displayName={DisplayName}",
+            request.Slug, request.DisplayName);
+
+        var validation = await _tenantService.ValidateSlugAsync(request.Slug, ct);
+        if (!validation.IsValid)
+            return BadRequest(new { error = validation.Message });
+
+        var result = await _tenantService.CreateWithoutOwnerAsync(
+            request.Slug, request.DisplayName, ct: ct);
+
+        // Copy memberships from the default tenant so existing passkeys work
+        await CopyMembershipsFromDefaultTenantAsync(result.Id, ct);
+
+        _logger.LogInformation("Dev tenant created: {TenantId} ({Slug})", result.Id, result.Slug);
+        return Created($"/api/v4/admin/tenants/{result.Id}", result);
+    }
+
+    /// <summary>
+    /// Finds the default tenant, reads its non-system members with their role
+    /// slugs, and replicates those memberships onto the target tenant using
+    /// the matching seeded roles. This means the same passkey-authenticated
+    /// subjects can access the new tenant immediately.
+    /// </summary>
+    private async Task CopyMembershipsFromDefaultTenantAsync(Guid targetTenantId, CancellationToken ct)
+    {
+        var defaultTenant = await _db.Tenants.AsNoTracking()
+            .FirstOrDefaultAsync(t => t.IsDefault, ct);
+
+        if (defaultTenant is null)
+        {
+            _logger.LogWarning("No default tenant found — skipping membership copy");
+            return;
+        }
+
+        // Read members from the default tenant (need RLS context)
+        await SetTenantGuc(defaultTenant.Id, ct);
+
+        var sourceMembers = await _db.TenantMembers
+            .AsNoTracking()
+            .Include(m => m.Subject)
+            .Include(m => m.MemberRoles)
+                .ThenInclude(mr => mr.TenantRole)
+            .Where(m => m.TenantId == defaultTenant.Id
+                     && m.RevokedAt == null
+                     && !m.Subject.IsSystemSubject)
+            .ToListAsync(ct);
+
+        if (sourceMembers.Count == 0)
+        {
+            _logger.LogInformation("No non-system members on default tenant to copy");
+            return;
+        }
+
+        // Get the target tenant's seeded roles (keyed by slug)
+        await SetTenantGuc(targetTenantId, ct);
+
+        var targetRoles = await _db.TenantRoles
+            .AsNoTracking()
+            .Where(r => r.TenantId == targetTenantId)
+            .ToDictionaryAsync(r => r.Slug, r => r.Id, ct);
+
+        foreach (var member in sourceMembers)
+        {
+            // Map source role slugs to target role IDs
+            var roleIds = member.MemberRoles
+                .Select(mr => mr.TenantRole.Slug)
+                .Where(slug => targetRoles.ContainsKey(slug))
+                .Select(slug => targetRoles[slug])
+                .ToList();
+
+            await _tenantService.AddMemberAsync(
+                targetTenantId, member.SubjectId, roleIds,
+                directPermissions: member.DirectPermissions,
+                label: member.Label,
+                limitTo24Hours: member.LimitTo24Hours,
+                ct: ct);
+
+            _logger.LogInformation(
+                "Copied member {SubjectName} ({SubjectId}) with roles [{Roles}] to tenant {TenantId}",
+                member.Subject.Name, member.SubjectId,
+                string.Join(", ", member.MemberRoles.Select(mr => mr.TenantRole.Slug)),
+                targetTenantId);
+        }
+    }
+
+    // ── Tenant deletion / reset ──────────────────────────────────────────────
+
+    /// <summary>
+    /// Delete a tenant and all associated data without authentication (dev-only).
+    /// For the default tenant, this performs a reset: deletes and recreates it
+    /// with the same slug, display name, and default flag, then copies memberships.
+    /// </summary>
+    [HttpDelete("tenants/{id:guid}")]
+    public async Task<ActionResult> DeleteTenant(Guid id, CancellationToken ct)
+    {
+        var tenant = await _db.Tenants.FindAsync([id], ct);
+        if (tenant is null)
+            return NotFound(new { error = $"Tenant {id} not found" });
+
+        if (tenant.IsDefault)
+        {
+            _logger.LogInformation("Dev tenant reset (default): {TenantId}", id);
+            await ResetDefaultTenantAsync(tenant, ct);
+            _logger.LogInformation("Dev tenant reset complete: {TenantId}", id);
+            return NoContent();
+        }
+
+        _logger.LogInformation("Dev tenant deletion: {TenantId}", id);
+        await _tenantService.DeleteAsync(id, ct);
+        _logger.LogInformation("Dev tenant deleted: {TenantId}", id);
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Deletes and immediately re-inserts the tenant row with the same ID,
+    /// letting CASCADE wipe all tenant-scoped data while preserving the ID
+    /// so background services don't break. Then re-seeds and restores memberships.
+    /// </summary>
+    private async Task ResetDefaultTenantAsync(
+        Infrastructure.Data.Entities.TenantEntity tenant, CancellationToken ct)
+    {
+        var tenantId = tenant.Id;
+        var slug = tenant.Slug;
+        var displayName = tenant.DisplayName;
+
+        await SetTenantGuc(tenantId, ct);
+
+        // Collect non-system members before reset (subjects are global, survive cascade)
+        var memberInfo = await _db.TenantMembers
+            .AsNoTracking()
+            .Include(m => m.Subject)
+            .Include(m => m.MemberRoles).ThenInclude(mr => mr.TenantRole)
+            .Where(m => m.TenantId == tenantId && m.RevokedAt == null && !m.Subject.IsSystemSubject)
+            .Select(m => new { m.SubjectId, RoleSlugs = m.MemberRoles.Select(mr => mr.TenantRole.Slug).ToList() })
+            .ToListAsync(ct);
+
+        // Delete + re-insert the tenant row in a single statement so the ID
+        // is reclaimed immediately. CASCADE wipes all tenant-scoped data.
+        // Detach the tracked entity first so EF doesn't conflict.
+        _db.Entry(tenant).State = EntityState.Detached;
+
+        await _db.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+            DELETE FROM tenants WHERE id = {tenantId};
+            INSERT INTO tenants (id, slug, display_name, is_active, is_default, timezone,
+                                 allow_access_requests, quiet_hours_override_critical,
+                                 sys_created_at, sys_updated_at)
+            VALUES ({tenantId}, {slug}, {displayName}, true, true, 'UTC',
+                    true, true, now(), now());
+            """);
+
+        // Re-seed roles, public membership, and OAuth clients
+        await _tenantService.SeedAfterResetAsync(tenantId, ct);
+
+        // Restore non-system memberships with matching role slugs
+        var newRoles = await _db.TenantRoles.AsNoTracking()
+            .Where(r => r.TenantId == tenantId)
+            .ToDictionaryAsync(r => r.Slug, r => r.Id, ct);
+
+        foreach (var member in memberInfo)
+        {
+            var roleIds = member.RoleSlugs
+                .Where(s => newRoles.ContainsKey(s))
+                .Select(s => newRoles[s])
+                .ToList();
+
+            await _tenantService.AddMemberAsync(tenantId, member.SubjectId, roleIds, ct: ct);
+        }
+    }
+
+    // ── Scoped snapshot import ────────────────────────────────────────────────
+
+    /// <summary>
+    /// Import snapshot data for a single tenant, matched by slug in the
+    /// provided snapshot. Upserts referenced subjects and passkeys without
+    /// affecting other tenants.
+    /// </summary>
+    [HttpPost("tenants/{id:guid}/import-snapshot")]
+    public async Task<ActionResult> ImportScopedSnapshot(
+        Guid id,
+        [FromBody] TenantSnapshotDto snapshot,
+        CancellationToken ct)
+    {
+        var tenant = await _db.Tenants.FindAsync([id], ct);
+        if (tenant is null)
+            return NotFound(new { error = $"Tenant {id} not found" });
+
+        _logger.LogInformation(
+            "Scoped snapshot import for tenant {Slug} ({TenantId}): {Roles} roles, {Members} members, {OAuthClients} OAuth clients, {Connectors} connectors",
+            tenant.Slug, id, snapshot.Roles.Count, snapshot.Members.Count,
+            snapshot.OAuthClients.Count, snapshot.ConnectorConfigurations.Count);
+
+        var strategy = _db.Database.CreateExecutionStrategy();
+
+        return await strategy.ExecuteAsync(async () =>
+        {
+        await using var tx = await _db.Database.BeginTransactionAsync(ct);
+
+        try
+        {
+            // Phase 1: Clean existing scoped data for this tenant
+            await SetTenantGuc(id, ct);
+
+            var existingMemberRoles = await _db.TenantMemberRoles
+                .Where(mr => _db.TenantMembers
+                    .Where(m => m.TenantId == id)
+                    .Select(m => m.Id)
+                    .Contains(mr.TenantMemberId))
+                .ToListAsync(ct);
+            _db.TenantMemberRoles.RemoveRange(existingMemberRoles);
+
+            var existingMembers = await _db.TenantMembers.Where(m => m.TenantId == id).ToListAsync(ct);
+            _db.TenantMembers.RemoveRange(existingMembers);
+
+            var existingRoles = await _db.TenantRoles.Where(r => r.TenantId == id).ToListAsync(ct);
+            _db.TenantRoles.RemoveRange(existingRoles);
+
+            var existingOAuthClients = await _db.OAuthClients.Where(c => c.TenantId == id).ToListAsync(ct);
+            _db.OAuthClients.RemoveRange(existingOAuthClients);
+
+            var existingConnectorConfigs = await _db.ConnectorConfigurations.Where(c => c.TenantId == id).ToListAsync(ct);
+            _db.ConnectorConfigurations.RemoveRange(existingConnectorConfigs);
+
+            await _db.SaveChangesAsync(ct);
+
+            // Phase 2: Upsert subjects and passkeys referenced by this tenant
+            var subjectIds = snapshot.Subjects.Select(s => s.Id).Distinct().ToList();
+            var passkeyIds = snapshot.PasskeyCredentials.Select(p => p.Id).Distinct().ToList();
+
+            var existingPasskeys = await _db.PasskeyCredentials.Where(p => passkeyIds.Contains(p.Id)).ToListAsync(ct);
+            _db.PasskeyCredentials.RemoveRange(existingPasskeys);
+
+            var existingSubjects = await _db.Subjects.Where(s => subjectIds.Contains(s.Id)).ToListAsync(ct);
+            _db.Subjects.RemoveRange(existingSubjects);
+            await _db.SaveChangesAsync(ct);
+
+            var addedSubjectIds = new HashSet<Guid>();
+            foreach (var s in snapshot.Subjects)
+            {
+                if (!addedSubjectIds.Add(s.Id)) continue;
+                _db.Subjects.Add(new()
+                {
+                    Id = s.Id, Name = s.Name, Username = s.Username,
+                    AccessTokenHash = s.AccessTokenHash, AccessTokenPrefix = s.AccessTokenPrefix,
+                    Email = s.Email, Notes = s.Notes, IsActive = s.IsActive,
+                    IsSystemSubject = s.IsSystemSubject, CreatedAt = s.CreatedAt, UpdatedAt = s.UpdatedAt,
+                    LastLoginAt = s.LastLoginAt, OriginalId = s.OriginalId,
+                    PreferredLanguage = s.PreferredLanguage, ApprovalStatus = s.ApprovalStatus,
+                    AccessRequestMessage = s.AccessRequestMessage, IsPlatformAdmin = s.IsPlatformAdmin,
+                });
+            }
+            await _db.SaveChangesAsync(ct);
+
+            var addedPasskeyIds = new HashSet<Guid>();
+            foreach (var p in snapshot.PasskeyCredentials)
+            {
+                if (!addedPasskeyIds.Add(p.Id)) continue;
+                _db.PasskeyCredentials.Add(new()
+                {
+                    Id = p.Id, SubjectId = p.SubjectId,
+                    CredentialId = Convert.FromBase64String(p.CredentialId),
+                    PublicKey = Convert.FromBase64String(p.PublicKey),
+                    SignCount = p.SignCount, Transports = p.Transports, Label = p.Label,
+                    CreatedAt = p.CreatedAt, LastUsedAt = p.LastUsedAt, AaGuid = p.AaGuid,
+                });
+            }
+            await _db.SaveChangesAsync(ct);
+
+            // Phase 3: Insert scoped data, remapping tenant_id to the actual tenant
+            foreach (var r in snapshot.Roles)
+            {
+                _db.TenantRoles.Add(new()
+                {
+                    Id = r.Id, TenantId = id, Name = r.Name, Slug = r.Slug,
+                    Description = r.Description, Permissions = r.Permissions,
+                    IsSystem = r.IsSystem, SysCreatedAt = r.SysCreatedAt, SysUpdatedAt = r.SysUpdatedAt,
+                });
+            }
+
+            foreach (var m in snapshot.Members)
+            {
+                _db.TenantMembers.Add(new()
+                {
+                    Id = m.Id, TenantId = id, SubjectId = m.SubjectId,
+                    SysCreatedAt = m.SysCreatedAt, SysUpdatedAt = m.SysUpdatedAt,
+                    DirectPermissions = m.DirectPermissions, Label = m.Label,
+                    LimitTo24Hours = m.LimitTo24Hours, CreatedFromInviteId = m.CreatedFromInviteId,
+                    LastUsedAt = m.LastUsedAt, LastUsedIp = m.LastUsedIp,
+                    LastUsedUserAgent = m.LastUsedUserAgent, RevokedAt = m.RevokedAt,
+                });
+            }
+
+            foreach (var mr in snapshot.MemberRoles)
+            {
+                _db.TenantMemberRoles.Add(new()
+                {
+                    Id = mr.Id, TenantMemberId = mr.TenantMemberId,
+                    TenantRoleId = mr.TenantRoleId, SysCreatedAt = mr.SysCreatedAt,
+                });
+            }
+
+            foreach (var c in snapshot.OAuthClients)
+            {
+                _db.OAuthClients.Add(new()
+                {
+                    Id = c.Id, TenantId = id, ClientId = c.ClientId,
+                    SoftwareId = c.SoftwareId, ClientName = c.ClientName,
+                    ClientUri = c.ClientUri, LogoUri = c.LogoUri,
+                    CreatedFromIp = c.CreatedFromIp, DisplayName = c.DisplayName,
+                    IsKnown = c.IsKnown, RedirectUris = c.RedirectUris,
+                    CreatedAt = c.CreatedAt, UpdatedAt = c.UpdatedAt,
+                });
+            }
+
+            foreach (var c in snapshot.ConnectorConfigurations)
+            {
+                var secretsJson = "{}";
+                if (c.SecretsPlaintext is { Count: > 0 })
+                {
+                    if (_encryption.IsConfigured)
+                    {
+                        var encrypted = _encryption.EncryptSecrets(c.SecretsPlaintext);
+                        secretsJson = JsonSerializer.Serialize(encrypted, JsonOptions);
+                    }
+                    else
+                    {
+                        _logger.LogWarning(
+                            "Encryption not configured; skipping secret encryption for connector {Name}",
+                            c.ConnectorName);
+                    }
+                }
+
+                _db.ConnectorConfigurations.Add(new()
+                {
+                    Id = c.Id, TenantId = id, ConnectorName = c.ConnectorName,
+                    ConfigurationJson = c.ConfigurationJson, SecretsJson = secretsJson,
+                    SchemaVersion = c.SchemaVersion, LastModified = c.LastModified,
+                    ModifiedBy = c.ModifiedBy, SysCreatedAt = c.SysCreatedAt, SysUpdatedAt = c.SysUpdatedAt,
+                    LastSyncAttempt = c.LastSyncAttempt, LastSuccessfulSync = c.LastSuccessfulSync,
+                    LastErrorMessage = c.LastErrorMessage, LastErrorAt = c.LastErrorAt, IsHealthy = c.IsHealthy,
+                });
+            }
+
+            await _db.SaveChangesAsync(ct);
+            await tx.CommitAsync(ct);
+
+            _logger.LogInformation("Scoped snapshot import completed for tenant {Slug}", tenant.Slug);
+            return Ok(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Scoped snapshot import failed for tenant {Slug}", tenant.Slug);
+            return StatusCode(500, new { success = false, error = ex.Message });
+        }
+        });
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────
 
     private async Task SetTenantGuc(Guid tenantId, CancellationToken ct)
@@ -645,3 +1075,27 @@ public class DevAdminController : ControllerBase
             ct);
     }
 }
+
+public record DevCreateTenantRequest(string Slug, string DisplayName);
+
+public record DevTenantSummaryDto(
+    Guid Id,
+    string Slug,
+    string DisplayName,
+    bool IsActive,
+    bool IsDefault,
+    string Timezone,
+    DateTime CreatedAt,
+    long Entries,
+    long Treatments,
+    long DeviceStatuses,
+    int Profiles,
+    int Members,
+    DateTime? LatestEntry,
+    List<DevConnectorSummaryDto> Connectors);
+
+public record DevConnectorSummaryDto(
+    string Name,
+    bool IsHealthy,
+    DateTime? LastSuccessfulSync,
+    string? LastError);

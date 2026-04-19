@@ -100,7 +100,9 @@ public static class MkcertHelper
         Directory.CreateDirectory(CertsDir);
 
         // Idempotent: installs the local CA into the system trust store if not already done.
-        RunProcess("mkcert", "-install");
+        // mkcert -install may exit non-zero if a non-critical trust store (e.g. Android Studio's
+        // keytool) is inaccessible. As long as the system trust store has the CA, that's fine.
+        RunProcess("mkcert", "-install", ignoreExitCode: true);
 
         // Generate cert for wildcard, apex, and localhost.
         RunProcess(
@@ -113,7 +115,7 @@ public static class MkcertHelper
         );
     }
 
-    private static string RunProcess(string fileName, string arguments)
+    private static string RunProcess(string fileName, string arguments, bool ignoreExitCode = false)
     {
         var psi = new ProcessStartInfo(fileName, arguments)
         {
@@ -138,7 +140,7 @@ public static class MkcertHelper
                 $"{fileName} timed out after 30 seconds. If mkcert -install prompted for a password, run it manually first.");
         }
 
-        if (process.ExitCode != 0)
+        if (process.ExitCode != 0 && !ignoreExitCode)
         {
             throw new InvalidOperationException(
                 $"{fileName} {arguments} failed (exit code {process.ExitCode}): {error}"

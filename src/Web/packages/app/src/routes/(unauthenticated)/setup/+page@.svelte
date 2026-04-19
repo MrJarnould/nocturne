@@ -1,0 +1,399 @@
+<script lang="ts">
+  import { goto } from "$app/navigation";
+  import { page } from "$app/state";
+  import { ArrowRight, ArrowLeft, Sprout, Cable } from "lucide-svelte";
+  import Github from "lucide-svelte/icons/github";
+  import { markSetupComplete } from "./setup.remote";
+  import * as migrationRemote from "$api/generated/migrations.generated.remote";
+  import { MigrationJobState } from "$api";
+
+  import ConstellationCanvas from "./ConstellationCanvas.svelte";
+  import StepSidebar from "./StepSidebar.svelte";
+  import PathChoice from "./steps/PathChoice.svelte";
+  import NightscoutConnect from "./steps/NightscoutConnect.svelte";
+  import DevicePicker from "./steps/DevicePicker.svelte";
+  import FirstSync from "./steps/FirstSync.svelte";
+  import ImportProgress from "./steps/ImportProgress.svelte";
+  import Finish from "./steps/Finish.svelte";
+
+  // Auth check is handled server-side in +page.server.ts:
+  // - No subjects → redirect to /setup/account (fresh install or recovery)
+  // - Subjects exist but not authenticated → redirect to /auth/login
+
+  // ── Step definitions ────────────────────────────────────────────────
+  const STEPS = {
+    fresh: [
+      { id: "path", label: "Choose your path", short: "Path" },
+      { id: "cgm", label: "Connect your CGM", short: "Device" },
+      { id: "sync", label: "First sync", short: "Sync" },
+      { id: "finish", label: "You\u2019re in", short: "Done" },
+    ],
+    migration: [
+      { id: "path", label: "Choose your path", short: "Path" },
+      { id: "connect", label: "Connect your Nightscout", short: "Connect" },
+      { id: "import", label: "Import your history", short: "Import" },
+      { id: "finish", label: "Welcome home", short: "Done" },
+    ],
+  } as const;
+
+  // ── State ───────────────────────────────────────────────────────────
+  let path = $state<"fresh" | "migration">("fresh");
+  let stepIndex = $state(0);
+  let selectedDevice = $state<string | null>(null);
+  let importProgress = $state(0);
+  let migrationJobId = $state<string | undefined>(undefined);
+
+  const steps = $derived(STEPS[path]);
+  const currentStep = $derived(steps[stepIndex]);
+  const progressPct = $derived(
+    steps.length <= 1 ? 100 : (stepIndex / (steps.length - 1)) * 100,
+  );
+
+  // Constellation progress: for migration import step, use import %; otherwise step-based
+  const constellationProgress = $derived.by(() => {
+    if (path === "migration" && currentStep?.id === "import") {
+      return 0.35 + 0.6 * (importProgress / 100);
+    }
+    if (currentStep?.id === "finish") return 1;
+    return steps.length <= 1 ? 1 : stepIndex / (steps.length - 1);
+  });
+
+  // ── Onboarding CSS variables ──────────────────────────────────────────
+  // Path-independent surface/utility tokens
+  const BASE_VARS = [
+    "--onb-navy: oklch(0.08 0.025 261.692)",
+    "--onb-navy-60: oklch(0.08 0.025 261.692 / 0.6)",
+    "--onb-navy-50: oklch(0.08 0.025 261.692 / 0.5)",
+    "--onb-panel: oklch(0.09 0.022 261.692)",
+    "--onb-surface: oklch(0.1 0.025 261.692)",
+    "--onb-surface-60: oklch(0.1 0.025 261.692 / 0.6)",
+    "--onb-teal: oklch(0.72 0.14 184)",
+    "--onb-ok: oklch(0.72 0.17 150)",
+    "--onb-green: oklch(0.78 0.21 145)",
+    "--onb-green-soft: oklch(0.85 0.21 145)",
+    "--onb-green-dim: oklch(0.78 0.21 145 / 0.12)",
+    "--onb-lavender: oklch(0.78 0.09 265)",
+    "--onb-lavender-soft: oklch(0.86 0.08 265)",
+    "--onb-lavender-dim: oklch(0.78 0.09 265 / 0.14)",
+    "--onb-border: rgb(255 255 255 / 0.08)",
+  ].join("; ");
+
+  // Path-dependent accent tokens
+  const accentVars = $derived(
+    path === "migration"
+      ? "--onb-accent: var(--onb-lavender); --onb-accent-soft: var(--onb-lavender-soft); --onb-accent-dim: var(--onb-lavender-dim)"
+      : "--onb-accent: var(--onb-green); --onb-accent-soft: var(--onb-green-soft); --onb-accent-dim: var(--onb-green-dim)",
+  );
+
+  const styleVars = $derived(`${BASE_VARS}; ${accentVars}`);
+
+  // ── Navigation ──────────────────────────────────────────────────────
+  function handlePathSelect(selected: "fresh" | "migration") {
+    path = selected;
+    stepIndex = 1;
+  }
+
+  function handleBack() {
+    if (stepIndex > 0) stepIndex--;
+  }
+
+  function handleNext() {
+    if (stepIndex < steps.length - 1) stepIndex++;
+  }
+
+  function handleSkip() {
+    handleNext();
+  }
+
+  async function handleEnterDashboard() {
+    await markSetupComplete();
+    await goto("/", { invalidateAll: true });
+  }
+
+  function handleImportComplete() {
+    const finishIdx = steps.findIndex((s) => s.id === "finish");
+    if (finishIdx >= 0) stepIndex = finishIdx;
+  }
+
+  async function handleMigrationConnected() {
+    // Check for an active migration job started by the connector
+    try {
+      const history = await migrationRemote.getHistory();
+      const activeJob = history?.find(
+        (j) =>
+          j.state === MigrationJobState.Running ||
+          j.state === MigrationJobState.Pending ||
+          j.state === MigrationJobState.Validating
+      );
+      if (activeJob?.id) {
+        migrationJobId = activeJob.id;
+      }
+    } catch {
+      // ImportProgress will find the job itself if we can't here
+    }
+    handleNext();
+  }
+
+  // User info
+  const userEmail = $derived(page.data?.user?.email ?? "");
+  const userInitials = $derived(
+    userEmail ? userEmail.slice(0, 2).toUpperCase() : "U",
+  );
+</script>
+
+<svelte:head>
+  <title>Get Started - Nocturne</title>
+</svelte:head>
+
+<div
+  class="relative min-h-screen grid grid-rows-[auto_1fr_auto] text-white"
+  style="{styleVars}; background: var(--onb-navy);"
+>
+  <!-- Background gradient -->
+  <div
+    class="fixed inset-0 z-0 pointer-events-none"
+    style="background: radial-gradient(ellipse 50% 35% at 50% 0%, oklch(0.16 0.05 265 / 0.6), transparent 70%), linear-gradient(180deg, var(--onb-navy), oklch(0.07 0.03 261.692));"
+  ></div>
+
+  <!-- Constellation background (above gradient so stars are visible) -->
+  <div class="fixed inset-0 z-1 pointer-events-none">
+    <ConstellationCanvas progress={constellationProgress} />
+  </div>
+
+  <!-- Header -->
+  <header
+    class="relative z-50 flex items-center justify-between px-8 py-5.5 border-b border-white/8 backdrop-blur-sm max-[900px]:px-5 max-[900px]:py-3.5"
+    style="background: var(--onb-navy-60); backdrop-filter: blur(14px) saturate(1.3);"
+  >
+    <div class="flex items-center gap-3">
+      <!-- Logo mark -->
+      <svg class="h-7 w-7" viewBox="0 0 100 100" aria-hidden="true">
+        <path
+          d="M50 6 C 70 30, 86 48, 86 66 A 36 36 0 0 1 14 66 C 14 48, 30 30, 50 6 Z"
+          fill="oklch(0.21 0.04 265)"
+        />
+        <path
+          d="M58 32 A 28 28 0 1 0 58 92 A 22 22 0 1 1 58 32 Z"
+          fill="oklch(0.82 0.06 265)"
+          opacity="0.92"
+        />
+        <g fill="#22c55e">
+          <circle cx="18" cy="56" r="1.6" /><circle cx="26" cy="58" r="1.6" />
+          <circle cx="34" cy="58" r="1.6" /><circle cx="42" cy="56" r="1.6" />
+          <circle cx="50" cy="55" r="1.6" /><circle cx="58" cy="55" r="1.6" />
+          <circle cx="66" cy="56" r="1.6" /><circle cx="74" cy="58" r="1.6" />
+          <circle cx="82" cy="60" r="1.6" />
+        </g>
+      </svg>
+      <span class="font-[Montserrat] text-xl font-light tracking-wide text-white"
+        >nocturne</span
+      >
+    </div>
+
+    <div class="flex items-center gap-5">
+      <!-- Step counter -->
+      <span class="hidden font-mono text-[13px] text-white/40 sm:inline">
+        Step {stepIndex + 1} of {steps.length}
+      </span>
+
+      <!-- Account pill -->
+      {#if userEmail}
+        <div
+          class="flex items-center gap-2.5 rounded-full border border-white/8 bg-white/3 py-1 pl-1 pr-3"
+        >
+          <span
+            class="flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold"
+            style="background: linear-gradient(135deg, var(--onb-teal), var(--onb-accent)); color: var(--onb-navy);"
+          >
+            {userInitials}
+          </span>
+          <span class="hidden text-[13px] text-white/40 sm:inline">{userEmail}</span>
+        </div>
+      {/if}
+
+      <!-- Save & exit -->
+      <button
+        class="text-[13px] text-white/40 transition-colors hover:text-white"
+        onclick={handleEnterDashboard}
+      >
+        Save & exit
+      </button>
+    </div>
+  </header>
+
+  <!-- Stage -->
+  <main class="relative z-10 px-8 py-12 pb-16 max-[900px]:px-5 max-[900px]:py-7 max-[900px]:pb-10">
+    <div class="w-full max-w-280 mx-auto grid grid-cols-[320px_1fr] gap-14 items-start max-[900px]:grid-cols-1 max-[900px]:gap-6">
+      <!-- Sidebar -->
+      <aside class="sticky top-25 max-[900px]:static">
+        <StepSidebar
+          {path}
+          currentStep={stepIndex}
+          steps={steps.map((s) => ({ id: s.id, label: s.label }))}
+          onJumpToStep={(i) => (stepIndex = i)}
+        />
+      </aside>
+
+      <!-- Step card -->
+      <section class="step-card relative rounded-[22px] border border-white/8 backdrop-blur-[18px] overflow-hidden min-h-135 flex flex-col"
+        style="background: linear-gradient(180deg, oklch(0.14 0.03 261.692 / 0.85), oklch(0.12 0.025 261.692 / 0.75)); box-shadow: 0 1px 0 rgb(255 255 255 / 0.05) inset, 0 30px 80px -30px rgb(0 0 0 / 0.6);"
+      >
+        <!-- Strip -->
+        <div class="relative z-2 flex items-center justify-between px-7 py-5 border-b border-white/8 max-[900px]:px-5.5 max-[900px]:py-3.5 max-[900px]:flex-wrap max-[900px]:gap-2.5">
+          <div class="flex items-center gap-3">
+            <span class="font-mono text-xs uppercase tracking-wide text-white/40">
+              Step {String(stepIndex + 1).padStart(2, "0")} / {String(steps.length).padStart(2, "0")}
+            </span>
+            <span class="text-white/20">&middot;</span>
+            <span class="text-xs text-white/40">{currentStep?.short}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <!-- Path badge -->
+            <span
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10.5px] font-semibold tracking-[0.06em] uppercase"
+              style="background: var(--onb-accent-dim); color: var(--onb-accent); border: 1px solid var(--onb-accent-dim);"
+            >
+              {#if path === "migration"}
+                <Cable class="h-2.5 w-2.5" />
+                Nightscout Migration
+              {:else}
+                <Sprout class="h-2.5 w-2.5" />
+                Fresh Start
+              {/if}
+            </span>
+            <!-- Progress bar -->
+            <div class="h-0.75 w-30 overflow-hidden rounded-full bg-white/8">
+              <div
+                class="h-full rounded-full transition-all duration-500"
+                style="width: {progressPct}%; background: var(--onb-accent); box-shadow: 0 0 10px var(--onb-accent);"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step body -->
+        <div class="relative z-2 flex-1 px-5 py-3 max-[900px]:px-4">
+          {#if currentStep?.id === "path"}
+            <PathChoice currentPath={path} onSelect={handlePathSelect} />
+          {:else if currentStep?.id === "connect"}
+            <NightscoutConnect
+              onComplete={handleMigrationConnected}
+            />
+          {:else if currentStep?.id === "cgm"}
+            <DevicePicker
+              {selectedDevice}
+              onSelect={(id) => {
+                selectedDevice = id;
+              }}
+            />
+          {:else if currentStep?.id === "sync"}
+            <FirstSync
+              selectedDevice={selectedDevice ?? "none"}
+            />
+          {:else if currentStep?.id === "import"}
+            <ImportProgress
+              jobId={migrationJobId}
+              onProgressChange={(pct) => (importProgress = pct)}
+              onComplete={handleImportComplete}
+            />
+          {:else if currentStep?.id === "finish"}
+            <Finish {path} onEnterDashboard={handleEnterDashboard} />
+          {/if}
+        </div>
+
+        <!-- Actions bar -->
+        <div
+          class="relative z-2 flex justify-between items-center px-7 py-4.5 border-t border-white/8 max-[900px]:px-5.5 max-[900px]:py-3.5 max-[900px]:flex-wrap max-[900px]:gap-2.5"
+          style="background: var(--onb-surface-60);"
+        >
+          <div>
+            {#if stepIndex > 0 && currentStep?.id !== "finish"}
+              <button
+                class="inline-flex items-center gap-2 h-10.5 px-5 rounded-[10px] text-sm font-medium border border-white/14 bg-transparent text-white whitespace-nowrap cursor-pointer transition-[background,border-color,color] duration-150 hover:bg-white/5 hover:border-white/22 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--onb-accent-dim)"
+                onclick={handleBack}
+              >
+                <ArrowLeft class="h-4 w-4" />
+                Back
+              </button>
+            {:else if currentStep?.id === "path"}
+              <span class="text-xs text-white/30">
+                Just pick a starting point.
+              </span>
+            {/if}
+          </div>
+          <div class="flex items-center gap-3">
+            {#if currentStep?.id === "finish"}
+              <button
+                class="inline-flex items-center gap-2 h-10.5 px-5 rounded-[10px] text-sm font-semibold border border-transparent whitespace-nowrap cursor-pointer transition-[background,border-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--onb-accent-dim)"
+                style="background: var(--onb-accent); color: var(--onb-navy);"
+                onmouseenter={(e) => e.currentTarget.style.background = 'var(--onb-accent-soft)'}
+                onmouseleave={(e) => e.currentTarget.style.background = 'var(--onb-accent)'}
+                onclick={handleEnterDashboard}
+              >
+                Enter Nocturne
+                <ArrowRight class="h-4 w-4" />
+              </button>
+            {:else if currentStep?.id !== "path"}
+              <button
+                class="text-[13px] text-white/30 transition-colors hover:text-white"
+                onclick={handleSkip}
+              >
+                Skip for now
+              </button>
+              <button
+                class="inline-flex items-center gap-2 h-10.5 px-5 rounded-[10px] text-sm font-semibold border border-transparent whitespace-nowrap cursor-pointer transition-[background,border-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--onb-accent-dim)"
+                style="background: var(--onb-accent); color: var(--onb-navy);"
+                onmouseenter={(e) => e.currentTarget.style.background = 'var(--onb-accent-soft)'}
+                onmouseleave={(e) => e.currentTarget.style.background = 'var(--onb-accent)'}
+                onclick={handleNext}
+              >
+                Continue
+                <ArrowRight class="h-4 w-4" />
+              </button>
+            {/if}
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer
+    class="relative z-50 px-8 py-5 border-t border-white/8 flex justify-between items-center text-xs text-white/30 max-[900px]:flex-wrap max-[900px]:gap-2.5"
+    style="background: var(--onb-navy-50); backdrop-filter: blur(8px);"
+  >
+    <div class="flex flex-wrap items-center gap-5">
+      <span>&copy; 2026 Nocturne</span>
+      <a href="/privacy" class="hover:text-white/60">Privacy</a>
+      <a href="/docs" class="hover:text-white/60">Docs</a>
+    </div>
+    <div class="flex flex-wrap items-center gap-5">
+      <span class="font-mono">v1.4.2</span>
+      <a
+        href="https://github.com/nightscout/nocturne"
+        class="inline-flex items-center gap-1.5 hover:text-white/60"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <Github class="h-3.5 w-3.5" />
+        Source
+      </a>
+    </div>
+  </footer>
+</div>
+
+<style>
+  /* Pseudo-element for step-card accent glow — cannot be expressed with Tailwind's before: variant
+     because it uses a CSS custom property in the radial-gradient. */
+  .step-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 60% 30% at 50% 0%,
+      var(--onb-accent-dim),
+      transparent 70%
+    );
+  }
+</style>

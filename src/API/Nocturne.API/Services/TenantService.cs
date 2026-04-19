@@ -65,6 +65,12 @@ public partial class TenantService : ITenantService
         context.Tenants.Add(tenant);
         await context.SaveChangesAsync(ct);
 
+        // Set the RLS tenant context so subsequent writes to tenant-scoped
+        // tables (roles, members, OAuth clients) are permitted. The factory-
+        // created context has no TenantId, so the connection interceptor
+        // won't set the GUC automatically.
+        await SetTenantGuc(context, tenant.Id);
+
         // Seed default roles for this tenant
         await _roleService.SeedRolesForTenantAsync(tenant.Id, ct);
 
@@ -99,6 +105,10 @@ public partial class TenantService : ITenantService
         context.Tenants.Add(tenant);
         await context.SaveChangesAsync(ct);
 
+        // Set the RLS tenant context so subsequent writes to tenant-scoped
+        // tables (roles, members, OAuth clients) are permitted.
+        await SetTenantGuc(context, tenant.Id);
+
         // Seed default roles for this tenant (but don't assign an owner)
         await _roleService.SeedRolesForTenantAsync(tenant.Id, ct);
 
@@ -109,6 +119,20 @@ public partial class TenantService : ITenantService
         await SeedKnownOAuthClientsAsync(context, tenant.Id, ct);
 
         return ToCreatedDto(tenant, plaintextSecret);
+    }
+
+    /// <summary>
+    /// Re-seeds roles, public membership, and OAuth clients for an existing
+    /// tenant after its data has been purged. Used by the dev-only reset flow.
+    /// </summary>
+    public async Task SeedAfterResetAsync(Guid tenantId, CancellationToken ct = default)
+    {
+        await using var context = await _factory.CreateDbContextAsync(ct);
+        await SetTenantGuc(context, tenantId);
+
+        await _roleService.SeedRolesForTenantAsync(tenantId, ct);
+        await CreatePublicSubjectMembershipAsync(context, tenantId, ct);
+        await SeedKnownOAuthClientsAsync(context, tenantId, ct);
     }
 
     public async Task<List<TenantDto>> GetAllAsync(CancellationToken ct = default)
@@ -554,6 +578,19 @@ public partial class TenantService : ITenantService
         var bytes = new byte[24];
         System.Security.Cryptography.RandomNumberGenerator.Fill(bytes);
         return Convert.ToBase64String(bytes).Replace("+", "-").Replace("/", "_").TrimEnd('=');
+    }
+
+    /// <summary>
+    /// Sets the RLS tenant context on a factory-created DbContext. Sets both
+    /// the context's TenantId (so the connection interceptor fires on new
+    /// connections) and the PostgreSQL GUC on the current connection.
+    /// </summary>
+    private static async Task SetTenantGuc(NocturneDbContext context, Guid tenantId)
+    {
+        context.TenantId = tenantId;
+        await context.Database.ExecuteSqlRawAsync(
+            "SELECT set_config('app.current_tenant_id', {0}, false)",
+            tenantId.ToString());
     }
 
     private static TenantDto ToDto(TenantEntity t) =>

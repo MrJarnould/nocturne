@@ -27,9 +27,12 @@
   const hasOidc = $derived(oidc?.enabled && (oidc?.providers?.length ?? 0) > 0);
 
   // ── Redirect if already authenticated ─────────────────────────────
+  // Guard with !registrationComplete so the $effect doesn't fire after
+  // setAuthCookies auto-invalidates queries during the passkey flow —
+  // the user needs to see their recovery codes before navigating away.
   $effect(() => {
-    if (isAuthenticated) {
-      goto("/setup", { replaceState: true });
+    if (isAuthenticated && !registrationComplete) {
+      goto("/setup", { replaceState: true, invalidateAll: true });
     }
   });
 

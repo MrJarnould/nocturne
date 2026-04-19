@@ -433,7 +433,8 @@ class Program
 
             if (!isWorktree)
             {
-                gateway.WithHttpsEndpoint(port: 1612);
+                // Custom domain → port 443 so URLs work without a port number.
+                gateway.WithHttpsEndpoint(port: !string.IsNullOrEmpty(customDomain) ? 443 : 1612);
             }
         }
         else
@@ -483,6 +484,19 @@ class Program
                     .WithTransformXForwarded("X-Forwarded", ForwardedTransformActions.Set);
             });
 
+        // When a custom domain is configured, show the custom domain URL in the
+        // Aspire dashboard instead of the raw localhost endpoint.
+        if (builder.ExecutionContext.IsRunMode && !string.IsNullOrEmpty(customDomain))
+        {
+            gateway.WithUrlForEndpoint("https", url =>
+            {
+                url.DisplayText = customDomain;
+                url.Url = url.Endpoint!.Port == 443
+                    ? $"https://{customDomain}"
+                    : $"https://{customDomain}:{url.Endpoint.Port}";
+            });
+        }
+
         // In run mode, derive PUBLIC_BASE_DOMAIN from the gateway's live HTTPS
         // endpoint so OAuth redirect URIs resolve correctly with dynamic ports.
         // In publish mode, PUBLIC_BASE_DOMAIN must be set via the public-base-domain
@@ -494,9 +508,7 @@ class Program
         {
             var gatewayEndpoint = gateway.GetEndpoint("https");
             var baseDomainExpr = !string.IsNullOrEmpty(customDomain)
-                ? ReferenceExpression.Create(
-                    $"{customDomain}:{gatewayEndpoint.Property(EndpointProperty.Port)}"
-                )
+                ? ReferenceExpression.Create($"{customDomain}")
                 : ReferenceExpression.Create(
                     $"{gatewayEndpoint.Property(EndpointProperty.Host)}:{gatewayEndpoint.Property(EndpointProperty.Port)}"
                 );
@@ -516,6 +528,19 @@ class Program
                     gatewayEndpoint.Property(EndpointProperty.Port)
                 )
                 .WithEnvironment("VITE_HMR_HOST", hmrHost);
+
+            // Show the gateway URL on the web resource in the Aspire dashboard
+            // so users can click through to the app via the HTTPS gateway.
+            if (!string.IsNullOrEmpty(customDomain))
+            {
+                web.WithUrl($"https://{customDomain}", customDomain);
+            }
+            else
+            {
+                web.WithUrl(ReferenceExpression.Create(
+                    $"https://{gatewayEndpoint.Property(EndpointProperty.Host)}:{gatewayEndpoint.Property(EndpointProperty.Port)}"
+                ), "Gateway");
+            }
 
             // Warn if custom domain doesn't resolve
             if (!string.IsNullOrEmpty(customDomain))

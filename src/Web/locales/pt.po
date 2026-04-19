@@ -133,7 +133,7 @@ msgstr ""
 #: src/lib/components/TreatmentEditModal.svelte
 #: src/lib/components/TreatmentsTable.svelte
 #: src/lib/components/entries/DeviceEventSection.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/NoteFormFields.svelte
 msgid "Event Type"
 msgstr ""
 
@@ -162,13 +162,13 @@ msgstr ""
 #: src/lib/components/TreatmentEditModal.svelte
 #: src/lib/components/TreatmentsTable.svelte
 #: src/lib/components/entries/DeviceEventSection.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
 #: src/lib/components/patient/PatientDeviceManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
 #: src/lib/components/status-pills/CAGEPill.svelte
 #: src/lib/components/status-pills/COBPill.svelte
 #: src/lib/components/status-pills/IOBPill.svelte
 #: src/lib/components/status-pills/SAGEPill.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 #: src/routes/(authenticated)/reports/day-in-review/+page.svelte
 #: src/routes/(authenticated)/reports/year-overview/+page.svelte
 #: src/routes/docs/installation/byo-postgres/+page.svelte
@@ -197,6 +197,7 @@ msgstr ""
 #: src/lib/components/admin/OidcProviderDialog.svelte
 #: src/lib/components/admin/RoleDialog.svelte
 #: src/lib/components/admin/SubjectEditDialog.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/RuleEditorSheet.svelte
 #: src/lib/components/connectors/ApiSecretSection.svelte
 #: src/lib/components/connectors/ConnectorSelectionGrid.svelte
@@ -209,6 +210,9 @@ msgstr ""
 #: src/lib/components/food/AddFoodDialog.svelte
 #: src/lib/components/food/AddFoodDialog.svelte
 #: src/lib/components/meal-matching/MealMatchReviewDialog.svelte
+#: src/lib/components/members/CreateInviteCard.svelte
+#: src/lib/components/members/MemberCard.svelte
+#: src/lib/components/members/MemberCard.svelte
 #: src/lib/components/patient/PatientDeviceManager.svelte
 #: src/lib/components/patient/PatientDeviceManager.svelte
 #: src/lib/components/patient/PatientDeviceManager.svelte
@@ -245,11 +249,7 @@ msgstr ""
 #: src/routes/(authenticated)/settings/account/+page.svelte
 #: src/routes/(authenticated)/settings/account/+page.svelte
 #: src/routes/(authenticated)/settings/admin/tenants/+page.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/(authenticated)/settings/alerts/setup/+page.svelte
-#: src/routes/(authenticated)/settings/members/+page.svelte
-#: src/routes/(authenticated)/settings/members/+page.svelte
-#: src/routes/(authenticated)/settings/members/+page.svelte
 #: src/routes/(authenticated)/settings/roles/+page.svelte
 #: src/routes/(authenticated)/settings/roles/+page.svelte
 #: src/routes/(authenticated)/settings/roles/+page.svelte
@@ -520,12 +520,12 @@ msgid "Fat"
 msgstr ""
 
 #: src/lib/components/TreatmentsTable.svelte
+#: src/lib/components/alerts/AlertHistoryCard.svelte
 #: src/lib/components/status-pills/SAGEPill.svelte
 #: src/lib/components/trackers/TrackerEditorDialog.svelte
 #: src/lib/components/trackers/tracker-notification-editor.svelte
 #: src/lib/components/ui/duration-input/duration-input.svelte
 #: src/lib/components/ui/duration-input/duration-input.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 #: src/routes/settings/trackers/+page.svelte
 msgid "Duration"
@@ -645,8 +645,8 @@ msgstr ""
 
 #: src/lib/components/dashboard/RecentTreatmentsCard.svelte
 #: src/lib/components/icons/TreatmentTypeIcon.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
 #: src/lib/components/treatments/TreatmentsDataTable.svelte
+#: src/lib/components/treatments/edit-dialog/NoteFormFields.svelte
 #: src/lib/stores/realtime-store.svelte.ts
 #: src/lib/websocket/websocket-client.svelte.ts
 msgid "Announcement"
@@ -826,77 +826,77 @@ msgstr ""
 #~ msgid "<0/> Open Clock"
 #~ msgstr ""
 
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/SchedulesTab.svelte
 #: src/lib/components/settings/alarm-profile/DayOfWeekPicker.svelte
 #: src/routes/(authenticated)/calendar/+page.svelte
 #: src/routes/(authenticated)/reports/week-to-week/+page.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/calendar/+page.svelte
 #: src/routes/reports/week-to-week/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Sun"
 msgstr ""
 
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/SchedulesTab.svelte
 #: src/lib/components/settings/alarm-profile/DayOfWeekPicker.svelte
 #: src/routes/(authenticated)/calendar/+page.svelte
 #: src/routes/(authenticated)/reports/week-to-week/+page.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/calendar/+page.svelte
 #: src/routes/reports/week-to-week/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Mon"
 msgstr ""
 
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/SchedulesTab.svelte
 #: src/lib/components/settings/alarm-profile/DayOfWeekPicker.svelte
 #: src/routes/(authenticated)/calendar/+page.svelte
 #: src/routes/(authenticated)/reports/week-to-week/+page.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/calendar/+page.svelte
 #: src/routes/reports/week-to-week/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Tue"
 msgstr ""
 
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/SchedulesTab.svelte
 #: src/lib/components/settings/alarm-profile/DayOfWeekPicker.svelte
 #: src/routes/(authenticated)/calendar/+page.svelte
 #: src/routes/(authenticated)/reports/week-to-week/+page.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/calendar/+page.svelte
 #: src/routes/reports/week-to-week/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Wed"
 msgstr ""
 
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/SchedulesTab.svelte
 #: src/lib/components/settings/alarm-profile/DayOfWeekPicker.svelte
 #: src/routes/(authenticated)/calendar/+page.svelte
 #: src/routes/(authenticated)/reports/week-to-week/+page.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/calendar/+page.svelte
 #: src/routes/reports/week-to-week/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Thu"
 msgstr ""
 
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/SchedulesTab.svelte
 #: src/lib/components/settings/alarm-profile/DayOfWeekPicker.svelte
 #: src/routes/(authenticated)/calendar/+page.svelte
 #: src/routes/(authenticated)/reports/week-to-week/+page.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/calendar/+page.svelte
 #: src/routes/reports/week-to-week/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Fri"
 msgstr ""
 
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/SchedulesTab.svelte
 #: src/lib/components/settings/alarm-profile/DayOfWeekPicker.svelte
 #: src/routes/(authenticated)/calendar/+page.svelte
 #: src/routes/(authenticated)/reports/week-to-week/+page.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/calendar/+page.svelte
 #: src/routes/reports/week-to-week/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
@@ -1446,6 +1446,8 @@ msgstr ""
 
 #: src/lib/components/account/SecurityCredentialCard.svelte
 #: src/lib/components/alerts/AlertBanner.svelte
+#: src/lib/components/alerts/AlertHistoryCard.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/connectors/ConnectorSetup.svelte
 #: src/lib/components/connectors/DataSourceManageDialog.svelte
 #: src/lib/components/connectors/DataSourceSelectionView.svelte
@@ -1456,6 +1458,9 @@ msgstr ""
 #: src/lib/components/dashboard/glucose-chart/dialogs/DeliveryInspectionDialog.svelte
 #: src/lib/components/dashboard/widgets/LastUpdatedWidget.svelte
 #: src/lib/components/layout/AppSidebar.svelte
+#: src/lib/components/members/MemberCard.svelte
+#: src/lib/components/members/MemberCard.svelte
+#: src/lib/components/members/PendingInvitesList.svelte
 #: src/lib/components/patient/PatientDeviceManager.svelte
 #: src/lib/components/profile/ProfileEditDialog.svelte
 #: src/lib/components/status-pills/TrackerPill.svelte
@@ -1471,9 +1476,6 @@ msgstr ""
 #: src/routes/(authenticated)/settings/appearance/+page.svelte
 #: src/routes/(authenticated)/settings/appearance/+page.svelte
 #: src/routes/(authenticated)/settings/connectors/+page.svelte
-#: src/routes/(authenticated)/settings/members/+page.svelte
-#: src/routes/(authenticated)/settings/members/+page.svelte
-#: src/routes/(authenticated)/settings/members/+page.svelte
 #: src/routes/(authenticated)/settings/migration/+page.svelte
 #: src/routes/(authenticated)/settings/migration/+page.svelte
 #: src/routes/(authenticated)/settings/nightscout-transition/+page.svelte
@@ -1864,6 +1866,8 @@ msgid "Recent Requests ({0}{1})"
 msgstr ""
 
 #: src/routes/(authenticated)/compatibility/+page.svelte
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+#: src/routes/(unauthenticated)/setup/+page@.svelte
 #: src/routes/compatibility/+page.svelte
 msgid "Path"
 msgstr ""
@@ -1934,6 +1938,7 @@ msgstr ""
 #: src/routes/(authenticated)/compatibility/[id]/+page.svelte
 #: src/routes/(authenticated)/compatibility/test/+page.svelte
 #: src/routes/(legal)/terms/+page.svelte
+#: src/routes/(unauthenticated)/setup/steps/DevicePicker.svelte
 #: src/routes/compatibility/+page.svelte
 #: src/routes/compatibility/[id]/+page.svelte
 #: src/routes/compatibility/[id]/+page.svelte
@@ -2133,9 +2138,8 @@ msgstr ""
 msgid "Unit"
 msgstr ""
 
+#: src/lib/components/patient/InsulinFormFields.svelte
 #: src/lib/components/patient/PatientDeviceManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
 #: src/lib/components/trackers/TrackerEditorDialog.svelte
 #: src/routes/(authenticated)/food/FoodEditor.svelte
 #: src/routes/(authenticated)/food/FoodList.svelte
@@ -2880,9 +2884,9 @@ msgstr ""
 
 #: src/lib/components/admin/IdentityProvidersTabContent.svelte
 #: src/lib/components/admin/OidcProvidersTabContent.svelte
+#: src/lib/components/members/MemberCard.svelte
 #: src/routes/(authenticated)/clock/+page.svelte
 #: src/routes/(authenticated)/settings/integrations/discord/+page.svelte
-#: src/routes/(authenticated)/settings/members/+page.svelte
 #: src/routes/clock/+page.svelte
 #: src/routes/settings/admin/+page.svelte
 #: src/routes/settings/integrations/discord/+page.svelte
@@ -3550,7 +3554,7 @@ msgid "<0/> Delete Profile"
 msgstr ""
 
 #: src/lib/components/entries/BGCheckSection.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BGCheckFormFields.svelte
 #: src/routes/(authenticated)/settings/profile/+page.svelte
 #: src/routes/(authenticated)/settings/profile/+page.svelte
 #: src/routes/(fullscreen)/setup/profile/+page.svelte
@@ -3583,7 +3587,6 @@ msgstr ""
 msgid "Not set"
 msgstr ""
 
-#: src/lib/components/patient/PatientInsulinManager.svelte
 #: src/routes/(authenticated)/settings/profile/+page.svelte
 #: src/routes/(authenticated)/settings/profile/+page.svelte
 #: src/routes/profile/+page.svelte
@@ -3635,11 +3638,11 @@ msgstr ""
 msgid "{0} g/hr"
 msgstr ""
 
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/SchedulesTab.svelte
 #: src/lib/components/dashboard/glucose-chart/dialogs/DeliveryInspectionDialog.svelte
 #: src/lib/components/dashboard/glucose-chart/dialogs/DeliveryInspectionDialog.svelte
 #: src/routes/(authenticated)/settings/admin/tenants/+page.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/(authenticated)/settings/alerts/setup/+page.svelte
 #: src/routes/(authenticated)/settings/integrations/discord/+page.svelte
 #: src/routes/(authenticated)/settings/profile/+page.svelte
@@ -3994,7 +3997,7 @@ msgstr ""
 #: src/lib/components/dashboard/glucose-chart/GlucoseChartCard.svelte
 #: src/lib/components/dashboard/glucose-chart/GlucoseChartCard.svelte
 #: src/lib/components/icons/PumpModeIcon.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BolusFormFields.svelte
 msgid "Automatic"
 msgstr ""
 
@@ -4269,7 +4272,7 @@ msgstr ""
 #: src/lib/components/entries/BGCheckSection.svelte
 #: src/lib/components/icons/TreatmentTypeIcon.svelte
 #: src/lib/components/trackers/TrackerEditorDialog.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BGCheckFormFields.svelte
 #: src/routes/(authenticated)/settings/trackers/+page.svelte
 #: src/routes/settings/trackers/+page.svelte
 #: src/routes/settings/trackers/+page.svelte
@@ -4307,11 +4310,8 @@ msgstr ""
 
 #: src/lib/components/alerts/AudioSection.svelte
 #: src/lib/components/alerts/AudioSection.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
 #: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 #: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
 #: src/lib/components/trackers/TrackerEditorDialog.svelte
@@ -4634,6 +4634,7 @@ msgstr ""
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/routes/(authenticated)/reports/executive-summary/+page.svelte
 #: src/routes/(fullscreen)/setup/permissions/+page.svelte
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
 #: src/routes/reports/executive-summary/+page.svelte
 #: src/routes/settings/setup/permissions/+page.svelte
 msgid "Treatments"
@@ -4768,9 +4769,9 @@ msgstr ""
 #: src/lib/components/admin/SubjectEditDialog.svelte
 #: src/lib/components/layout/AppSidebar.svelte
 #: src/lib/components/layout/UserMenu.svelte
+#: src/lib/components/members/CreateInviteCard.svelte
+#: src/lib/components/members/MemberCard.svelte
 #: src/routes/(authenticated)/settings/access-requests/+page.svelte
-#: src/routes/(authenticated)/settings/members/+page.svelte
-#: src/routes/(authenticated)/settings/members/+page.svelte
 #: src/routes/(authenticated)/settings/roles/+page.svelte
 #: src/routes/settings/access-requests/+page.svelte
 #: src/routes/settings/admin/+page.svelte
@@ -5548,7 +5549,7 @@ msgstr ""
 #: src/lib/components/reports/SiteChangeImpactChart.svelte
 #: src/lib/components/reports/SiteChangeImpactChart.svelte
 #: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BGCheckFormFields.svelte
 #: src/routes/(authenticated)/settings/appearance/+page.svelte
 #: src/routes/settings/appearance/+page.svelte
 msgid "mg/dL"
@@ -5867,11 +5868,11 @@ msgstr ""
 msgid "<0/> Add Time Block"
 msgstr ""
 
+#: src/lib/components/alerts/QuietHoursCard.svelte
 #: src/lib/components/alerts/SchedulesTab.svelte
 #: src/lib/components/profile/ProfileEditDialog.svelte
 #: src/lib/components/schedule/ScheduleView.svelte
 #: src/lib/components/trackers/TrackerStartDialog.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Start Time"
 msgstr ""
@@ -6110,6 +6111,7 @@ msgstr ""
 #: src/lib/components/status-pills/COBPill.svelte
 #: src/lib/components/status-pills/IOBPill.svelte
 #: src/lib/components/treatments/TreatmentsDataTable.svelte
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
 msgid "Source"
 msgstr ""
 
@@ -6138,6 +6140,7 @@ msgid "Activity"
 msgstr ""
 
 #: src/lib/components/status-pills/IOBPill.svelte
+#: src/routes/(unauthenticated)/setup/+page@.svelte
 msgid "Device"
 msgstr ""
 
@@ -6253,7 +6256,7 @@ msgstr ""
 #: src/lib/components/alerts/GeneralTab.svelte
 #: src/lib/components/entries/BolusSection.svelte
 #: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BolusFormFields.svelte
 msgid "Normal"
 msgstr ""
 
@@ -6335,6 +6338,8 @@ msgstr ""
 msgid "Minutes without data"
 msgstr ""
 
+#: src/lib/components/alerts/AlertHistoryCard.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/GeneralTab.svelte
 #: src/lib/components/alerts/GeneralTab.svelte
 #: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
@@ -6623,8 +6628,7 @@ msgstr ""
 msgid "Extend by"
 msgstr ""
 
-#: src/lib/components/patient/PatientInsulinManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
 #: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 #: src/lib/components/settings/alarm-profile/AlarmSnoozeTab.svelte
 msgid "min"
@@ -7223,19 +7227,19 @@ msgstr ""
 #~ msgid "Select or enter event type..."
 #~ msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BolusFormFields.svelte
 msgid "<0/> Insulin (U)"
 msgstr ""
 
 #: src/lib/components/entries/BolusSection.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BolusFormFields.svelte
 msgid "Duration (min)"
 msgstr ""
 
 #~ msgid "<0/> Rate (U/hr)"
 #~ msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/CarbsFormFields.svelte
 msgid "<0/> Carbs (g)"
 msgstr ""
 
@@ -7252,12 +7256,12 @@ msgstr ""
 #~ msgid "<0/> Additional Properties <1/>"
 #~ msgstr ""
 
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/entries/EntryEditDialog.svelte
 #: src/lib/components/treatments/TreatmentEditDialog.svelte
 #: src/routes/(authenticated)/clock/+page.svelte
 #: src/routes/(authenticated)/reports/data-quality/compression-lows/+page.svelte
 #: src/routes/(authenticated)/reports/data-quality/compression-lows/+page.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/(authenticated)/settings/roles/+page.svelte
 #: src/routes/clock/+page.svelte
 #: src/routes/reports/data-quality/compression-lows/+page.svelte
@@ -7649,6 +7653,7 @@ msgstr ""
 
 #: src/routes/(fullscreen)/auth/login/+page.svelte
 #: src/routes/(unauthenticated)/auth/login/+page.svelte
+#: src/routes/(unauthenticated)/setup/StepSidebar.svelte
 #: src/routes/auth/login/+page.svelte
 msgid "Welcome to Nocturne"
 msgstr ""
@@ -8287,9 +8292,9 @@ msgstr ""
 #~ msgid "Generated Face String:"
 #~ msgstr ""
 
+#: src/lib/components/alerts/QuietHoursCard.svelte
 #: src/lib/components/settings/ConnectorConfigForm.svelte
 #: src/routes/(authenticated)/settings/admin/tenants/+page.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/(authenticated)/settings/integrations/discord/+page.svelte
 #: src/routes/(authenticated)/settings/roles/+page.svelte
 #: src/routes/settings/admin/tenants/+page.svelte
@@ -8500,6 +8505,7 @@ msgstr ""
 #: src/lib/components/setup/WizardShell.svelte
 #: src/routes/(fullscreen)/setup/migrate/nightscout/+page.svelte
 #: src/routes/(unauthenticated)/clock/[id]/+page.svelte
+#: src/routes/(unauthenticated)/setup/+page@.svelte
 #: src/routes/clock/[face]/+page.svelte
 #: src/routes/clock/[id]/+page.svelte
 #: src/routes/settings/setup/migrate/nightscout/+page.svelte
@@ -9335,7 +9341,7 @@ msgstr ""
 #~ msgid "<0/> Insulin & Carbs"
 #~ msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BolusFormFields.svelte
 msgid "Basal Insulin"
 msgstr ""
 
@@ -10903,11 +10909,11 @@ msgstr ""
 #: src/lib/components/dashboard/glucose-chart/dialogs/DeliveryInspectionDialog.svelte
 #: src/lib/components/dashboard/glucose-chart/dialogs/GlucoseInspectionDialog.svelte
 #: src/lib/components/dashboard/glucose-chart/dialogs/TreatmentInspectionDialog.svelte
+#: src/lib/components/members/MemberCard.svelte
 #: src/lib/components/ui/danger-zone-dialog/danger-zone-dialog.svelte
 #: src/lib/components/ui/dialog/dialog-content.svelte
 #: src/lib/components/ui/sheet/sheet-content.svelte
 #: src/routes/(authenticated)/settings/admin/+page.svelte
-#: src/routes/(authenticated)/settings/members/+page.svelte
 #: src/routes/settings/admin/+page.svelte
 #: src/routes/settings/connectors/+page.svelte
 #: src/routes/settings/connectors/+page.svelte
@@ -11017,7 +11023,7 @@ msgstr ""
 #~ msgid "Duplicate"
 #~ msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/QuietHoursCard.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "<0/> Quiet Hours"
 msgstr ""
@@ -11025,7 +11031,7 @@ msgstr ""
 #~ msgid "Reduce notification noise during specified hours"
 #~ msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/QuietHoursCard.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Enable quiet hours"
 msgstr ""
@@ -11135,7 +11141,7 @@ msgid "Prediction horizon"
 msgstr ""
 
 #. placeholder {0}: rule.hysteresisMinutes ?? 0
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 #: src/routes/settings/algorithm/+page.svelte
 msgid "{0} minutes"
@@ -11555,7 +11561,7 @@ msgstr ""
 msgid "Blood glucose units"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BGCheckFormFields.svelte
 #: src/routes/(authenticated)/settings/appearance/+page.svelte
 #: src/routes/settings/appearance/+page.svelte
 msgid "mmol/L"
@@ -11946,6 +11952,8 @@ msgid "Connection test failed"
 msgstr ""
 
 #: src/routes/(authenticated)/settings/migration/+page.svelte
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
 #: src/routes/settings/migration/+page.svelte
 msgid "Failed to start migration"
 msgstr ""
@@ -11958,6 +11966,8 @@ msgstr ""
 #: src/routes/(authenticated)/reports/data-quality/compression-lows/+page.svelte
 #: src/routes/(authenticated)/reports/executive-summary/+page.svelte
 #: src/routes/(authenticated)/settings/migration/+page.svelte
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
 #: src/routes/reports/data-quality/compression-lows/+page.svelte
 #: src/routes/reports/executive-summary/+page.svelte
 #: src/routes/settings/migration/+page.svelte
@@ -12084,8 +12094,8 @@ msgid ""
 "partial data."
 msgstr ""
 
+#: src/lib/components/patient/InsulinFormFields.svelte
 #: src/lib/components/patient/PatientDeviceManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
 #: src/routes/(authenticated)/reports/data-quality/+page.svelte
 #: src/routes/(authenticated)/reports/data-quality/compression-lows/+page.svelte
 #: src/routes/(authenticated)/settings/migration/+page.svelte
@@ -12095,8 +12105,8 @@ msgstr ""
 msgid "Start Date"
 msgstr ""
 
+#: src/lib/components/patient/InsulinFormFields.svelte
 #: src/lib/components/patient/PatientDeviceManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
 #: src/routes/(authenticated)/settings/migration/+page.svelte
 #: src/routes/settings/migration/+page.svelte
 msgid "End Date"
@@ -13479,8 +13489,8 @@ msgstr ""
 msgid "More pages"
 msgstr ""
 
+#: src/lib/components/alerts/AlertHistoryCard.svelte
 #: src/lib/components/ui/pagination/pagination-next-button.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Next"
 msgstr ""
@@ -13489,8 +13499,8 @@ msgstr ""
 msgid "Go to next page"
 msgstr ""
 
+#: src/lib/components/alerts/AlertHistoryCard.svelte
 #: src/lib/components/ui/pagination/pagination-prev-button.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/(authenticated)/settings/alerts/setup/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 #: src/routes/settings/alerts/setup/+page.svelte
@@ -13686,12 +13696,12 @@ msgstr ""
 
 #: src/lib/components/admin/IdentityProvidersTabContent.svelte
 #: src/lib/components/admin/OidcProvidersTabContent.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/connectors/ConnectorDetailsDialog.svelte
 #: src/lib/components/connectors/ConnectorDetailsDialog.svelte
 #: src/lib/components/connectors/ConnectorSetup.svelte
 #: src/lib/components/connectors/ServerConnectorsCard.svelte
 #: src/lib/components/connectors/ServerConnectorsCard.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 #: src/routes/settings/connectors/+page.svelte
 #: src/routes/settings/connectors/+page.svelte
@@ -14031,9 +14041,11 @@ msgstr ""
 
 #: src/lib/components/connectors/DeduplicationDialog.svelte
 #: src/lib/components/connectors/SyncResultCard.svelte
+#: src/lib/components/members/CreateInviteCard.svelte
 #: src/lib/components/settings/ApiTokens.svelte
 #: src/routes/(authenticated)/settings/account/+page.svelte
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+#: src/routes/(unauthenticated)/setup/+page@.svelte
 #: src/routes/settings/account/+page.svelte
 #: src/routes/settings/api-access/+page.svelte
 #: src/routes/settings/connectors/+page.svelte
@@ -14321,6 +14333,7 @@ msgid "Setup progress"
 msgstr ""
 
 #: src/lib/components/SiteHeader.svelte
+#: src/routes/(unauthenticated)/setup/+page@.svelte
 msgid "Docs"
 msgstr ""
 
@@ -15333,10 +15346,10 @@ msgstr ""
 #~ msgstr ""
 
 #: src/lib/components/settings/ConnectorConfigForm.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BGCheckFormFields.svelte
+#: src/lib/components/treatments/edit-dialog/BGCheckFormFields.svelte
+#: src/lib/components/treatments/edit-dialog/BolusFormFields.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "Select..."
 msgstr ""
 
@@ -17011,36 +17024,36 @@ msgstr ""
 
 #: src/lib/components/dashboard/glucose-chart/ChartLegend.svelte
 #: src/lib/components/icons/DeviceEventIcon.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "SensorStart"
 msgstr ""
 
 #: src/lib/components/dashboard/glucose-chart/ChartLegend.svelte
 #: src/lib/components/icons/DeviceEventIcon.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "SensorChange"
 msgstr ""
 
 #: src/lib/components/icons/DeviceEventIcon.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "SensorStop"
 msgstr ""
 
 #: src/lib/components/dashboard/glucose-chart/ChartLegend.svelte
 #: src/lib/components/icons/DeviceEventIcon.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "SiteChange"
 msgstr ""
 
 #: src/lib/components/dashboard/glucose-chart/ChartLegend.svelte
 #: src/lib/components/icons/DeviceEventIcon.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "InsulinChange"
 msgstr ""
 
 #: src/lib/components/dashboard/glucose-chart/ChartLegend.svelte
 #: src/lib/components/icons/DeviceEventIcon.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "PumpBatteryChange"
 msgstr ""
 
@@ -17397,9 +17410,11 @@ msgstr ""
 #. placeholder {0}: (totalEntries ?? 0).toLocaleString()
 #. placeholder {0}: (totalEntries ?? 0).toLocaleString()
 #. placeholder {0}: allRows.length.toLocaleString()
+#. placeholder {0}: formatCount(col.migrated)
 #: src/lib/components/settings/DataSourceRow.svelte
 #: src/lib/components/settings/DataSourceRow.svelte
 #: src/routes/(authenticated)/reports/treatments/+page.svelte
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
 #: src/routes/reports/treatments/+page.svelte
 msgid "{0} records"
 msgstr ""
@@ -17525,7 +17540,7 @@ msgid "Pump Resume"
 msgstr ""
 
 #: src/lib/components/entries/DeviceEventSection.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "Priming"
 msgstr ""
 
@@ -17538,7 +17553,7 @@ msgid "Needle Priming"
 msgstr ""
 
 #: src/lib/components/entries/DeviceEventSection.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "Rewind"
 msgstr ""
 
@@ -17563,7 +17578,7 @@ msgid "<0/> Device Event"
 msgstr ""
 
 #: src/lib/components/entries/BGCheckSection.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BGCheckFormFields.svelte
 msgid "Finger"
 msgstr ""
 
@@ -17571,11 +17586,11 @@ msgstr ""
 msgid "<0/> BG Check"
 msgstr ""
 
+#: src/lib/components/alerts/AlertHistoryCard.svelte
 #: src/lib/components/entries/BGCheckSection.svelte
 #: src/lib/components/treatments/TreatmentsDataTable.svelte
 #: src/routes/(authenticated)/reports/day-in-review/+page.svelte
 #: src/routes/(authenticated)/settings/admin/tenants/+page.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/reports/day-in-review/+page.svelte
 #: src/routes/settings/admin/tenants/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
@@ -17591,7 +17606,7 @@ msgid "Dual Wave"
 msgstr ""
 
 #: src/lib/components/entries/BolusSection.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BolusFormFields.svelte
 msgid "Bolus Type"
 msgstr ""
 
@@ -17608,7 +17623,7 @@ msgid "Delivered (U)"
 msgstr ""
 
 #: src/lib/components/entries/BolusSection.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BolusFormFields.svelte
 msgid "Insulin Type"
 msgstr ""
 
@@ -17713,81 +17728,81 @@ msgstr ""
 msgid "Value:"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BolusFormFields.svelte
 msgid "Square"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BolusFormFields.svelte
 msgid "Dual"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BGCheckFormFields.svelte
+#: src/lib/components/treatments/edit-dialog/BGCheckFormFields.svelte
 msgid "MgDl"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BGCheckFormFields.svelte
+#: src/lib/components/treatments/edit-dialog/BGCheckFormFields.svelte
 msgid "Mmol"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "PodChange"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "ReservoirChange"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "CannulaChange"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "TransmitterSensorInsert"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "PodActivated"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "PodDeactivated"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "PumpSuspend"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "PumpResume"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "TubePriming"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "NeedlePriming"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "DateChanged"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "TimeChanged"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "BolusMaxChanged"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "BasalMaxChanged"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "ProfileSwitch"
 msgstr ""
 
@@ -17801,49 +17816,49 @@ msgid "Edit the details of this {0} record."
 msgstr ""
 
 #: src/lib/components/dashboard/glucose-chart/dialogs/TreatmentInspectionDialog.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BolusFormFields.svelte
 msgid "Programmed"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BolusFormFields.svelte
 msgid "Delivered"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/CarbsFormFields.svelte
 msgid "Absorption Time (min)"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/CarbsFormFields.svelte
 msgid "Carb Time (min)"
 msgstr ""
 
 #: src/lib/components/dashboard/glucose-chart/dialogs/DeliveryInspectionDialog.svelte
 #: src/lib/components/dashboard/glucose-chart/dialogs/TreatmentInspectionDialog.svelte
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BGCheckFormFields.svelte
 msgid "<0/> Glucose"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/BGCheckFormFields.svelte
 msgid "Glucose Type"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/NoteFormFields.svelte
 msgid "<0/> Text"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/NoteFormFields.svelte
 msgid "Note text..."
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "<0/> Event Type"
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/DeviceEventFormFields.svelte
 msgid "Additional notes..."
 msgstr ""
 
-#: src/lib/components/treatments/TreatmentEditDialog.svelte
+#: src/lib/components/treatments/edit-dialog/LinkedRecordsPanel.svelte
 msgid "<0/> Linked Records <1/>"
 msgstr ""
 
@@ -18070,11 +18085,11 @@ msgstr ""
 msgid "Removing..."
 msgstr ""
 
+#: src/lib/components/members/MemberCard.svelte
 #: src/lib/components/settings/LinkedOidcIdentities.svelte
 #: src/routes/(authenticated)/meals/+page.svelte
 #: src/routes/(authenticated)/settings/account/+page.svelte
 #: src/routes/(authenticated)/settings/account/+page.svelte
-#: src/routes/(authenticated)/settings/members/+page.svelte
 #: src/routes/meals/+page.svelte
 #: src/routes/settings/account/+page.svelte
 #: src/routes/settings/account/+page.svelte
@@ -19887,12 +19902,11 @@ msgstr ""
 #~ msgid "Add a user to this tenant."
 #~ msgstr ""
 
-#: src/lib/components/patient/PatientInsulinManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
 msgid "Role"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/MemberCard.svelte
 #: src/routes/settings/members/+page.svelte
 msgid "Remove member"
 msgstr ""
@@ -20280,6 +20294,7 @@ msgid "<0/> Treatments"
 msgstr ""
 
 #: src/lib/components/dashboard/glucose-chart/dialogs/GlucoseInspectionDialog.svelte
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
 msgid "Activities"
 msgstr ""
 
@@ -21009,7 +21024,7 @@ msgstr ""
 msgid "Pronouns"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/MemberCard.svelte
 #: src/routes/(authenticated)/settings/patient/+page.svelte
 #: src/routes/settings/members/+page.svelte
 #: src/routes/settings/patient/+page.svelte
@@ -21127,8 +21142,8 @@ msgstr ""
 msgid "Optional"
 msgstr ""
 
+#: src/lib/components/patient/InsulinFormFields.svelte
 #: src/lib/components/patient/PatientDeviceManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
 msgid "Currently in use"
 msgstr ""
 
@@ -21168,11 +21183,10 @@ msgstr ""
 msgid "Add an insulin to your patient record."
 msgstr ""
 
-#: src/lib/components/patient/PatientInsulinManager.svelte
-msgid "Name / Brand"
-msgstr ""
+#~ msgid "Name / Brand"
+#~ msgstr ""
 
-#: src/lib/components/patient/PatientInsulinManager.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
 msgid "Any additional notes about this insulin"
 msgstr ""
 
@@ -21255,12 +21269,11 @@ msgstr ""
 #~ msgid "America/New_York"
 #~ msgstr ""
 
-#: src/lib/components/patient/PatientInsulinManager.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
 msgid "Duration of Insulin Action"
 msgstr ""
 
-#: src/lib/components/patient/PatientInsulinManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
 msgid "hours"
 msgstr ""
 
@@ -21287,7 +21300,10 @@ msgstr ""
 
 #. placeholder {0}: currentStep
 #. placeholder {1}: totalSteps
+#. placeholder {0}: stepIndex + 1
+#. placeholder {1}: steps.length
 #: src/lib/components/setup/WizardShell.svelte
+#: src/routes/(unauthenticated)/setup/+page@.svelte
 msgid "Step {0} of {1}"
 msgstr ""
 
@@ -21427,12 +21443,12 @@ msgstr ""
 msgid "Add an Insulin"
 msgstr ""
 
+#: src/lib/components/patient/InsulinFormFields.svelte
 #: src/lib/components/patient/PatientDeviceManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
 msgid "Select category"
 msgstr ""
 
-#: src/lib/components/patient/PatientInsulinManager.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
 msgid "Brand / Name"
 msgstr ""
 
@@ -21776,6 +21792,8 @@ msgstr ""
 msgid "High Threshold"
 msgstr ""
 
+#: src/lib/components/alerts/AlertHistoryCard.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/GeneralTab.svelte
 #: src/lib/components/alerts/GeneralTab.svelte
 #: src/routes/(authenticated)/settings/alerts/+page.svelte
@@ -21783,6 +21801,8 @@ msgstr ""
 msgid "Rate of Change"
 msgstr ""
 
+#: src/lib/components/alerts/AlertHistoryCard.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/GeneralTab.svelte
 #: src/lib/components/alerts/GeneralTab.svelte
 #: src/routes/(authenticated)/settings/alerts/+page.svelte
@@ -21790,54 +21810,56 @@ msgstr ""
 msgid "Signal Loss"
 msgstr ""
 
+#: src/lib/components/alerts/AlertHistoryCard.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Composite"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "No condition configured"
 msgstr ""
 
 #. placeholder {0}: (params as Record<string, unknown>)["threshold"] ?? "?"
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Below {0} mg/dL"
 msgstr ""
 
 #. placeholder {0}: (params as Record<string, unknown>)["threshold"] ?? "?"
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Above {0} mg/dL"
 msgstr ""
 
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/GeneralTab.svelte
 #: src/lib/components/alerts/GeneralTab.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Falling"
 msgstr ""
 
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/GeneralTab.svelte
 #: src/lib/components/alerts/GeneralTab.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Rising"
 msgstr ""
 
 #. placeholder {0}: (params as Record<string, unknown>)["minutes"] ?? "?"
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "No data for {0} minutes"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Multiple conditions combined"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Custom condition"
 msgstr ""
@@ -21889,7 +21911,7 @@ msgstr ""
 msgid "{0} — Started {1}"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertHistoryCard.svelte
 #: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
@@ -21901,7 +21923,6 @@ msgstr ""
 msgid "<0/> Alert Rules"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Rules define when alerts trigger and how they escalate"
 msgstr ""
@@ -21916,110 +21937,110 @@ msgstr ""
 msgid "Use the setup wizard to create your first alert rules"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Unnamed Rule"
 msgstr ""
 
 #. placeholder {0}: rule.schedules.length
 #. placeholder {1}: rule.schedules.length !== 1 ? "s" : ""
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "<0/> {0} schedule{1}"
 msgstr ""
 
 #. placeholder {0}: stepCount
 #. placeholder {1}: stepCount !== 1 ? "s" : ""
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "<0/> {0} escalation step{1}"
 msgstr ""
 
 #. placeholder {0}: rule.confirmationReadings
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "{0} confirmations"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Hysteresis"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Confirmations"
 msgstr ""
 
 #. placeholder {0}: rule.confirmationReadings ?? 1
 #. placeholder {1}: (rule.confirmationReadings ?? 1) !== 1 ? "s" : ""
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "{0} reading{1}"
 msgstr ""
 
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/GeneralTab.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Sort Order"
 msgstr ""
 
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/RuleEditorSheet.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/(fullscreen)/setup/profile/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 #: src/routes/settings/setup/profile/+page.svelte
 msgid "Schedules"
 msgstr ""
 
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/SchedulesTab.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Default Schedule"
 msgstr ""
 
 #. placeholder {0}: schedule.daysOfWeek.map((d) => ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d] ?? d).join(", ")
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Days: {0}"
 msgstr ""
 
-#. placeholder {0}: stepIdx + 1
 #. placeholder {0}: idx + 1
+#. placeholder {0}: stepIdx + 1
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/lib/components/alerts/SchedulesTab.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Step {0}"
 msgstr ""
 
 #. placeholder {0}: Math.round(step.delaySeconds / 60)
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "after {0}m"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "immediately"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "via"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "<0/> Delete Rule"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Delete Alert Rule"
 msgstr ""
 
 #. placeholder {0}: rule.name
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid ""
 "Are you sure you want to delete \"{0}\"? This\n"
@@ -22027,38 +22048,38 @@ msgid ""
 "escalation steps. This action cannot be undone."
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertHistoryCard.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "<0/> Alert History"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertHistoryCard.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Past alert excursions and their resolution"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertHistoryCard.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "No alert history"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertHistoryCard.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Resolved alerts will appear here"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertHistoryCard.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Rule"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertHistoryCard.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Started"
 msgstr ""
 
 #. placeholder {0}: item.acknowledgedBy
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertHistoryCard.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "by {0}"
 msgstr ""
@@ -22066,7 +22087,7 @@ msgstr ""
 #. placeholder {0}: history.page ?? 1
 #. placeholder {1}: history.totalPages ?? 1
 #. placeholder {2}: history.totalCount ?? 0
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertHistoryCard.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Page {0} of {1} ({2} total)"
 msgstr ""
@@ -22173,7 +22194,7 @@ msgid "Severity"
 msgstr ""
 
 #: src/lib/components/alerts/GeneralTab.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/QuietHoursCard.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Critical alerts bypass quiet hours"
 msgstr ""
@@ -22285,8 +22306,8 @@ msgstr ""
 msgid "Schedule name"
 msgstr ""
 
+#: src/lib/components/alerts/QuietHoursCard.svelte
 #: src/lib/components/alerts/SchedulesTab.svelte
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "End Time"
 msgstr ""
@@ -22317,8 +22338,8 @@ msgstr ""
 
 #: src/lib/components/account/TotpSetupDialog.svelte
 #: src/lib/components/alerts/SchedulesTab.svelte
+#: src/lib/components/members/CreateInviteCard.svelte
 #: src/routes/(authenticated)/settings/account/+page.svelte
-#: src/routes/(authenticated)/settings/members/+page.svelte
 #: src/routes/settings/account/+page.svelte
 #: src/routes/settings/account/+page.svelte
 #: src/routes/settings/members/+page.svelte
@@ -22347,17 +22368,17 @@ msgstr ""
 msgid "Update Rule"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "<0/> Edit Rule"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/QuietHoursCard.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Suppress non-critical alerts during specific hours"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/QuietHoursCard.svelte
 #: src/routes/settings/alerts/+page.svelte
 msgid "Allow critical alerts during quiet hours"
 msgstr ""
@@ -22809,7 +22830,7 @@ msgstr ""
 #~ msgid "Failed to add follower. Please try again."
 #~ msgstr ""
 
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/CreateInviteCard.svelte
 #: src/routes/settings/members/+page.svelte
 #: src/routes/settings/sharing/+page.svelte
 msgid "Failed to create invite. Please try again."
@@ -22845,16 +22866,17 @@ msgstr ""
 #~ msgid "<0/> Add by Email"
 #~ msgstr ""
 
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/CreateInviteCard.svelte
 #: src/routes/settings/members/+page.svelte
 #: src/routes/settings/sharing/+page.svelte
 msgid "Create Invite Link"
 msgstr ""
 
-#~ msgid ""
-#~ "Generate a shareable link. Anyone with this link can accept the invite\n"
-#~ "after signing in."
-#~ msgstr ""
+#: src/lib/components/members/CreateInviteCard.svelte
+msgid ""
+"Generate a shareable link. Anyone with this link can accept the invite\n"
+"after signing in."
+msgstr ""
 
 #~ msgid "Invite link created! Share it with your friend or family member."
 #~ msgstr ""
@@ -22863,7 +22885,7 @@ msgstr ""
 msgid "Data to share"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/CreateInviteCard.svelte
 #: src/routes/settings/members/+page.svelte
 #: src/routes/settings/sharing/+page.svelte
 msgid "Allow multiple uses"
@@ -22872,19 +22894,19 @@ msgstr ""
 #~ msgid "By default, invite links can only be used once. Enable this to allow unlimited uses."
 #~ msgstr ""
 
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/CreateInviteCard.svelte
 #: src/routes/settings/members/+page.svelte
 #: src/routes/settings/sharing/+page.svelte
 msgid "<0/> Create Link"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/PendingInvitesList.svelte
 #: src/routes/settings/members/+page.svelte
 #: src/routes/settings/sharing/+page.svelte
 msgid "<0/> Pending Invites"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/PendingInvitesList.svelte
 #: src/routes/settings/members/+page.svelte
 #: src/routes/settings/sharing/+page.svelte
 msgid "Invite Link"
@@ -22892,7 +22914,7 @@ msgstr ""
 
 #. placeholder {0}: invite.useCount
 #. placeholder {1}: invite.maxUses
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/PendingInvitesList.svelte
 #: src/routes/settings/members/+page.svelte
 #: src/routes/settings/sharing/+page.svelte
 msgid "· {0}/{1} uses"
@@ -22901,14 +22923,14 @@ msgstr ""
 #~ msgid "Expires {0} <0/>"
 #~ msgstr ""
 
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/PendingInvitesList.svelte
 #: src/routes/settings/members/+page.svelte
 #: src/routes/settings/sharing/+page.svelte
 msgid "Used by"
 msgstr ""
 
 #. placeholder {0}: formatDate(usage.joinedAt)
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/PendingInvitesList.svelte
 #: src/routes/settings/members/+page.svelte
 #: src/routes/settings/sharing/+page.svelte
 msgid "on {0}"
@@ -22950,7 +22972,6 @@ msgstr ""
 msgid "Shared Data"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/members/+page.svelte
 #: src/routes/settings/members/+page.svelte
 #: src/routes/settings/sharing/+page.svelte
 msgid ""
@@ -24690,39 +24711,34 @@ msgstr ""
 msgid "· Primary"
 msgstr ""
 
-#: src/lib/components/patient/PatientInsulinManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
 msgid "Formulation"
 msgstr ""
 
-#: src/lib/components/patient/PatientInsulinManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
 msgid "Select formulation"
 msgstr ""
 
 #. placeholder {0}: f.defaultDia
 #. placeholder {1}: f.concentration
-#: src/lib/components/patient/PatientInsulinManager.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
 msgid "DIA {0}h · U-{1}"
 msgstr ""
 
-#: src/lib/components/patient/PatientInsulinManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
 msgid "Enter a custom insulin name"
 msgstr ""
 
-#: src/lib/components/patient/PatientInsulinManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
 msgid "Peak"
 msgstr ""
 
-#: src/lib/components/patient/PatientInsulinManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
 msgid "Concentration"
 msgstr ""
 
-#: src/lib/components/patient/PatientInsulinManager.svelte
-#: src/lib/components/patient/PatientInsulinManager.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
 msgid "U-"
 msgstr ""
 
@@ -24735,23 +24751,22 @@ msgstr ""
 msgid "DIA {0}h"
 msgstr ""
 
-#: src/lib/components/patient/PatientInsulinManager.svelte
-msgid "Select formulation or enter custom"
-msgstr ""
+#~ msgid "Select formulation or enter custom"
+#~ msgstr ""
 
 #. placeholder {0}: f.defaultDia
 #. placeholder {1}: f.defaultPeak
 #. placeholder {2}: f.concentration
-#: src/lib/components/patient/PatientInsulinManager.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
 msgid "DIA {0}h · Peak {1}min · U-{2}"
 msgstr ""
 
-#: src/lib/components/patient/PatientInsulinManager.svelte
+#: src/lib/components/patient/InsulinFormFields.svelte
 msgid "Primary for this role"
 msgstr ""
 
+#: src/lib/components/members/CreateInviteCard.svelte
 #: src/routes/(authenticated)/settings/access-requests/+page.svelte
-#: src/routes/(authenticated)/settings/members/+page.svelte
 #: src/routes/settings/access-requests/+page.svelte
 #: src/routes/settings/members/+page.svelte
 #: src/routes/settings/sharing/+page.svelte
@@ -24764,14 +24779,14 @@ msgid ""
 "Older data will not be visible to the follower."
 msgstr ""
 
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/PendingInvitesList.svelte
 #: src/routes/settings/members/+page.svelte
 #: src/routes/settings/sharing/+page.svelte
 msgid "· Last 24 hours only"
 msgstr ""
 
 #. placeholder {0}: formatDate(invite.expiresAt)
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/PendingInvitesList.svelte
 #: src/routes/settings/members/+page.svelte
 #: src/routes/settings/sharing/+page.svelte
 msgid "Expires {0} <0/> <1/>"
@@ -24797,6 +24812,7 @@ msgstr ""
 #~ "tenant after signing in."
 #~ msgstr ""
 
+#: src/lib/components/members/CreateInviteCard.svelte
 #: src/routes/(authenticated)/settings/members/+page.svelte
 #: src/routes/settings/members/+page.svelte
 msgid "Invite link created. Share it with the new member."
@@ -25212,7 +25228,7 @@ msgstr ""
 msgid "This invite grants the following roles:"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/MemberCard.svelte
 #: src/routes/invite/[token]/+page.svelte
 #: src/routes/settings/members/+page.svelte
 msgid "Direct Permissions"
@@ -25267,21 +25283,21 @@ msgstr ""
 msgid "<0/> Invite Members"
 msgstr ""
 
+#: src/lib/components/members/CreateInviteCard.svelte
 #: src/routes/(authenticated)/settings/access-requests/+page.svelte
-#: src/routes/(authenticated)/settings/members/+page.svelte
 #: src/routes/settings/access-requests/+page.svelte
 #: src/routes/settings/members/+page.svelte
 msgid "<0/> Direct Permissions (optional)"
 msgstr ""
 
+#: src/lib/components/members/CreateInviteCard.svelte
 #: src/routes/(authenticated)/settings/access-requests/+page.svelte
-#: src/routes/(authenticated)/settings/members/+page.svelte
 #: src/routes/settings/access-requests/+page.svelte
 #: src/routes/settings/members/+page.svelte
 msgid "Restrict access to only the most recent 24 hours of data."
 msgstr ""
 
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/CreateInviteCard.svelte
 #: src/routes/settings/members/+page.svelte
 msgid "By default, invite links can only be used once."
 msgstr ""
@@ -25298,32 +25314,31 @@ msgstr ""
 
 #. placeholder {0}: member.directPermissions.length
 #. placeholder {1}: member .directPermissions.length !== 1 ? "s" : ""
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/MemberCard.svelte
 #: src/routes/settings/members/+page.svelte
 msgid "{0} direct permission{1}"
 msgstr ""
 
 #. placeholder {0}: member.name ?? "this member"
-#: src/routes/(authenticated)/settings/members/+page.svelte
 #: src/routes/settings/members/+page.svelte
 msgid ""
 "Remove {0} from the tenant?\n"
 "They will lose access to all tenant data."
 msgstr ""
 
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/MemberCard.svelte
 #: src/routes/settings/members/+page.svelte
 msgid "<0/> 24-hour limit"
 msgstr ""
 
 #. placeholder {0}: formatDate(member.sysCreatedAt)
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/MemberCard.svelte
 #: src/routes/settings/members/+page.svelte
 msgid "<0/> Joined {0}"
 msgstr ""
 
 #. placeholder {0}: formatDate(member.lastUsedAt)
-#: src/routes/(authenticated)/settings/members/+page.svelte
+#: src/lib/components/members/MemberCard.svelte
 #: src/routes/settings/members/+page.svelte
 msgid "<0/> Last active {0}"
 msgstr ""
@@ -25834,6 +25849,7 @@ msgid "Begin setup <0/>"
 msgstr ""
 
 #: src/routes/(fullscreen)/setup/migrate/+page.svelte
+#: src/routes/(unauthenticated)/setup/StepSidebar.svelte
 #: src/routes/settings/setup/migrate/+page.svelte
 msgid "Migrating from Nightscout"
 msgstr ""
@@ -25897,6 +25913,7 @@ msgid "Device status"
 msgstr ""
 
 #: src/routes/(fullscreen)/setup/permissions/+page.svelte
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
 #: src/routes/settings/setup/permissions/+page.svelte
 msgid "Profiles"
 msgstr ""
@@ -26258,6 +26275,7 @@ msgstr ""
 msgid "Allow the Nocturne bot to access glucose data on your behalf and send alerts to your <0/> account?"
 msgstr ""
 
+#: src/routes/(unauthenticated)/setup/+page@.svelte
 #: src/routes/auth/bot/authorize/+page.svelte
 msgid "Connect"
 msgstr ""
@@ -27051,6 +27069,7 @@ msgid "There are no data sources available at this time."
 msgstr ""
 
 #: src/lib/components/connectors/DataSourceSelectionView.svelte
+#: src/routes/(unauthenticated)/setup/+page@.svelte
 msgid "Skip for now"
 msgstr ""
 
@@ -27193,7 +27212,7 @@ msgid ""
 msgstr ""
 
 #. placeholder {0}: (params as Record<string, unknown>)["threshold"] ?? "?"
-#: src/routes/(authenticated)/settings/alerts/+page.svelte
+#: src/lib/components/alerts/AlertRuleRow.svelte
 msgid "Threshold: {0} mg/dL"
 msgstr ""
 
@@ -27323,4 +27342,435 @@ msgstr ""
 
 #: src/lib/components/treatments/ColumnFilterPopover.svelte
 msgid "No options found."
+msgstr ""
+
+#. placeholder {0}: f.concentration
+#: src/lib/components/patient/InsulinFormFields.svelte
+msgid "U-{0}"
+msgstr ""
+
+#. placeholder {0}: member.name ?? "this member"
+#: src/lib/components/members/MemberCard.svelte
+msgid ""
+"Remove {0} from the tenant? They\n"
+"will lose access to all tenant data."
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
+msgid "Entries"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
+msgid "Device statuses"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
+msgid "Food library"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
+msgid "Bringing your <0>history</0> across."
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
+msgid ""
+"We're streaming entries, treatments, and profiles from your Nightscout\n"
+"into Nocturne's store. You can navigate away — this continues in\n"
+"the background."
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
+msgid "Overall progress"
+msgstr ""
+
+#~ msgid "About <0/> remaining · 487,214 records"
+#~ msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/PathChoice.svelte
+msgid "How are you <0>arriving</0>?"
+msgstr ""
+
+#~ msgid ""
+#~ "Both roads end in the same place. We just want to know whether to carry\n"
+#~ "your existing Nightscout data over, or give you a clean notebook to start in."
+#~ msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/PathChoice.svelte
+msgid "Fresh start"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/PathChoice.svelte
+msgid "Start with a blank slate"
+msgstr ""
+
+#~ msgid "I'm new to open-source diabetes data, or I'd rather not bring old data with me."
+#~ msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/PathChoice.svelte
+msgid "<0/> Pick your glucose units and target range"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/PathChoice.svelte
+msgid "<0/> Connect a CGM, pump, or uploader"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/PathChoice.svelte
+msgid "<0/> Land on a dashboard in about two minutes"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/PathChoice.svelte
+msgid "Coming from Nightscout"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/PathChoice.svelte
+msgid "Migrate my Nightscout data"
+msgstr ""
+
+#~ msgid "I already run Nightscout. Pull my history across and keep my uploaders working."
+#~ msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/PathChoice.svelte
+msgid "<0/> Point at your existing Nightscout URL"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/PathChoice.svelte
+msgid "<0/> Import entries, treatments, profiles"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/PathChoice.svelte
+msgid "<0/> Run side-by-side during the switchover"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
+msgid "Dexcom G7 · share"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
+msgid "Libre 3 · libreview"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
+msgid "Nightscout · bridge"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
+msgid "AAPS · direct"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
+msgid "Checking for your <0>first</0> reading…"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
+msgid ""
+"We're listening on your uploader endpoint. As soon as a reading arrives,\n"
+"we'll confirm the connection and send you to the dashboard."
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
+msgid "Listener"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
+msgid "Endpoint"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
+msgid "https://nocturne.local/api/v1/entries"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
+msgid "Auth"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
+msgid "API secret issued"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
+msgid "Uptime"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
+msgid "Waiting for reading…"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
+msgid "Dry run"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
+msgid "mg/dl · in range"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Choose your path"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Connect your CGM"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "First sync"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Sync"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "You’re in"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Connect your Nightscout"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Import your history"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Import"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Welcome home"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Get Started - Nocturne"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "nocturne"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Save & exit"
+msgstr ""
+
+#. placeholder {0}: String(stepIndex + 1).padStart(2, "0")
+#. placeholder {1}: String(steps.length).padStart(2, "0")
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Step {0} / {1}"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "<0/> Nightscout Migration"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "<0/> Fresh Start"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Just pick a starting point."
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Enter Nocturne <0/>"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Continue <0/>"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "© 2026 Nocturne"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Privacy"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "v1.4.2"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "<0/> Source"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/DevicePicker.svelte
+msgid "Dexcom G6 / G7"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/DevicePicker.svelte
+msgid "Libre 2 / 3"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/DevicePicker.svelte
+msgid "AAPS / Trio"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/DevicePicker.svelte
+msgid "I’ll set this up later"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/DevicePicker.svelte
+msgid "Pick your <0>first</0> data source."
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/DevicePicker.svelte
+msgid ""
+"You can connect more later. If your rig uses an uploader already pointing\n"
+"at Nightscout, choose xDrip+ or Nightscout — that's all you need."
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/DevicePicker.svelte
+msgid "Don't see your device?"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/DevicePicker.svelte
+msgid "Any Nightscout-compatible uploader works. <0>Advanced setup →</0>"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/Finish.svelte
+msgid "Invite a caretaker"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/Finish.svelte
+msgid "Add follower access with one link"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/Finish.svelte
+msgid "Quiet hours"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/Finish.svelte
+msgid "Silence low-priority alerts overnight"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/Finish.svelte
+msgid "Your first report"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/Finish.svelte
+msgid "Generate an AGP for your next clinic visit"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/Finish.svelte
+msgid "Your data is <0>home.</0>"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/Finish.svelte
+msgid "You're <0>in.</0>"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/Finish.svelte
+msgid ""
+"All your entries, treatments, and profiles are in Nocturne. Your\n"
+"existing uploaders keep working — you don't need to change them until\n"
+"you're ready."
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/Finish.svelte
+msgid ""
+"Your CGM is connected, your target range is set, and the dashboard is\n"
+"waiting. The next reading will land any minute."
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/Finish.svelte
+msgid "<0/> Open my dashboard"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/Finish.svelte
+msgid "Take the 60-second tour"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/Finish.svelte
+msgid "A few next things"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/StepSidebar.svelte
+msgid "Let's get your data <0>flowing.</0>"
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/StepSidebar.svelte
+msgid "Bring your <0>decade</0> of data with you."
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/StepSidebar.svelte
+msgid ""
+"Four short steps. Nothing to uninstall later, nothing sent off-server.\n"
+"You can change every choice in Settings afterwards."
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/StepSidebar.svelte
+msgid ""
+"We'll connect to your Nightscout instance, copy your entries over, and\n"
+"keep your uploaders pointing at the new host. No data loss, no downtime."
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/NightscoutConnect.svelte
+msgid "Point us at your <0>Nightscout</0>."
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/NightscoutConnect.svelte
+msgid ""
+"Enter the URL and API secret for the Nightscout instance you want to copy\n"
+"across. We read only — your existing site isn't modified."
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/PathChoice.svelte
+msgid ""
+"Both roads end in the same place. We just want to know whether to carry\n"
+"your existing Nightscout data over, or give you a clean notebook to start\n"
+"in."
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/PathChoice.svelte
+msgid ""
+"I'm new to open-source diabetes data, or I'd rather not bring old data\n"
+"with me."
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/PathChoice.svelte
+msgid ""
+"I already run Nightscout. Pull my history across and keep my uploaders\n"
+"working."
+msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
+msgid "Failed to find active migration"
+msgstr ""
+
+#~ msgid "No active migration found"
+#~ msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
+msgid "Finding active migration..."
+msgstr ""
+
+#. placeholder {0}: formatCount(totalMigrated)
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
+msgid "About <0/> remaining · {0} records"
+msgstr ""
+
+#. placeholder {0}: formatCount(totalMigrated)
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
+msgid "{0} records migrated"
+msgstr ""
+
+#. placeholder {0}: formatCount(col.migrated)
+#. placeholder {1}: formatCount(col.total)
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
+msgid "{0} / {1} records"
+msgstr ""
+
+#~ msgid "complete"
+#~ msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
+msgid "pending"
+msgstr ""
+
+#~ msgid "no records found"
+#~ msgstr ""
+
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
+msgid "no records"
 msgstr ""

@@ -46,7 +46,7 @@ Nocturne/
 - [NodeJS](https://nodejs.org/)
 - [pnpm](https://pnpm.io/)
 
-Copy the appsettings.example.json, and rename it to `appsettings.json`. Fill in the values for the connection strings, and any other settings you want to change. If you'd like to pipe in your Nightscout values into it just to test it out, do so in the `Connector.Nightscout` section, *not* the CompatibilityProxy; they are fundamentally different things.
+Copy the appsettings.example.json, and rename it to `appsettings.json`. Fill in the values for the connection strings, and any other settings you want to change. If you'd like to pipe in your Nightscout values into it just to test it out, do so in the `Connector.Nightscout` section, _not_ the CompatibilityProxy; they are fundamentally different things.
 
 .NET Aspire orchestrates all services with a single command:
 
@@ -61,7 +61,7 @@ Aspire will automatically:
 - Start the Nocturne API
 - Launch any configured data connectors
 - Set up service discovery and health checks
-- Click on the link in the console, which will have  Open the Aspire dashboard at `[http://localhost:17257](https://localhost:17257/)`
+- Click on the link in the console, which will have Open the Aspire dashboard at `[http://localhost:17257](https://localhost:17257/)`
 
 You can then access the frontend from the port assigned to it.
 
@@ -137,6 +137,7 @@ Add lines to your hosts file (`C:\Windows\System32\drivers\etc\hosts` on Windows
 ```
 127.0.0.1  nocturne.test
 127.0.0.1  demo.nocturne.test
+127.0.0.1  riley.nocturne.test
 ```
 
 Add one line per tenant slug you want to use. Hosts files don't support wildcards.
@@ -166,7 +167,6 @@ Nocturne includes native connectors for popular diabetes platforms:
 ### Using Connectors
 
 If you set up the connector's settings in the appsettings, then it'll automatically start when you run `aspire run`.
-
 
 ## Production Deployment (Docker Compose)
 
@@ -201,11 +201,11 @@ The script runs `aspire publish` with production flags and auto-generates random
 
 Nocturne uses three separate PostgreSQL roles for defense in depth. All three have `NOBYPASSRLS` so they obey Row Level Security policies, even when the database has no superuser connected.
 
-| Role | Purpose | Privileges |
-|------|---------|------------|
-| **`nocturne_migrator`** | Runs EF Core migrations (schema DDL). Owns the database and `public` schema. | `CREATE`, `ALTER`, `DROP` on tables. Cannot bypass RLS. |
-| **`nocturne_app`** | Runtime connection pool for the .NET API. Owns nothing. | `SELECT`, `INSERT`, `UPDATE`, `DELETE` on migrator-created tables. Cannot bypass RLS. |
-| **`nocturne_web`** | SvelteKit bot framework (chat state storage). Owns only its own `chat_state_*` tables. | `CREATE` on `public` schema (for its own tables only). No access to Nocturne tenant tables. Cannot bypass RLS. |
+| Role                    | Purpose                                                                                | Privileges                                                                                                     |
+| ----------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **`nocturne_migrator`** | Runs EF Core migrations (schema DDL). Owns the database and `public` schema.           | `CREATE`, `ALTER`, `DROP` on tables. Cannot bypass RLS.                                                        |
+| **`nocturne_app`**      | Runtime connection pool for the .NET API. Owns nothing.                                | `SELECT`, `INSERT`, `UPDATE`, `DELETE` on migrator-created tables. Cannot bypass RLS.                          |
+| **`nocturne_web`**      | SvelteKit bot framework (chat state storage). Owns only its own `chat_state_*` tables. | `CREATE` on `public` schema (for its own tables only). No access to Nocturne tenant tables. Cannot bypass RLS. |
 
 The bootstrap user (`POSTGRES_USER`) is only used for initial container setup. After `container-init/00-init.sh` runs, all application traffic flows through the three roles above. Passwords are set via environment variables in `.env.production`.
 
