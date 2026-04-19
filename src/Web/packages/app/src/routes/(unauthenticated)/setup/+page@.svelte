@@ -1,18 +1,32 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
+  import { onMount } from "svelte";
   import { ArrowRight, ArrowLeft, Sprout, Cable } from "lucide-svelte";
+  import { Button } from "$lib/components/ui/button";
   import Github from "lucide-svelte/icons/github";
   import { markSetupComplete } from "./setup.remote";
   import * as migrationRemote from "$api/generated/migrations.generated.remote";
+  import {
+    getServicesOverview,
+    getActiveDataSources,
+    getUploaderSetup,
+  } from "$api/generated/services.generated.remote";
   import { MigrationJobState } from "$api";
+  import type {
+    UploaderApp,
+    DataSourceInfo,
+    ServicesOverview,
+    UploaderSetupResponse,
+  } from "$lib/api/generated/nocturne-api-client";
 
   import ConstellationCanvas from "./ConstellationCanvas.svelte";
   import StepSidebar from "./StepSidebar.svelte";
   import PathChoice from "./steps/PathChoice.svelte";
   import NightscoutConnect from "./steps/NightscoutConnect.svelte";
-  import DevicePicker from "./steps/DevicePicker.svelte";
-  import FirstSync from "./steps/FirstSync.svelte";
+  import DataSourceSelectionView from "$lib/components/connectors/DataSourceSelectionView.svelte";
+  import ConnectorSetup from "$lib/components/connectors/ConnectorSetup.svelte";
+  import UploaderSetupView from "$lib/components/connectors/UploaderSetupView.svelte";
   import ImportProgress from "./steps/ImportProgress.svelte";
   import Finish from "./steps/Finish.svelte";
 
@@ -24,8 +38,8 @@
   const STEPS = {
     fresh: [
       { id: "path", label: "Choose your path", short: "Path" },
-      { id: "cgm", label: "Connect your CGM", short: "Device" },
-      { id: "sync", label: "First sync", short: "Sync" },
+      { id: "cgm", label: "Connect a data source", short: "Source" },
+      { id: "sync", label: "Configure & sync", short: "Setup" },
       { id: "finish", label: "You\u2019re in", short: "Done" },
     ],
     migration: [
@@ -39,14 +53,20 @@
   // ── State ───────────────────────────────────────────────────────────
   let path = $state<"fresh" | "migration">("fresh");
   let stepIndex = $state(0);
-  let selectedDevice = $state<string | null>(null);
+  let selectedConnectorId = $state<string | null>(null);
+  let selectedUploader = $state<UploaderApp | null>(null);
+  let uploaderSetupResponse = $state<UploaderSetupResponse | null>(null);
+  let servicesData = $state<ServicesOverview | null>(null);
+  let activeDataSources = $state<DataSourceInfo[]>([]);
+  let servicesLoading = $state(true);
+  let servicesError = $state<string | null>(null);
   let importProgress = $state(0);
   let migrationJobId = $state<string | undefined>(undefined);
 
   const steps = $derived(STEPS[path]);
   const currentStep = $derived(steps[stepIndex]);
   const progressPct = $derived(
-    steps.length <= 1 ? 100 : (stepIndex / (steps.length - 1)) * 100,
+    steps.length <= 1 ? 100 : (stepIndex / (steps.length - 1)) * 100
   );
 
   // Constellation progress: for migration import step, use import %; otherwise step-based
@@ -56,6 +76,26 @@
     }
     if (currentStep?.id === "finish") return 1;
     return steps.length <= 1 ? 1 : stepIndex / (steps.length - 1);
+  });
+
+  // ── Data source loading ──────────────────────────────────────────────
+  const connectors = $derived(servicesData?.availableConnectors ?? []);
+  const uploaderApps = $derived(servicesData?.uploaderApps ?? []);
+
+  onMount(async () => {
+    try {
+      const [overview, sources] = await Promise.all([
+        getServicesOverview(),
+        getActiveDataSources(),
+      ]);
+      servicesData = overview;
+      activeDataSources = sources ?? [];
+    } catch (e) {
+      servicesError =
+        e instanceof Error ? e.message : "Failed to load data sources";
+    } finally {
+      servicesLoading = false;
+    }
   });
 
   // ── Onboarding CSS variables ──────────────────────────────────────────
@@ -82,7 +122,7 @@
   const accentVars = $derived(
     path === "migration"
       ? "--onb-accent: var(--onb-lavender); --onb-accent-soft: var(--onb-lavender-soft); --onb-accent-dim: var(--onb-lavender-dim)"
-      : "--onb-accent: var(--onb-green); --onb-accent-soft: var(--onb-green-soft); --onb-accent-dim: var(--onb-green-dim)",
+      : "--onb-accent: var(--onb-green); --onb-accent-soft: var(--onb-green-soft); --onb-accent-dim: var(--onb-green-dim)"
   );
 
   const styleVars = $derived(`${BASE_VARS}; ${accentVars}`);
@@ -108,6 +148,39 @@
   async function handleEnterDashboard() {
     await markSetupComplete();
     await goto("/", { invalidateAll: true });
+  }
+
+  function handleSelectConnector(id: string) {
+    selectedConnectorId = id;
+    selectedUploader = null;
+    handleNext();
+  }
+
+  async function handleSelectUploader(app: UploaderApp) {
+    selectedUploader = app;
+    selectedConnectorId = null;
+    if (app.id) {
+      try {
+        uploaderSetupResponse = await getUploaderSetup(app.id);
+      } catch {
+        uploaderSetupResponse = null;
+      }
+    }
+    handleNext();
+  }
+
+  function handleSourceSkip() {
+    const finishIdx = steps.findIndex((s) => s.id === "finish");
+    if (finishIdx >= 0) stepIndex = finishIdx;
+  }
+
+  function handleSetupComplete() {
+    const finishIdx = steps.findIndex((s) => s.id === "finish");
+    if (finishIdx >= 0) stepIndex = finishIdx;
+  }
+
+  function handleSetupBack() {
+    handleBack();
   }
 
   function handleImportComplete() {
@@ -137,7 +210,7 @@
   // User info
   const userEmail = $derived(page.data?.user?.email ?? "");
   const userInitials = $derived(
-    userEmail ? userEmail.slice(0, 2).toUpperCase() : "U",
+    userEmail ? userEmail.slice(0, 2).toUpperCase() : "U"
   );
 </script>
 
@@ -178,16 +251,22 @@
           opacity="0.92"
         />
         <g fill="#22c55e">
-          <circle cx="18" cy="56" r="1.6" /><circle cx="26" cy="58" r="1.6" />
-          <circle cx="34" cy="58" r="1.6" /><circle cx="42" cy="56" r="1.6" />
-          <circle cx="50" cy="55" r="1.6" /><circle cx="58" cy="55" r="1.6" />
-          <circle cx="66" cy="56" r="1.6" /><circle cx="74" cy="58" r="1.6" />
+          <circle cx="18" cy="56" r="1.6" />
+          <circle cx="26" cy="58" r="1.6" />
+          <circle cx="34" cy="58" r="1.6" />
+          <circle cx="42" cy="56" r="1.6" />
+          <circle cx="50" cy="55" r="1.6" />
+          <circle cx="58" cy="55" r="1.6" />
+          <circle cx="66" cy="56" r="1.6" />
+          <circle cx="74" cy="58" r="1.6" />
           <circle cx="82" cy="60" r="1.6" />
         </g>
       </svg>
-      <span class="font-[Montserrat] text-xl font-light tracking-wide text-white"
-        >nocturne</span
+      <span
+        class="font-[Montserrat] text-xl font-light tracking-wide text-white"
       >
+        nocturne
+      </span>
     </div>
 
     <div class="flex items-center gap-5">
@@ -207,7 +286,9 @@
           >
             {userInitials}
           </span>
-          <span class="hidden text-[13px] text-white/40 sm:inline">{userEmail}</span>
+          <span class="hidden text-[13px] text-white/40 sm:inline">
+            {userEmail}
+          </span>
         </div>
       {/if}
 
@@ -222,8 +303,12 @@
   </header>
 
   <!-- Stage -->
-  <main class="relative z-10 px-8 py-12 pb-16 max-[900px]:px-5 max-[900px]:py-7 max-[900px]:pb-10">
-    <div class="w-full max-w-280 mx-auto grid grid-cols-[320px_1fr] gap-14 items-start max-[900px]:grid-cols-1 max-[900px]:gap-6">
+  <main
+    class="relative z-10 px-8 py-12 pb-16 max-[900px]:px-5 max-[900px]:py-7 max-[900px]:pb-10"
+  >
+    <div
+      class="w-full max-w-280 mx-auto grid grid-cols-[320px_1fr] gap-14 items-start max-[900px]:grid-cols-1 max-[900px]:gap-6"
+    >
       <!-- Sidebar -->
       <aside class="sticky top-25 max-[900px]:static">
         <StepSidebar
@@ -235,14 +320,21 @@
       </aside>
 
       <!-- Step card -->
-      <section class="step-card relative rounded-[22px] border border-white/8 backdrop-blur-[18px] overflow-hidden min-h-135 flex flex-col"
+      <section
+        class="step-card relative rounded-[22px] border border-white/8 backdrop-blur-[18px] overflow-hidden min-h-135 flex flex-col"
         style="background: linear-gradient(180deg, oklch(0.14 0.03 261.692 / 0.85), oklch(0.12 0.025 261.692 / 0.75)); box-shadow: 0 1px 0 rgb(255 255 255 / 0.05) inset, 0 30px 80px -30px rgb(0 0 0 / 0.6);"
       >
         <!-- Strip -->
-        <div class="relative z-2 flex items-center justify-between px-7 py-5 border-b border-white/8 max-[900px]:px-5.5 max-[900px]:py-3.5 max-[900px]:flex-wrap max-[900px]:gap-2.5">
+        <div
+          class="relative z-2 flex items-center justify-between px-7 py-5 border-b border-white/8 max-[900px]:px-5.5 max-[900px]:py-3.5 max-[900px]:flex-wrap max-[900px]:gap-2.5"
+        >
           <div class="flex items-center gap-3">
-            <span class="font-mono text-xs uppercase tracking-wide text-white/40">
-              Step {String(stepIndex + 1).padStart(2, "0")} / {String(steps.length).padStart(2, "0")}
+            <span
+              class="font-mono text-xs uppercase tracking-wide text-white/40"
+            >
+              Step {String(stepIndex + 1).padStart(2, "0")} / {String(
+                steps.length
+              ).padStart(2, "0")}
             </span>
             <span class="text-white/20">&middot;</span>
             <span class="text-xs text-white/40">{currentStep?.short}</span>
@@ -276,20 +368,102 @@
           {#if currentStep?.id === "path"}
             <PathChoice currentPath={path} onSelect={handlePathSelect} />
           {:else if currentStep?.id === "connect"}
-            <NightscoutConnect
-              onComplete={handleMigrationConnected}
-            />
+            <NightscoutConnect onComplete={handleMigrationConnected} />
           {:else if currentStep?.id === "cgm"}
-            <DevicePicker
-              {selectedDevice}
-              onSelect={(id) => {
-                selectedDevice = id;
-              }}
-            />
+            <div class="flex flex-col gap-8 px-4 py-8">
+              <div class="flex flex-col items-center gap-4 text-center">
+                <h1
+                  class="font-[Montserrat] font-[250] leading-tight tracking-tight text-white"
+                  style="font-size: clamp(32px, 4vw, 48px);"
+                >
+                  Connect a <em
+                    class="not-italic font-light"
+                    style="color: var(--onb-accent);"
+                  >
+                    data source
+                  </em>
+                  .
+                </h1>
+                <p class="max-w-140 text-base leading-relaxed text-white/50">
+                  Choose a cloud service or phone app to start sending glucose
+                  and treatment data to Nocturne. You can connect more later.
+                </p>
+              </div>
+              <DataSourceSelectionView
+                {connectors}
+                {uploaderApps}
+                dataSources={activeDataSources}
+                isLoading={servicesLoading}
+                loadError={servicesError}
+                onSelectConnector={handleSelectConnector}
+                onSelectUploader={handleSelectUploader}
+                onSkip={handleSourceSkip}
+              />
+            </div>
           {:else if currentStep?.id === "sync"}
-            <FirstSync
-              selectedDevice={selectedDevice ?? "none"}
-            />
+            <div class="flex flex-col gap-8 px-4 py-8">
+              {#if selectedConnectorId}
+                <div class="flex flex-col items-center gap-4 text-center">
+                  <h1
+                    class="font-[Montserrat] font-[250] leading-tight tracking-tight text-white"
+                    style="font-size: clamp(32px, 4vw, 48px);"
+                  >
+                    Configure your <em
+                      class="not-italic font-light"
+                      style="color: var(--onb-accent);"
+                    >
+                      connection
+                    </em>
+                    .
+                  </h1>
+                  <p class="max-w-140 text-base leading-relaxed text-white/50">
+                    Enter your credentials and we'll start syncing your data.
+                  </p>
+                </div>
+                <ConnectorSetup
+                  connectorId={selectedConnectorId}
+                  primaryAction="save-and-sync"
+                  showToggle={false}
+                  showDangerZone={false}
+                  showCapabilities={true}
+                  onComplete={() => handleSetupComplete()}
+                  onCancel={handleSetupBack}
+                />
+              {:else if selectedUploader}
+                <div class="flex flex-col items-center gap-4 text-center">
+                  <h1
+                    class="font-[Montserrat] font-[250] leading-tight tracking-tight text-white"
+                    style="font-size: clamp(32px, 4vw, 48px);"
+                  >
+                    Set up your <em
+                      class="not-italic font-light"
+                      style="color: var(--onb-accent);"
+                    >
+                      app
+                    </em>
+                    .
+                  </h1>
+                  <p class="max-w-140 text-base leading-relaxed text-white/50">
+                    Follow the steps below to connect your phone app to
+                    Nocturne.
+                  </p>
+                </div>
+                <UploaderSetupView
+                  app={selectedUploader}
+                  setupResponse={uploaderSetupResponse}
+                  onBack={handleSetupBack}
+                  onConnected={handleSetupComplete}
+                />
+              {:else}
+                <div
+                  class="flex flex-col items-center gap-8 px-4 py-8 text-center"
+                >
+                  <p class="text-white/50">
+                    No data source selected. Go back to choose one.
+                  </p>
+                </div>
+              {/if}
+            </div>
           {:else if currentStep?.id === "import"}
             <ImportProgress
               jobId={migrationJobId}
@@ -308,13 +482,10 @@
         >
           <div>
             {#if stepIndex > 0 && currentStep?.id !== "finish"}
-              <button
-                class="inline-flex items-center gap-2 h-10.5 px-5 rounded-[10px] text-sm font-medium border border-white/14 bg-transparent text-white whitespace-nowrap cursor-pointer transition-[background,border-color,color] duration-150 hover:bg-white/5 hover:border-white/22 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--onb-accent-dim)"
-                onclick={handleBack}
-              >
+              <Button variant="outline" onclick={handleBack}>
                 <ArrowLeft class="h-4 w-4" />
                 Back
-              </button>
+              </Button>
             {:else if currentStep?.id === "path"}
               <span class="text-xs text-white/30">
                 Just pick a starting point.
@@ -323,33 +494,23 @@
           </div>
           <div class="flex items-center gap-3">
             {#if currentStep?.id === "finish"}
-              <button
-                class="inline-flex items-center gap-2 h-10.5 px-5 rounded-[10px] text-sm font-semibold border border-transparent whitespace-nowrap cursor-pointer transition-[background,border-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--onb-accent-dim)"
-                style="background: var(--onb-accent); color: var(--onb-navy);"
-                onmouseenter={(e) => e.currentTarget.style.background = 'var(--onb-accent-soft)'}
-                onmouseleave={(e) => e.currentTarget.style.background = 'var(--onb-accent)'}
-                onclick={handleEnterDashboard}
-              >
+              <Button onclick={handleEnterDashboard}>
                 Enter Nocturne
                 <ArrowRight class="h-4 w-4" />
-              </button>
-            {:else if currentStep?.id !== "path"}
-              <button
-                class="text-[13px] text-white/30 transition-colors hover:text-white"
-                onclick={handleSkip}
-              >
+              </Button>
+            {:else if currentStep?.id === "cgm"}
+              <Button onclick={handleSetupComplete}>
+                Save and continue
+                <ArrowRight class="h-4 w-4" />
+              </Button>
+            {:else if currentStep?.id !== "path" && currentStep?.id !== "sync"}
+              <Button variant="ghost" onclick={handleSkip}>
                 Skip for now
-              </button>
-              <button
-                class="inline-flex items-center gap-2 h-10.5 px-5 rounded-[10px] text-sm font-semibold border border-transparent whitespace-nowrap cursor-pointer transition-[background,border-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--onb-accent-dim)"
-                style="background: var(--onb-accent); color: var(--onb-navy);"
-                onmouseenter={(e) => e.currentTarget.style.background = 'var(--onb-accent-soft)'}
-                onmouseleave={(e) => e.currentTarget.style.background = 'var(--onb-accent)'}
-                onclick={handleNext}
-              >
+              </Button>
+              <Button onclick={handleNext}>
                 Continue
                 <ArrowRight class="h-4 w-4" />
-              </button>
+              </Button>
             {/if}
           </div>
         </div>

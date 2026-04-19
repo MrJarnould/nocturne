@@ -384,7 +384,6 @@ msgstr "Just now"
 #: src/lib/components/dashboard/BGStatisticsCards.svelte
 #: src/lib/components/dashboard/glucose-chart/dialogs/DeliveryInspectionDialog.svelte
 #: src/lib/components/dashboard/widgets/LastUpdatedWidget.svelte
-#: src/lib/components/layout/AppSidebar.svelte
 #: src/lib/components/members/MemberCard.svelte
 #: src/lib/components/members/MemberCard.svelte
 #: src/lib/components/members/PendingInvitesList.svelte
@@ -4098,6 +4097,7 @@ msgid "Settings"
 msgstr "Settings"
 
 #: src/lib/components/layout/AppSidebar.svelte
+#: src/routes/(unauthenticated)/setup/+page@.svelte
 msgid "Setup"
 msgstr "Setup"
 
@@ -7255,12 +7255,12 @@ msgstr "Activity"
 #: src/lib/components/status-pills/COBPill.svelte
 #: src/lib/components/status-pills/IOBPill.svelte
 #: src/lib/components/treatments/TreatmentsDataTable.svelte
+#: src/routes/(unauthenticated)/setup/+page@.svelte
 #: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
 msgid "Source"
 msgstr "Source"
 
 #: src/lib/components/status-pills/IOBPill.svelte
-#: src/routes/(unauthenticated)/setup/+page@.svelte
 msgid "Device"
 msgstr "Device"
 
@@ -16906,17 +16906,14 @@ msgstr ""
 msgid "Choose your path"
 msgstr "Choose your path"
 
-#: src/routes/(unauthenticated)/setup/+page@.svelte
-msgid "Connect your CGM"
-msgstr "Connect your CGM"
+#~ msgid "Connect your CGM"
+#~ msgstr "Connect your CGM"
 
-#: src/routes/(unauthenticated)/setup/+page@.svelte
-msgid "First sync"
-msgstr "First sync"
+#~ msgid "First sync"
+#~ msgstr "First sync"
 
-#: src/routes/(unauthenticated)/setup/+page@.svelte
-msgid "Sync"
-msgstr "Sync"
+#~ msgid "Sync"
+#~ msgstr "Sync"
 
 #: src/routes/(unauthenticated)/setup/+page@.svelte
 msgid "You’re in"
@@ -16961,7 +16958,7 @@ msgid "Save & exit"
 msgstr "Save & exit"
 
 #. placeholder {0}: String(stepIndex + 1).padStart(2, "0")
-#. placeholder {1}: String(steps.length).padStart(2, "0")
+#. placeholder {1}: String( steps.length ).padStart(2, "0")
 #: src/routes/(unauthenticated)/setup/+page@.svelte
 msgid "Step {0} / {1}"
 msgstr "Step {0} / {1}"
@@ -17090,15 +17087,14 @@ msgstr "Food library"
 msgid "Bringing your <0>history</0> across."
 msgstr "Bringing your <0>history</0> across."
 
-#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
-msgid ""
-"We're streaming entries, treatments, and profiles from your Nightscout\n"
-"into Nocturne's store. You can navigate away — this continues in\n"
-"the background."
-msgstr ""
-"We're streaming entries, treatments, and profiles from your Nightscout\n"
-"into Nocturne's store. You can navigate away — this continues in\n"
-"the background."
+#~ msgid ""
+#~ "We're streaming entries, treatments, and profiles from your Nightscout\n"
+#~ "into Nocturne's store. You can navigate away — this continues in\n"
+#~ "the background."
+#~ msgstr ""
+#~ "We're streaming entries, treatments, and profiles from your Nightscout\n"
+#~ "into Nocturne's store. You can navigate away — this continues in\n"
+#~ "the background."
 
 #: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
 msgid "Overall progress"
@@ -17368,3 +17364,76 @@ msgstr "pending"
 #: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
 msgid "no records"
 msgstr "no records"
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Connect a data source"
+msgstr "Connect a data source"
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Configure & sync"
+msgstr "Configure & sync"
+
+#~ msgid "Connect a <0>data source</0>."
+#~ msgstr "Connect a <0>data source</0>."
+
+#~ msgid "Choose a cloud service or phone app to start sending glucose and treatment data to Nocturne. You can connect more later."
+#~ msgstr "Choose a cloud service or phone app to start sending glucose and treatment data to Nocturne. You can connect more later."
+
+#~ msgid "Configure your <0>connection</0>."
+#~ msgstr "Configure your <0>connection</0>."
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Enter your credentials and we'll start syncing your data."
+msgstr "Enter your credentials and we'll start syncing your data."
+
+#~ msgid "Set up your <0>app</0>."
+#~ msgstr "Set up your <0>app</0>."
+
+#~ msgid "Follow the steps below to connect your phone app to Nocturne."
+#~ msgstr "Follow the steps below to connect your phone app to Nocturne."
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "No data source selected. Go back to choose one."
+msgstr "No data source selected. Go back to choose one."
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Connect a <0>data source</0> ."
+msgstr "Connect a <0>data source</0> ."
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid ""
+"Choose a cloud service or phone app to start sending glucose\n"
+"and treatment data to Nocturne. You can connect more later."
+msgstr ""
+"Choose a cloud service or phone app to start sending glucose\n"
+"and treatment data to Nocturne. You can connect more later."
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Configure your <0>connection</0> ."
+msgstr "Configure your <0>connection</0> ."
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Set up your <0>app</0> ."
+msgstr "Set up your <0>app</0> ."
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid ""
+"Follow the steps below to connect your phone app to\n"
+"Nocturne."
+msgstr ""
+"Follow the steps below to connect your phone app to\n"
+"Nocturne."
+
+#: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
+msgid ""
+"We're streaming entries, treatments, and profiles from your Nightscout\n"
+"into Nocturne's store. You can navigate away — this continues in the\n"
+"background."
+msgstr ""
+"We're streaming entries, treatments, and profiles from your Nightscout\n"
+"into Nocturne's store. You can navigate away — this continues in the\n"
+"background."
+
+#: src/routes/(unauthenticated)/setup/+page@.svelte
+msgid "Save and continue <0/>"
+msgstr "Save and continue <0/>"

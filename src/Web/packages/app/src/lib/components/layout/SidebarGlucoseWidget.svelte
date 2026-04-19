@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getRealtimeStore } from "$lib/stores/realtime-store.svelte";
+  import { tryGetRealtimeStore } from "$lib/stores/realtime-store.svelte";
   import {
     glucoseUnits,
     predictionMinutes,
@@ -20,17 +20,17 @@
   } from "$api/predictions.remote";
   import { getDirectionInfo } from "$lib/utils";
 
-  const realtimeStore = getRealtimeStore();
+  const realtimeStore = tryGetRealtimeStore();
 
   // Get current glucose values (raw mg/dL)
-  const rawCurrentBG = $derived(realtimeStore.currentBG);
-  const rawBgDelta = $derived(realtimeStore.bgDelta);
-  const direction = $derived(realtimeStore.direction);
-  const demoMode = $derived(realtimeStore.demoMode);
-  const lastUpdated = $derived(realtimeStore.lastUpdated);
+  const rawCurrentBG = $derived(realtimeStore?.currentBG ?? 0);
+  const rawBgDelta = $derived(realtimeStore?.bgDelta ?? 0);
+  const direction = $derived(realtimeStore?.direction ?? "NONE");
+  const demoMode = $derived(realtimeStore?.demoMode ?? false);
+  const lastUpdated = $derived(realtimeStore?.lastUpdated ?? 0);
 
   // Connection status
-  const isConnected = $derived(realtimeStore.isConnected);
+  const isConnected = $derived(realtimeStore?.isConnected ?? false);
 
   // Stale threshold in milliseconds (10 minutes)
   const STALE_THRESHOLD_MS = 10 * 60 * 1000;
@@ -39,13 +39,13 @@
   const predictionHorizonMs = $derived(predictionMinutes.current * 60 * 1000);
 
   // Stale detection - data older than threshold (recalculates every second)
-  const now = $derived(realtimeStore.now);
+  const now = $derived(realtimeStore?.now ?? Date.now());
   const isStale = $derived(now - lastUpdated > STALE_THRESHOLD_MS);
   const isDisconnected = $derived(!isConnected);
 
   // Loading state - no data received yet
   const isLoading = $derived(
-    rawCurrentBG === 0 && realtimeStore.entries.length === 0
+    rawCurrentBG === 0 && (realtimeStore?.entries.length ?? 0) === 0
   );
 
   // Format for display based on user's unit preference
@@ -89,7 +89,7 @@
   // Get last 3 hours of entries for mini chart (convert to display units)
   const chartEntries = $derived.by(() => {
     const threeHoursAgo = Date.now() - 3 * 60 * 60 * 1000;
-    return realtimeStore.entries
+    return (realtimeStore?.entries ?? [])
       .filter((e) => (e.mills ?? 0) > threeHoursAgo)
       .map((e) => ({
         date: new Date(e.mills ?? 0),
@@ -155,10 +155,10 @@
   const DirectionIcon = $derived(getDirectionInfo(direction).icon);
 
   // Calculate time since last reading for display
-  const timeSince = $derived(realtimeStore.timeSinceReading);
+  const timeSince = $derived(realtimeStore?.timeSinceReading ?? "");
 
   // Syncing state
-  const isSyncing = $derived(realtimeStore.isSyncing);
+  const isSyncing = $derived(realtimeStore?.isSyncing ?? false);
 
   // Status text - show connection error or time since reading
   // Note: "Syncing..." state is handled in the GlucoseValueIndicator component
@@ -178,7 +178,7 @@
         {isSyncing}
         {statusText}
         statusTooltip="Click to sync data"
-        onSyncClick={() => realtimeStore.syncData()}
+        onSyncClick={() => realtimeStore?.syncData()}
         size="sm"
       />
       <div class="flex flex-col items-start">

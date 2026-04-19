@@ -22,6 +22,16 @@ import { LANGUAGE_COOKIE_NAME } from "$lib/stores/appearance-store.svelte";
 /** Static asset paths that bypass all middleware. */
 const STATIC_ASSET_PREFIXES = ["/_app", "/assets", "/favicon.ico"] as const;
 
+/**
+ * Get the original client-facing host from the request.
+ * YARP suppresses the original Host header when transforms are configured,
+ * replacing it with the internal destination host. The original host is
+ * preserved in X-Forwarded-Host, which we must read first.
+ */
+function getOriginalHost(request: Request): string | null {
+  return request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+}
+
 /** Route prefixes that bypass requireAuthentication enforcement. */
 const PUBLIC_PREFIXES = ["/auth", "/api", "/setup", "/clock", "/invite", "/terms", "/privacy"] as const;
 
@@ -72,7 +82,7 @@ const authHandle: Handle = async ({ event, resolve }) => {
     // performed by the API (via SessionCookieHandler auto-refresh) back to
     // the browser, so rotated refresh tokens don't silently disappear.
     const refreshToken = event.cookies.get(AUTH_COOKIE_NAMES.refreshToken);
-    const hostHeader = event.request.headers.get("host");
+    const hostHeader = getOriginalHost(event.request);
     const apiClient = createServerApiClient(apiBaseUrl, fetch, {
       accessToken,
       refreshToken,
@@ -146,7 +156,7 @@ const siteSecurityHandle: Handle = async ({ event, resolve }) => {
   // Probe the API for setup/recovery mode and site-level requireAuthentication.
   try {
     if (!event.locals.siteSecurityChecked) {
-      const hostHeader = event.request.headers.get("host");
+      const hostHeader = getOriginalHost(event.request);
       const apiClient = createServerApiClient(apiBaseUrl, fetch, {
         hashedInstanceKey: getHashedInstanceKey(),
         extraHeaders: hostHeader ? { "X-Forwarded-Host": hostHeader } : undefined,
@@ -230,7 +240,7 @@ const proxyHandle: Handle = async ({ event, resolve }) => {
     // Forward the request to the backend API
     const headers = new Headers(event.request.headers);
     // Forward original Host for tenant resolution behind reverse proxies
-    const originalHost = event.request.headers.get("host");
+    const originalHost = getOriginalHost(event.request);
     if (originalHost) {
       headers.set("X-Forwarded-Host", originalHost);
     }
@@ -284,15 +294,10 @@ const apiClientHandle: Handle = async ({ event, resolve }) => {
   const accessToken = event.cookies.get(AUTH_COOKIE_NAMES.accessToken);
   const refreshToken = event.cookies.get(AUTH_COOKIE_NAMES.refreshToken);
 
-  // Forward X-Acting-As header if present (follower context)
   const extraHeaders: Record<string, string> = {};
-  const actingAs = event.request.headers.get("x-acting-as");
-  if (actingAs) {
-    extraHeaders["X-Acting-As"] = actingAs;
-  }
 
   // Forward the original Host for tenant resolution behind reverse proxies
-  const originalHost = event.request.headers.get("host");
+  const originalHost = getOriginalHost(event.request);
   if (originalHost) {
     extraHeaders["X-Forwarded-Host"] = originalHost;
   }

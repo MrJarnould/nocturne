@@ -459,29 +459,29 @@ class Program
             {
                 // OIDC callback on apex → API (must come before /api/ → web catch-all)
                 yarp.AddRoute("/api/v4/oidc/{**catch-all}", api.GetEndpoint("http"))
-                    .WithTransformXForwarded("X-Forwarded", ForwardedTransformActions.Set);
+                    .WithTransformXForwarded("X-Forwarded-", ForwardedTransformActions.Set);
 
                 // Bot webhooks, remote functions → web
                 yarp.AddRoute("/api/{**catch-all}", webEndpoints.GetEndpoint("http"))
-                    .WithTransformXForwarded("X-Forwarded", ForwardedTransformActions.Set);
+                    .WithTransformXForwarded("X-Forwarded-", ForwardedTransformActions.Set);
 
                 // Bot account linking
                 yarp.AddRoute("/auth/bot/{**catch-all}", webEndpoints.GetEndpoint("http"))
-                    .WithTransformXForwarded("X-Forwarded", ForwardedTransformActions.Set);
+                    .WithTransformXForwarded("X-Forwarded-", ForwardedTransformActions.Set);
 
                 // API docs
                 yarp.AddRoute("/scalar/{**catch-all}", api.GetEndpoint("http"))
-                    .WithTransformXForwarded("X-Forwarded", ForwardedTransformActions.Set);
+                    .WithTransformXForwarded("X-Forwarded-", ForwardedTransformActions.Set);
                 yarp.AddRoute("/openapi/{**catch-all}", api.GetEndpoint("http"))
-                    .WithTransformXForwarded("X-Forwarded", ForwardedTransformActions.Set);
+                    .WithTransformXForwarded("X-Forwarded-", ForwardedTransformActions.Set);
 
                 // OAuth/OIDC discovery endpoints → API
                 yarp.AddRoute("/.well-known/{**catch-all}", api.GetEndpoint("http"))
-                    .WithTransformXForwarded("X-Forwarded", ForwardedTransformActions.Set);
+                    .WithTransformXForwarded("X-Forwarded-", ForwardedTransformActions.Set);
 
                 // Fallback → web (includes Socket.IO websockets, HMR, all frontend routes)
                 yarp.AddRoute(webEndpoints.GetEndpoint("http"))
-                    .WithTransformXForwarded("X-Forwarded", ForwardedTransformActions.Set);
+                    .WithTransformXForwarded("X-Forwarded-", ForwardedTransformActions.Set);
             });
 
         // When a custom domain is configured, show the custom domain URL in the

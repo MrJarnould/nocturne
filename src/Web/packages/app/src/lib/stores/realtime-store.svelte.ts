@@ -961,3 +961,8 @@ export function getRealtimeStore(): RealtimeStore {
   }
   return store;
 }
+
+/** Gets the realtime store from context, returning null if not available */
+export function tryGetRealtimeStore(): RealtimeStore | null {
+  return getContext<RealtimeStore>(REALTIME_STORE_KEY) ?? null;
+}

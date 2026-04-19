@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from "$app/state";
   import { invalidateAll } from "$app/navigation";
+  import { browser } from "$app/environment";
 
   import * as Sidebar from "$lib/components/ui/sidebar";
   import * as Collapsible from "$lib/components/ui/collapsible";
@@ -11,11 +12,6 @@
   import LanguageSelector from "$lib/components/LanguageSelector.svelte";
   import { updateLanguagePreference } from "$api/user-preferences.remote";
   import { hasLanguagePreference } from "$lib/stores/appearance-store.svelte";
-  import {
-    actingAs,
-    followerTargets,
-    type ActingAsTarget,
-  } from "$lib/stores/acting-as";
   import { getMyTenants } from "$lib/api/generated/myTenants.generated.remote";
   import {
     Home,
@@ -76,63 +72,90 @@
   );
   const sidebar = Sidebar.useSidebar();
 
-  // Follower target selector state
-  let targets = $state<ActingAsTarget[]>([]);
-  let selectedValue = $state<string>("__self__");
+  // Tenant switcher state
+  interface TenantTarget {
+    id: string;
+    slug: string;
+    displayName: string | null;
+  }
+  let tenantTargets = $state<TenantTarget[]>([]);
+  let selectedTenantSlug = $state<string | null>(null);
+  let defaultTenantSlug = $state<string | null>(null);
+  let baseDomain = $state<string | null>(null);
+  let currentSlug = $state<string | null>(null);
+
+  // Derive subdomain info from hostname
+  $effect(() => {
+    if (!browser) return;
+    const parts = window.location.hostname.split(".");
+    if (parts.length > 2 && window.location.hostname !== "localhost") {
+      currentSlug = parts[0];
+      baseDomain = parts.slice(1).join(".");
+    }
+  });
 
   /**
-   * Fetch available follower targets from the API. Gracefully handles errors.
+   * Fetch available tenants from the API. Only populates targets when
+   * subdomain-based multitenancy is active (baseDomain is set).
    */
-  async function loadFollowerTargets() {
+  async function loadTenantTargets() {
+    if (!baseDomain) return;
     try {
       const tenants = await getMyTenants();
-      const fetched: ActingAsTarget[] = (tenants ?? [])
-        .filter((t): t is typeof t & { id: string } => !!t.id && !t.isDefault)
+      const defaultTenant = (tenants ?? []).find((t) => t.isDefault);
+      defaultTenantSlug = defaultTenant?.slug ?? null;
+
+      tenantTargets = (tenants ?? [])
+        .filter(
+          (t): t is typeof t & { id: string; slug: string } =>
+            !!t.id && !!t.slug && !t.isDefault,
+        )
         .map((t) => ({
-          subjectId: t.id,
+          id: t.id,
+          slug: t.slug,
           displayName: t.displayName ?? null,
-          email: null,
-          scopes: [],
-          label: t.slug ?? null,
         }));
-      targets = fetched;
-      followerTargets.set(fetched);
+
+      // Pre-select based on current subdomain
+      selectedTenantSlug =
+        currentSlug && currentSlug !== defaultTenantSlug
+          ? currentSlug
+          : null;
     } catch {
       // Silently fail
     }
   }
 
-  function handleTargetChange(value: string | undefined) {
-    if (!value) return;
-    selectedValue = value;
+  function handleTenantChange(value: string | undefined) {
+    if (!value || !baseDomain) return;
 
+    let targetSlug: string | null = null;
     if (value === "__self__") {
-      actingAs.set(null);
+      targetSlug = defaultTenantSlug;
     } else {
-      const target = targets.find((t) => t.subjectId === value);
-      if (target) {
-        actingAs.set(target);
-      }
+      targetSlug = tenantTargets.find((t) => t.id === value)?.slug ?? null;
     }
 
-    // Refresh all page data to reflect the new context
-    invalidateAll();
+    if (targetSlug && targetSlug !== currentSlug) {
+      // Default tenant lives at the apex domain, not at default.baseDomain
+      const host = targetSlug === defaultTenantSlug
+        ? baseDomain
+        : `${targetSlug}.${baseDomain}`;
+      window.location.href = `${window.location.protocol}//${host}/`;
+    }
   }
 
-  /**
-   * Format a target for display. Shows "{displayName} ({label})" if label is
-   * present, otherwise just "{displayName}".
-   */
-  function formatTargetLabel(target: ActingAsTarget): string {
-    const name = target.displayName || target.email || "Unknown";
-    return target.label ? `${name} (${target.label})` : name;
+  function formatTenantLabel(target: TenantTarget): string {
+    return target.displayName
+      ? `${target.displayName} (${target.slug})`
+      : target.slug;
   }
 
   // Use $effect so this runs when `user` becomes available after client-side
   // login navigation (onMount alone misses that case).
   $effect(() => {
     if (user) {
-      loadFollowerTargets();
+      loadTenantTargets();
     }
   });
 
@@ -393,8 +416,8 @@
 
   <Sidebar.Separator />
 
-  <!-- Follower target selector (only visible when targets are available) -->
-  {#if targets.length > 0}
+  <!-- Tenant switcher (only visible when multiple tenants are available) -->
+  {#if tenantTargets.length > 0}
     <div class="border-b px-3 py-2 group-data-[collapsible=icon]:hidden">
       <p
         class="mb-1.5 text-xs font-medium text-muted-foreground flex items-center gap-1.5"
@@ -404,25 +427,28 @@
       </p>
       <Select.Root
         type="single"
-        value={selectedValue}
-        onValueChange={handleTargetChange}
+        value={selectedTenantSlug
+          ? (tenantTargets.find((t) => t.slug === selectedTenantSlug)?.id ??
+            "__self__")
+          : "__self__"}
+        onValueChange={handleTenantChange}
       >
         <Select.Trigger size="sm" class="w-full">
-          {#if selectedValue === "__self__"}
+          {#if !selectedTenantSlug}
             My Data
           {:else}
-            {#each targets as target}
-              {#if target.subjectId === selectedValue}
-                {formatTargetLabel(target)}
+            {#each tenantTargets as target}
+              {#if target.slug === selectedTenantSlug}
+                {formatTenantLabel(target)}
               {/if}
             {/each}
           {/if}
         </Select.Trigger>
         <Select.Content>
           <Select.Item value="__self__">My Data</Select.Item>
-          {#each targets as target}
-            <Select.Item value={target.subjectId}>
-              {formatTargetLabel(target)}
+          {#each tenantTargets as target}
+            <Select.Item value={target.id}>
+              {formatTenantLabel(target)}
             </Select.Item>
           {/each}
         </Select.Content>

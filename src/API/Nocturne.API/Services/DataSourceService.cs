@@ -137,7 +137,7 @@ public class DataSourceService : IDataSourceService
     }
 
     /// <inheritdoc />
-    public Task<List<AvailableConnector>> GetAvailableConnectorsAsync(
+    public async Task<List<AvailableConnector>> GetAvailableConnectorsAsync(
         CancellationToken cancellationToken = default
     )
     {
@@ -158,13 +158,20 @@ public class DataSourceService : IDataSourceService
             .OrderBy(connector => connector.Name)
             .ToList();
 
+        // Check which connectors have actual saved configuration in the database
+        var configuredNames = await _context.ConnectorConfigurations
+            .AsNoTracking()
+            .Select(c => c.ConnectorName.ToLower())
+            .ToListAsync(cancellationToken);
+
+        var configuredSet = new HashSet<string>(configuredNames, StringComparer.OrdinalIgnoreCase);
 
         foreach (var connector in connectors)
         {
-            connector.IsConfigured = ConnectorMetadataService.GetByConnectorId(connector.Id) != null;
+            connector.IsConfigured = configuredSet.Contains(connector.Id ?? "");
         }
 
-        return Task.FromResult(connectors);
+        return connectors;
     }
 
     private static string? GetConnectorDocumentationUrl(string connectorName)

@@ -122,8 +122,11 @@
 
 			// Draw stars
 			for (const star of stars) {
-				const x = star.scatteredX + (star.gridX - star.scatteredX) * easedProgress;
-				const y = star.scatteredY + (star.gridY - star.scatteredY) * easedProgress;
+				const drift = (1 - easedProgress) * 1.5;
+				const driftX = Math.sin(time * 0.15 + star.twinkleOffset) * drift;
+				const driftY = Math.cos(time * 0.12 + star.twinkleOffset * 1.3) * drift;
+				const x = star.scatteredX + (star.gridX - star.scatteredX) * easedProgress + driftX;
+				const y = star.scatteredY + (star.gridY - star.scatteredY) * easedProgress + driftY;
 
 				// Distance fade from center
 				const dx = x / w - 0.5;

@@ -1,5 +1,14 @@
 <script lang="ts">
-  import { Database, Upload, Users, ChartLine, BookOpen, Check, AlertTriangle, Loader2 } from "lucide-svelte";
+  import {
+    Database,
+    Upload,
+    Users,
+    ChartLine,
+    BookOpen,
+    Check,
+    AlertTriangle,
+    Loader2,
+  } from "lucide-svelte";
   import * as migrationRemote from "$api/generated/migrations.generated.remote";
   import { MigrationJobState } from "$api";
 
@@ -13,22 +22,24 @@
     onComplete: () => void;
   } = $props();
 
-  let progress = $state(0);          // displayed progress (smoothed)
-  let realProgress = $state(0);      // actual backend progress
+  let progress = $state(0); // displayed progress (smoothed)
+  let realProgress = $state(0); // actual backend progress
   let error = $state<string | null>(null);
   let failed = $state(false);
   let loading = $state(true);
-  let done = $state(false);          // backend says completed
+  let done = $state(false); // backend says completed
   let wasAlreadyDone = $state(false); // migration was already complete when we mounted
-  let collections = $state<{
-    key: string;
-    icon: typeof Database;
-    label: string;
-    total: number;
-    migrated: number;
-    pct: number;
-    isComplete: boolean;
-  }[]>([]);
+  let collections = $state<
+    {
+      key: string;
+      icon: typeof Database;
+      label: string;
+      total: number;
+      migrated: number;
+      pct: number;
+      isComplete: boolean;
+    }[]
+  >([]);
   let etaText = $state<string | null>(null);
   let totalMigrated = $state(0);
   let currentOperation = $state<string | null>(null);
@@ -37,7 +48,10 @@
   const MIN_DURATION_MS = 3000; // minimum time the progress animation takes
   let startedAt = $state(0);
 
-  const COLLECTION_META: Record<string, { icon: typeof Database; label: string }> = {
+  const COLLECTION_META: Record<
+    string,
+    { icon: typeof Database; label: string }
+  > = {
     entries: { icon: Database, label: "Entries" },
     treatments: { icon: Upload, label: "Treatments" },
     profile: { icon: Users, label: "Profiles" },
@@ -102,7 +116,8 @@
       // No active job found — kick one off using saved connector credentials
       if (!resolvedJobId) {
         try {
-          const jobInfo = await migrationRemote.startFromConnector("nightscout");
+          const jobInfo =
+            await migrationRemote.startFromConnector("nightscout");
           resolvedJobId = jobInfo?.id;
         } catch {
           error = "Failed to start migration";
@@ -163,7 +178,8 @@
             status.state === MigrationJobState.Cancelled
           ) {
             failed = true;
-            error = status.errorMessage ?? `Migration ${status.state?.toLowerCase()}`;
+            error =
+              status.errorMessage ?? `Migration ${status.state?.toLowerCase()}`;
             break;
           }
 
@@ -183,7 +199,9 @@
     }
 
     poll();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   });
 
   // Smooth displayed progress: never jumps ahead of real, but enforces a
@@ -234,18 +252,27 @@
       class="font-[Montserrat] font-[250] leading-tight tracking-tight text-white"
       style="font-size: clamp(32px, 4vw, 48px);"
     >
-      Bringing your <em class="not-italic font-light" style="color: var(--onb-accent);">history</em> across.
+      Bringing your <em
+        class="not-italic font-light"
+        style="color: var(--onb-accent);"
+      >
+        history
+      </em>
+      across.
     </h1>
-    <p class="max-w-[560px] text-base leading-relaxed text-white/50">
+    <p class="max-w-140 text-base leading-relaxed text-white/50">
       We're streaming entries, treatments, and profiles from your Nightscout
-      into Nocturne's store. You can navigate away &mdash; this continues in
-      the background.
+      into Nocturne's store. You can navigate away &mdash; this continues in the
+      background.
     </p>
   </div>
 
   {#if loading}
     <div class="flex flex-col items-center justify-center py-16 gap-4">
-      <Loader2 class="h-12 w-12 animate-spin" style="color: var(--onb-accent);" />
+      <Loader2
+        class="h-12 w-12 animate-spin"
+        style="color: var(--onb-accent);"
+      />
       <p class="text-sm text-white/40">Finding active migration...</p>
     </div>
   {:else if error && !collections.length}
@@ -261,7 +288,9 @@
     >
       <!-- Left side -->
       <div class="flex flex-col gap-3">
-        <span class="font-mono text-[13px] uppercase tracking-widest text-white/40">
+        <span
+          class="font-mono text-[13px] uppercase tracking-widest text-white/40"
+        >
           Overall progress
         </span>
         <div class="flex items-baseline gap-1">
@@ -271,7 +300,11 @@
           >
             {Math.round(progress)}
           </span>
-          <span class="text-[28px] font-[Montserrat] font-[250] tabular-nums text-white/40">%</span>
+          <span
+            class="text-[28px] font-[Montserrat] font-[250] tabular-nums text-white/40"
+          >
+            %
+          </span>
         </div>
         <p class="text-sm text-white/40">
           {#if failed}
@@ -289,7 +322,9 @@
       </div>
 
       <!-- Right side — Progress ring -->
-      <div class="relative flex items-center justify-center w-[200px] h-[200px]">
+      <div
+        class="relative flex items-center justify-center w-[200px] h-[200px]"
+      >
         <svg
           width="200"
           height="200"
@@ -311,16 +346,20 @@
             cy="100"
             r="88"
             fill="none"
-            stroke={failed ? '#f59e0b' : 'var(--onb-accent)'}
+            stroke={failed ? "#f59e0b" : "var(--onb-accent)"}
             stroke-width="6"
             stroke-linecap="round"
             stroke-dasharray={circumference}
             stroke-dashoffset={circumference * (1 - progress / 100)}
-            style="transition: stroke-dashoffset 0.6s ease; filter: drop-shadow(0 0 6px {failed ? '#f59e0b' : 'var(--onb-accent)'});"
+            style="transition: stroke-dashoffset 0.6s ease; filter: drop-shadow(0 0 6px {failed
+              ? '#f59e0b'
+              : 'var(--onb-accent)'});"
           />
         </svg>
         <!-- Center overlay -->
-        <span class="absolute font-[Montserrat] text-[38px] font-light tabular-nums text-white">
+        <span
+          class="absolute font-[Montserrat] text-[38px] font-light tabular-nums text-white"
+        >
           {Math.round(progress)}%
         </span>
       </div>
@@ -338,11 +377,15 @@
               <!-- Icon box -->
               <div
                 class="flex h-9 w-9 items-center justify-center rounded-lg"
-                style="background: {col.isComplete || col.pct > 0 ? 'var(--onb-accent-dim)' : 'rgb(255 255 255 / 0.03)'};"
+                style="background: {col.isComplete || col.pct > 0
+                  ? 'var(--onb-accent-dim)'
+                  : 'rgb(255 255 255 / 0.03)'};"
               >
                 <col.icon
                   class="h-[18px] w-[18px]"
-                  style="color: {col.isComplete || col.pct > 0 ? 'var(--onb-accent)' : 'rgb(255 255 255 / 0.4)'};"
+                  style="color: {col.isComplete || col.pct > 0
+                    ? 'var(--onb-accent)'
+                    : 'rgb(255 255 255 / 0.4)'};"
                 />
               </div>
 
@@ -367,7 +410,9 @@
                 {#if col.isComplete}
                   <Check class="h-4 w-4" style="color: var(--onb-accent);" />
                 {:else}
-                  <span class="font-mono text-xs text-white/40">{col.pct}%</span>
+                  <span class="font-mono text-xs text-white/40">
+                    {col.pct}%
+                  </span>
                 {/if}
               </div>
             </div>
@@ -379,7 +424,11 @@
             >
               <div
                 class="h-full rounded-full transition-all duration-500 ease-out"
-                style="width: {col.isComplete ? 100 : col.pct}%; background: {col.isComplete ? '#22c55e' : 'var(--onb-accent)'};"
+                style="width: {col.isComplete
+                  ? 100
+                  : col.pct}%; background: {col.isComplete
+                  ? '#22c55e'
+                  : 'var(--onb-accent)'};"
               ></div>
             </div>
           </div>
