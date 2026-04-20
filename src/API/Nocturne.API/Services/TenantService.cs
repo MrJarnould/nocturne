@@ -23,11 +23,30 @@ public partial class TenantService : ITenantService
     private readonly ITenantRoleService _roleService;
     private readonly ILogger<TenantService> _logger;
 
-    private static readonly HashSet<string> ReservedSlugs = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "admin", "api", "www", "default", "app", "mail", "ftp",
-        "status", "help", "support"
-    };
+    private static readonly HashSet<string> ReservedSlugs =
+    [
+        // Infrastructure
+        "api", "app", "www", "cdn", "assets", "static", "gateway",
+        "staging", "prod", "dev", "demo", "preview", "beta",
+        // Email
+        "mail", "smtp", "webmail", "autoconfig", "autodiscover", "postmaster",
+        // Auth/Security
+        "auth", "login", "signup", "sso", "oauth", "identity",
+        // Admin
+        "admin", "dashboard", "console", "manage", "internal", "platform", "system",
+        // Public
+        "docs", "help", "support", "status", "blog", "legal",
+        // DNS
+        "ns", "ns1", "ns2", "ftp", "localhost", "dns",
+        // Abuse vectors
+        "account", "billing", "security", "password", "verify",
+        // Platform
+        "monitoring", "alerts", "bridge", "connect",
+        // Reserved words
+        "null", "undefined", "default", "test", "example",
+        // Healthcare
+        "nightscout", "cgm", "patient", "clinic", "provider",
+    ];
 
     [GeneratedRegex(@"^[a-z0-9][a-z0-9\-]{1,62}[a-z0-9]$")]
     private static partial Regex SlugPattern();
