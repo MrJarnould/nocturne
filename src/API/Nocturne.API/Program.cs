@@ -309,13 +309,10 @@ app.UseForwardedHeaders();
 // UseRouting so the rewritten path is what the router sees.
 app.UseMiddleware<JsonExtensionMiddleware>();
 
-// Explicit UseRouting so TenantSetupMiddleware and RecoveryModeMiddleware can
-// read endpoint metadata (e.g. [AllowDuringSetup]). Minimal hosting would
-// insert this automatically but we make it explicit for clarity.
+// Explicit UseRouting so TenantSetupMiddleware can read endpoint metadata
+// (e.g. [AllowDuringSetup]). Minimal hosting would insert this automatically
+// but we make it explicit for clarity.
 app.UseRouting();
-
-// Block most API traffic when recovery mode is active (orphaned subjects detected)
-app.UseMiddleware<RecoveryModeMiddleware>();
 
 // Redirect OIDC callbacks from apex to the originating tenant subdomain
 app.UseMiddleware<OidcCallbackRedirectMiddleware>();
