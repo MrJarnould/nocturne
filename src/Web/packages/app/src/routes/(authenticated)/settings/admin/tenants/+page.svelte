@@ -17,14 +17,36 @@
     Pencil,
     Loader2,
     AlertTriangle,
+    Info,
+    X,
   } from "lucide-svelte";
   import * as Alert from "$lib/components/ui/alert";
   import * as tenantRemote from "$api/generated/tenants.generated.remote";
   import type { TenantDetailDto } from "$api";
   import { getCurrentTenantId } from "../../current-tenant.remote";
+  import { getTransitionStatus } from "../../../tenants/transition-status.remote";
 
   const tenantIdQuery = $derived(getCurrentTenantId());
   const currentTenantId = $derived(tenantIdQuery.current ?? undefined);
+
+  // Transition status
+  const transitionQuery = $derived(getTransitionStatus());
+  const transitionStatus = $derived(transitionQuery.current);
+
+  const DISMISS_KEY = "nocturne:multitenancy-notice-dismissed";
+  let dismissed = $state(
+    typeof localStorage !== "undefined" &&
+      localStorage.getItem(DISMISS_KEY) === "true",
+  );
+
+  function dismissNotice() {
+    dismissed = true;
+    localStorage.setItem(DISMISS_KEY, "true");
+  }
+
+  const showBanner = $derived(
+    transitionStatus?.multitenancyEnabled && !dismissed,
+  );
 
   // State
   let loading = $state(true);
@@ -96,6 +118,28 @@
       </p>
     </div>
   </div>
+
+  {#if showBanner}
+    <Alert.Root>
+      <Info class="h-4 w-4" />
+      <Alert.Title>Multitenancy enabled</Alert.Title>
+      <Alert.Description class="flex items-start justify-between gap-4">
+        <span>
+          All app sessions have been invalidated. Reconfigure your apps to use
+          <code class="rounded bg-muted px-1 py-0.5 font-mono text-xs"
+            >{"{slug}"}.{transitionStatus?.baseDomain}</code
+          >.
+        </span>
+        <button
+          onclick={dismissNotice}
+          class="shrink-0 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100"
+          aria-label="Dismiss"
+        >
+          <X class="h-4 w-4" />
+        </button>
+      </Alert.Description>
+    </Alert.Root>
+  {/if}
 
   {#if loading}
     <div class="flex items-center justify-center py-12">
