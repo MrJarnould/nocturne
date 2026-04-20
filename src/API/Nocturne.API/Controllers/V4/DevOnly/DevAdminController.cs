@@ -697,8 +697,6 @@ public class DevAdminController : ControllerBase
     /// <summary>
     /// Create a new tenant without authentication (dev-only).
     /// Used by the Aspire dashboard "Create Tenant" command.
-    /// Copies all non-system memberships from the default tenant so that
-    /// existing passkeys work immediately on the new tenant.
     /// </summary>
     [HttpPost("tenants")]
     public async Task<ActionResult<TenantCreatedDto>> CreateTenant(
