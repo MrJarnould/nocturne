@@ -132,16 +132,6 @@
             </div>
           </div>
           <div>
-            <p class="text-sm font-medium text-muted-foreground">Type</p>
-            <div class="mt-1">
-              {#if tenant.isDefault}
-                <Badge variant="secondary">Default</Badge>
-              {:else}
-                <Badge variant="outline">Standard</Badge>
-              {/if}
-            </div>
-          </div>
-          <div>
             <p class="text-sm font-medium text-muted-foreground">Slug</p>
             <p class="mt-1 font-mono text-sm">{tenant.slug}</p>
           </div>

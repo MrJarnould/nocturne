@@ -102,13 +102,12 @@
     if (!baseDomain) return;
     try {
       const tenants = await getMyTenants();
-      const defaultTenant = (tenants ?? []).find((t) => t.isDefault);
-      defaultTenantSlug = defaultTenant?.slug ?? null;
+      defaultTenantSlug = (tenants ?? [])[0]?.slug ?? null;
 
       tenantTargets = (tenants ?? [])
         .filter(
           (t): t is typeof t & { id: string; slug: string } =>
-            !!t.id && !!t.slug && !t.isDefault,
+            !!t.id && !!t.slug && t.slug !== currentSlug,
         )
         .map((t) => ({
           id: t.id,
@@ -131,16 +130,13 @@
 
     let targetSlug: string | null = null;
     if (value === "__self__") {
-      targetSlug = defaultTenantSlug;
+      targetSlug = currentSlug;
     } else {
       targetSlug = tenantTargets.find((t) => t.id === value)?.slug ?? null;
     }
 
     if (targetSlug && targetSlug !== currentSlug) {
-      // Default tenant lives at the apex domain, not at default.baseDomain
-      const host = targetSlug === defaultTenantSlug
-        ? baseDomain
-        : `${targetSlug}.${baseDomain}`;
+      const host = `${targetSlug}.${baseDomain}`;
       window.location.href = `${window.location.protocol}//${host}/`;
     }
   }
