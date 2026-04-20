@@ -44,7 +44,6 @@ public class DirectGrantTokenHandlerTests : IDisposable
                 Slug = "default",
                 DisplayName = "Default",
                 IsActive = true,
-                IsDefault = true,
             });
             ctx.Subjects.Add(new Nocturne.Infrastructure.Data.Entities.SubjectEntity
             {
