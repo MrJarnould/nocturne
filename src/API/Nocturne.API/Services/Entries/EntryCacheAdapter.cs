@@ -6,6 +6,7 @@ using Nocturne.Core.Models.Entries;
 using Nocturne.Infrastructure.Cache.Abstractions;
 using Nocturne.Infrastructure.Cache.Constants;
 using Nocturne.Infrastructure.Cache.Keys;
+using Nocturne.API.Services.Glucose;
 
 namespace Nocturne.API.Services.Entries;
 

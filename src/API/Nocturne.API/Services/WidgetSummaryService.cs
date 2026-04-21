@@ -1,4 +1,5 @@
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Glucose;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.Widget;
 using Nocturne.Infrastructure.Data.Abstractions;

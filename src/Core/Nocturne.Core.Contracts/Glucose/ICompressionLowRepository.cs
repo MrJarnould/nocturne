@@ -1,6 +1,6 @@
 using Nocturne.Core.Models;
 
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Glucose;
 
 /// <summary>
 /// Repository interface for <see cref="CompressionLowSuggestion"/> persistence operations.

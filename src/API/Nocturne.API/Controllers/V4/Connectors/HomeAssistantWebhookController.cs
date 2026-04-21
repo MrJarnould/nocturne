@@ -7,6 +7,7 @@ using Nocturne.Connectors.HomeAssistant.Configurations;
 using Nocturne.Connectors.HomeAssistant.Mappers;
 using Nocturne.Connectors.HomeAssistant.Models;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Glucose;
 
 namespace Nocturne.API.Controllers.V4.Connectors;
 

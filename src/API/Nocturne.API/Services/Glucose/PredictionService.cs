@@ -5,7 +5,7 @@ using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Oref;
 using OrefModels = Nocturne.Core.Oref.Models;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Glucose;
 
 /// <summary>
 /// <see cref="IPredictionService"/> implementation that calculates glucose predictions using oref

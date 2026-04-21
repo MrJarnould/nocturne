@@ -1,4 +1,4 @@
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Glucose;
 
 /// <summary>
 /// Service for detecting compression lows in overnight glucose data.

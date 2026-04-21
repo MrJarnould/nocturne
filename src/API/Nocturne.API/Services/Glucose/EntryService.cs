@@ -1,10 +1,11 @@
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Glucose;
 using Nocturne.Core.Contracts.Entries;
 using Nocturne.Core.Contracts.Events;
 using Nocturne.Core.Contracts.Repositories;
 using Nocturne.Core.Models;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Glucose;
 
 /// <summary>
 /// Domain service implementation for <see cref="Entry"/> operations using Store/Cache/EventSink ports.

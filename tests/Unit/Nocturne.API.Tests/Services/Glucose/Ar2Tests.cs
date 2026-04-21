@@ -1,10 +1,11 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using Nocturne.API.Services;
+using Nocturne.API.Services.Glucose;
 using Nocturne.Core.Models;
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Glucose;
 
 /// <summary>
 /// Tests for AR2 forecasting with 1:1 legacy JavaScript compatibility

@@ -1,4 +1,4 @@
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Glucose;
 
 /// <summary>
 /// Configuration for <see cref="IPredictionService"/>. Bound from the

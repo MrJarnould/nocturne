@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Nocturne.API.Services;
+using Nocturne.API.Services.Glucose;
 using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Entries;
 using Nocturne.Core.Contracts.Events;

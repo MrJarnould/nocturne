@@ -1,6 +1,6 @@
 using Nocturne.Core.Models;
 
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Glucose;
 
 /// <summary>
 /// Domain service for <see cref="StateSpan"/> lifecycle operations.

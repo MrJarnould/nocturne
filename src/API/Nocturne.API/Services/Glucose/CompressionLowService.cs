@@ -1,8 +1,9 @@
 using Microsoft.Extensions.Logging;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Glucose;
 using Nocturne.Core.Models;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Glucose;
 
 /// <summary>
 /// Domain service for compression low suggestion management. Provides retrieval, review, and

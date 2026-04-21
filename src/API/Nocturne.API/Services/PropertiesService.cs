@@ -1,6 +1,8 @@
 using System.Text.Json;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Glucose;
 using Nocturne.Core.Models;
+using Nocturne.API.Services.Glucose;
 
 namespace Nocturne.API.Services;
 

@@ -1,7 +1,7 @@
 using Nocturne.API.Controllers.V4;
 using Nocturne.API.Controllers.V4.Analytics;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Glucose;
 
 /// <summary>
 /// Produces forward glucose predictions from current CGM and treatment data.

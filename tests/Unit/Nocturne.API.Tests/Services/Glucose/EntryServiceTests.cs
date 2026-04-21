@@ -1,14 +1,16 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using Nocturne.API.Services;
+using Nocturne.API.Services.Glucose;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Glucose;
 using Nocturne.Core.Contracts.Entries;
 using Nocturne.Core.Contracts.Events;
 using Nocturne.Core.Contracts.Repositories;
 using Nocturne.Core.Models;
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Glucose;
 
 /// <summary>
 /// Unit tests for EntryService using Store/Cache/EventSink ports

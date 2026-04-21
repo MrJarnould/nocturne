@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Glucose;
 
 /// <summary>
 /// Tests for notification levels constants with 1:1 legacy compatibility

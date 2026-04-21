@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Nocturne.Core.Models;
 using Xunit;
+using Nocturne.API.Tests.Services.Glucose;
 
 namespace Nocturne.API.Tests.Services;
 

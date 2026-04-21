@@ -1,6 +1,6 @@
 using Nocturne.Core.Models;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Glucose;
 
 /// <summary>
 /// Static direction helpers that implement the exact algorithms from the legacy Nightscout JavaScript

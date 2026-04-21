@@ -1,8 +1,9 @@
 using Nocturne.API.Services;
+using Nocturne.API.Services.Glucose;
 using Nocturne.Core.Models;
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Glucose;
 
 /// <summary>
 /// Tests for Direction service functionality with 1:1 legacy compatibility

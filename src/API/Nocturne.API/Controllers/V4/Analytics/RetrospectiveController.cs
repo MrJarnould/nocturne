@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using OpenApi.Remote.Attributes;
 using Nocturne.API.Services;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Glucose;
 using Nocturne.Core.Models;
 using Nocturne.Core.Contracts.Repositories;
 namespace Nocturne.API.Controllers.V4.Analytics;

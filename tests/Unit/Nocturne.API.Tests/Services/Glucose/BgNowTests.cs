@@ -3,7 +3,7 @@ using Moq;
 using Nocturne.Core.Models;
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Glucose;
 
 /// <summary>
 /// Tests for BGNow functionality with 1:1 legacy compatibility

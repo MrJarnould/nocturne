@@ -3,6 +3,7 @@ using Nocturne.Core.Contracts.Entries;
 using Nocturne.Core.Contracts.Repositories;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.Entries;
+using Nocturne.API.Services.Glucose;
 
 namespace Nocturne.API.Services.Entries;
 
