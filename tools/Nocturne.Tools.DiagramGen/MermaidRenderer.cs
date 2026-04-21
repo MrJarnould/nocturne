@@ -9,6 +9,14 @@ public static class MermaidRenderer
 {
     public static string RenderModule(IModel model, string moduleName, string[] entityNames)
     {
+        // Build reverse lookup for labeling external entities
+        var entityToModule = new Dictionary<string, string>();
+        foreach (var (modName, modEntities) in ModuleMap.Modules)
+        {
+            foreach (var name in modEntities)
+                entityToModule[name] = modName;
+        }
+
         var entitySet = new HashSet<string>(entityNames);
         var entities = model.GetEntityTypes()
             .Where(e => !e.IsOwned() && entitySet.Contains(e.ClrType.Name))
@@ -16,6 +24,9 @@ public static class MermaidRenderer
 
         var sb = new System.Text.StringBuilder();
         sb.AppendLine("erDiagram");
+
+        // Track external entities referenced by cross-module FKs
+        var externalEntities = new HashSet<string>();
 
         foreach (var entity in entities)
         {
@@ -29,17 +40,26 @@ public static class MermaidRenderer
                 var isUnique = fk.IsUnique;
                 var isRequired = fk.IsRequired;
 
-                if (!entitySet.Contains(principal.ClrType.Name)) continue;
-
                 var leftCardinality = isUnique ? "||" : "}o";
                 var rightCardinality = isRequired ? "||" : "o|";
 
-                sb.AppendLine($"    {toName} {rightCardinality}--{leftCardinality} {fromName} : \"\"");
+                if (entitySet.Contains(principal.ClrType.Name))
+                {
+                    // Intra-module relationship
+                    sb.AppendLine($"    {toName} {rightCardinality}--{leftCardinality} {fromName} : \"\"");
+                }
+                else
+                {
+                    // Cross-module relationship — render with dotted line
+                    externalEntities.Add(principal.ClrType.Name);
+                    sb.AppendLine($"    {toName} {rightCardinality}..{leftCardinality} {fromName} : \"\"");
+                }
             }
         }
 
         sb.AppendLine();
 
+        // Render full entity blocks for module members
         foreach (var entity in entities)
         {
             var name = SanitizeName(entity.ClrType.Name);
@@ -60,6 +80,16 @@ public static class MermaidRenderer
                 sb.AppendLine($"        {typeName} {propName}{markerStr}");
             }
 
+            sb.AppendLine("    }");
+        }
+
+        // Render stub blocks for external entities (cross-module references)
+        foreach (var extName in externalEntities.OrderBy(n => n))
+        {
+            var sanitized = SanitizeName(extName);
+            var extModule = entityToModule.TryGetValue(extName, out var m) ? ModuleMap.Titles[m] : "external";
+            sb.AppendLine($"    {sanitized} {{");
+            sb.AppendLine($"        string _module \"{extModule}\"");
             sb.AppendLine("    }");
         }
 
