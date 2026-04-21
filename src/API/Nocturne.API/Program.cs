@@ -183,7 +183,6 @@ builder.Services.AddOpenApiDocument(config =>
     {
         document.Info.Version = "0.0.1";
         document.Info.Title = "Nocturne API";
-        document.Info.Description = "Modern diabetes management API. For support, join our Discord.";
     };
 });
 
@@ -203,6 +202,7 @@ builder.Services.AddOpenApi("nocturne", options =>
     options.AddOperationTransformer<SecurityRequirementOperationTransformer>();
     options.AddDocumentTransformer<TagDescriptionDocumentTransformer>();
     options.AddDocumentTransformer<SecuritySchemeDocumentTransformer>();
+    options.AddDocumentTransformer<DiagramDescriptionDocumentTransformer>();
 });
 
 builder.Services.AddOpenApi("nightscout", options =>
@@ -222,6 +222,7 @@ builder.Services.AddOpenApi("nightscout", options =>
     options.AddOperationTransformer<SecurityRequirementOperationTransformer>();
     options.AddDocumentTransformer<TagDescriptionDocumentTransformer>();
     options.AddDocumentTransformer<SecuritySchemeDocumentTransformer>();
+    options.AddDocumentTransformer<DiagramDescriptionDocumentTransformer>();
 });
 
 // ── Service registration (grouped by concern) ──────────────────────────
