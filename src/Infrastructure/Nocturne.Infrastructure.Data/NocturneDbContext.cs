@@ -2067,6 +2067,63 @@ public class NocturneDbContext : DbContext
             .HasForeignKey(e => e.MatchedTreatmentId)
             .OnDelete(DeleteBehavior.SetNull);
 
+        // V4 entity foreign key relationships
+        modelBuilder
+            .Entity<BolusEntity>()
+            .HasOne<DeviceEntity>()
+            .WithMany()
+            .HasForeignKey(e => e.DeviceId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder
+            .Entity<BolusEntity>()
+            .HasOne<BolusCalculationEntity>()
+            .WithMany()
+            .HasForeignKey(e => e.BolusCalculationId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder
+            .Entity<BolusEntity>()
+            .HasOne<ApsSnapshotEntity>()
+            .WithMany()
+            .HasForeignKey(e => e.ApsSnapshotId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder
+            .Entity<TempBasalEntity>()
+            .HasOne<DeviceEntity>()
+            .WithMany()
+            .HasForeignKey(e => e.DeviceId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder
+            .Entity<TempBasalEntity>()
+            .HasOne<ApsSnapshotEntity>()
+            .WithMany()
+            .HasForeignKey(e => e.ApsSnapshotId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder
+            .Entity<PumpSnapshotEntity>()
+            .HasOne<DeviceEntity>()
+            .WithMany()
+            .HasForeignKey(e => e.DeviceId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder
+            .Entity<UploaderSnapshotEntity>()
+            .HasOne<DeviceEntity>()
+            .WithMany()
+            .HasForeignKey(e => e.DeviceId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder
+            .Entity<PatientDeviceEntity>()
+            .HasOne<DeviceEntity>()
+            .WithMany()
+            .HasForeignKey(e => e.DeviceId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         // Configure automatic timestamp updates
         modelBuilder
             .Entity<EntryEntity>()
