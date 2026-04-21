@@ -7,6 +7,6 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Nocturne.Core.Models\Nocturne.Core.Models.csproj" />
+    <ProjectReference Include="..\..\..\sdk\csharp\out\src\NightscoutFoundation.Nocturne\NightscoutFoundation.Nocturne.csproj" />
   </ItemGroup>
 </Project>
