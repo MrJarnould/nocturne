@@ -59,7 +59,8 @@ public sealed class DiagramDescriptionDocumentTransformer : IOpenApiDocumentTran
             sb.AppendLine();
 
             var svgName = Path.GetFileNameWithoutExtension(diagram.Source) + ".svg";
-            sb.AppendLine($"![{diagram.Title}](/diagrams/{svgName})");
+            var svgPath = $"/diagrams/{svgName}";
+            sb.AppendLine($"[![{diagram.Title}]({svgPath})]({svgPath})");
             sb.AppendLine();
         }
 
