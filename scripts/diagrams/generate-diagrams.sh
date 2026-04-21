@@ -22,15 +22,14 @@ echo "==> Generating auto diagrams"
 
 # --- Dependify: project dependency graph ---
 echo "    Generating project dependency graph"
-dotnet dependify graph scan \
-  --path "$REPO_ROOT/Nocturne.sln" \
+dotnet dependify graph scan "$REPO_ROOT" \
   --format mermaid \
   > "$DIAGRAMS_DIR/project-dependencies.mmd"
 
 # --- EfToMermaid: entity relationship diagram ---
 echo "    Generating ER diagram"
 dotnet run --project "$REPO_ROOT/tools/Nocturne.Tools.DiagramGen" \
-  --no-build -- "$DIAGRAMS_DIR/er-diagram.mmd"
+  -- "$DIAGRAMS_DIR/er-diagram.mmd"
 
 # --- Render all diagrams listed in manifest to SVG ---
 echo "==> Rendering diagrams to SVG"
@@ -46,7 +45,7 @@ grep "source:" "$MANIFEST" | sed 's/.*source: *//' | while read -r source; do
   fi
 
   echo "    $source → $(basename "$output")"
-  npx --yes @mermaid-js/mermaid-cli mmdc \
+  npx --yes @mermaid-js/mermaid-cli \
     -i "$input" \
     -o "$output" \
     --backgroundColor transparent \
