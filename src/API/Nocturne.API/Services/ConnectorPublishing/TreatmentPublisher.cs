@@ -3,6 +3,8 @@ using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.V4;
+using Nocturne.Infrastructure.Data;
+using Nocturne.Infrastructure.Data.Entities.V4;
 
 namespace Nocturne.API.Services.ConnectorPublishing;
 
@@ -14,6 +16,7 @@ namespace Nocturne.API.Services.ConnectorPublishing;
 /// <seealso cref="ITreatmentPublisher"/>
 internal sealed class TreatmentPublisher : ITreatmentPublisher
 {
+    private readonly NocturneDbContext _dbContext;
     private readonly ITreatmentService _treatmentService;
     private readonly IBolusRepository _bolusRepository;
     private readonly ICarbIntakeRepository _carbIntakeRepository;
@@ -23,6 +26,7 @@ internal sealed class TreatmentPublisher : ITreatmentPublisher
     private readonly ILogger<TreatmentPublisher> _logger;
 
     public TreatmentPublisher(
+        NocturneDbContext dbContext,
         ITreatmentService treatmentService,
         IBolusRepository bolusRepository,
         ICarbIntakeRepository carbIntakeRepository,
@@ -31,6 +35,7 @@ internal sealed class TreatmentPublisher : ITreatmentPublisher
         ITempBasalRepository tempBasalRepository,
         ILogger<TreatmentPublisher> logger)
     {
+        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         _treatmentService = treatmentService ?? throw new ArgumentNullException(nameof(treatmentService));
         _bolusRepository = bolusRepository ?? throw new ArgumentNullException(nameof(bolusRepository));
         _carbIntakeRepository = carbIntakeRepository ?? throw new ArgumentNullException(nameof(carbIntakeRepository));
@@ -170,6 +175,41 @@ internal sealed class TreatmentPublisher : ITreatmentPublisher
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to publish TempBasal records for {Source}", source);
+            return false;
+        }
+    }
+
+    public async Task<bool> PublishDecompositionBatchesAsync(
+        IEnumerable<DecompositionBatch> batches,
+        string source,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var batchList = batches.ToList();
+            if (batchList.Count == 0) return true;
+
+            foreach (var batch in batchList)
+            {
+                _dbContext.DecompositionBatches.Add(new DecompositionBatchEntity
+                {
+                    Id = batch.Id,
+                    TenantId = _dbContext.TenantId,
+                    Source = batch.Source,
+                    SourceRecordId = batch.SourceRecordId,
+                    SourceTreatmentId = batch.SourceTreatmentId,
+                    CreatedAt = batch.CreatedAt,
+                });
+            }
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            _logger.LogDebug("Published {Count} DecompositionBatch records for {Source}", batchList.Count, source);
+            return true;
+        }
+        catch (OperationCanceledException) { throw; }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to publish DecompositionBatch records for {Source}", source);
             return false;
         }
     }

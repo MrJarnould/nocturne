@@ -593,6 +593,24 @@ public abstract class BaseConnectorService<TConfig> : IConnectorService<TConfig>
     }
 
     /// <summary>
+    ///     Submits DecompositionBatch records before their V4 siblings (FK ordering)
+    /// </summary>
+    protected virtual async Task<bool> PublishDecompositionBatchesAsync(
+        IEnumerable<DecompositionBatch> batches,
+        TConfig config,
+        CancellationToken cancellationToken = default
+    )
+    {
+        if (_publisher == null || !_publisher.IsAvailable)
+        {
+            _logger?.LogWarning("Publisher not available for DecompositionBatch submission");
+            return false;
+        }
+
+        return await _publisher.Treatments.PublishDecompositionBatchesAsync(batches, ConnectorSource, cancellationToken);
+    }
+
+    /// <summary>
     ///     Submits V4 CarbIntake data directly to the API
     /// </summary>
     protected virtual async Task<bool> PublishCarbIntakeDataAsync(

@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -6,6 +7,7 @@ using Nocturne.API.Services.ConnectorPublishing;
 using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Models;
+using Nocturne.Infrastructure.Data;
 using Xunit;
 
 namespace Nocturne.API.Tests.Services.ConnectorPublishing;
@@ -30,7 +32,13 @@ public class TreatmentPublisherTests
         _mockBolusCalculationRepository = new Mock<IBolusCalculationRepository>();
         _mockTempBasalRepository = new Mock<ITempBasalRepository>();
 
+        var dbOptions = new DbContextOptionsBuilder<NocturneDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+        var dbContext = new NocturneDbContext(dbOptions);
+
         _publisher = new TreatmentPublisher(
+            dbContext,
             _mockTreatmentService.Object,
             _mockBolusRepository.Object,
             _mockCarbIntakeRepository.Object,
