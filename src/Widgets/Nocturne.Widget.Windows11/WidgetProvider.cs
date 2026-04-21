@@ -4,8 +4,7 @@ using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Windows.Widgets.Providers;
-using Nocturne.Core.Models;
-using Nocturne.Core.Models.Widget;
+using NightscoutFoundation.Nocturne.Model;
 using Nocturne.Widget.Contracts;
 using Nocturne.Widget.Contracts.Helpers;
 
@@ -676,8 +675,9 @@ public sealed class NocturneWidgetProvider : IWidgetProvider, IWidgetProvider2
         {
             var urgencyColor = tracker.Urgency switch
             {
-                NotificationUrgency.Urgent => "Attention",
-                NotificationUrgency.Hazard or NotificationUrgency.Warn => "Warning",
+                NightscoutFoundation.Nocturne.Model.NotificationUrgency.Urgent => "Attention",
+                NightscoutFoundation.Nocturne.Model.NotificationUrgency.Hazard
+                    or NightscoutFoundation.Nocturne.Model.NotificationUrgency.Warn => "Warning",
                 _ => "Default",
             };
 
