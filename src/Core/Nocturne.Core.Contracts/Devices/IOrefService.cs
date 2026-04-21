@@ -1,4 +1,4 @@
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Devices;
 
 /// <summary>
 /// Service interface for oref (OpenAPS Reference Implementation) algorithms.

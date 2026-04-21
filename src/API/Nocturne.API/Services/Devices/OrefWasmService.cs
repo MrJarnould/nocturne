@@ -1,9 +1,10 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Devices;
 using Wasmtime;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Devices;
 
 /// <summary>
 /// Calls the oref Rust algorithms via a WebAssembly module loaded with Wasmtime, providing

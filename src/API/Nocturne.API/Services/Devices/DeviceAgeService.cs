@@ -1,9 +1,10 @@
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Devices;
 using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.V4;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Devices;
 
 /// <summary>
 /// Calculates consumable device ages (cannula, sensor, insulin reservoir, pump battery) by querying

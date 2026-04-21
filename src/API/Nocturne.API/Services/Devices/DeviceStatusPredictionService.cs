@@ -4,7 +4,7 @@ using Nocturne.Core.Models;
 using Nocturne.Core.Contracts.Repositories;
 using Nocturne.API.Services.Glucose;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Devices;
 
 /// <summary>
 /// <see cref="IPredictionService"/> implementation that reads glucose predictions from the most recent

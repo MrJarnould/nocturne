@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using Nocturne.API.Services;
+using Nocturne.API.Services.Devices;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Devices;
 using Nocturne.Core.Contracts.Events;
 using Nocturne.Core.Models;
 using Nocturne.Infrastructure.Cache.Abstractions;
@@ -9,7 +11,7 @@ using Nocturne.Core.Contracts.Repositories;
 using Nocturne.Tests.Shared.Mocks;
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Devices;
 
 /// <summary>
 /// Unit tests for DeviceStatusService domain service with WebSocket broadcasting

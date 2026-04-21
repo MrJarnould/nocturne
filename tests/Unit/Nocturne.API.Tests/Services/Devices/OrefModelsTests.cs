@@ -1,6 +1,7 @@
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Devices;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Devices;
 
 /// <summary>
 /// Unit tests for oref model types.

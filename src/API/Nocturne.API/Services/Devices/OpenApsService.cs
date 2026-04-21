@@ -3,9 +3,10 @@ using System.Text.Json.Serialization;
 using System.Web;
 using Microsoft.Extensions.Logging;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Devices;
 using Nocturne.Core.Models;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Devices;
 
 /// <summary>
 /// OpenAPS loop data service with 1:1 legacy JavaScript compatibility. Analyses APS-uploaded

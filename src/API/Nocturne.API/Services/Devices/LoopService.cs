@@ -2,9 +2,10 @@ using System.Globalization;
 using dotAPNS;
 using Microsoft.Extensions.Options;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Devices;
 using Nocturne.Core.Models;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Devices;
 
 /// <summary>
 /// Handles APNS (Apple Push Notification Service) integration for iOS Loop app notifications,

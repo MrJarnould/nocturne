@@ -3,9 +3,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Nocturne.API.Services;
+using Nocturne.API.Services.Devices;
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Devices;
 
 /// <summary>
 /// Tests for LoopService with 1:1 legacy compatibility

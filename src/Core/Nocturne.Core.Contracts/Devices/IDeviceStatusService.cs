@@ -1,6 +1,6 @@
 using Nocturne.Core.Models;
 
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Devices;
 
 /// <summary>
 /// Domain service for <see cref="DeviceStatus"/> operations with WebSocket broadcasting.

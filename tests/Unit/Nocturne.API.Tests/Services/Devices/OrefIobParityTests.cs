@@ -2,7 +2,7 @@ using System.Globalization;
 using Nocturne.Core.Oref;
 using Nocturne.Core.Oref.Models;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Devices;
 
 [Parity("iob.test.js")]
 public class OrefIobParityTests

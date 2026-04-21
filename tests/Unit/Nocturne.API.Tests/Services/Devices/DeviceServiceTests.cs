@@ -1,12 +1,13 @@
 using FluentAssertions;
 using Moq;
 using Nocturne.API.Services;
+using Nocturne.API.Services.Devices;
 using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Models.V4;
 using Nocturne.Tests.Shared.Mocks;
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Devices;
 
 /// <summary>
 /// Unit tests for DeviceService — resolves device identity from (category, type, serial) tuples

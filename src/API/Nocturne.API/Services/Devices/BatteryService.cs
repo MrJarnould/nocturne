@@ -1,9 +1,10 @@
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Devices;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.Battery;
 using Nocturne.Core.Contracts.Repositories;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Devices;
 
 /// <summary>
 /// Tracks and analyses device battery status from recent <see cref="Nocturne.Core.Models.DeviceStatus"/> entries.

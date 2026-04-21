@@ -1,6 +1,6 @@
 using Nocturne.Core.Models.Battery;
 
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Devices;
 
 /// <summary>
 /// Service for tracking and analyzing device battery status

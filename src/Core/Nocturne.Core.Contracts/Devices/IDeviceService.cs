@@ -1,6 +1,6 @@
 using Nocturne.Core.Models.V4;
 
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Devices;
 
 /// <summary>
 /// Service for resolving physical devices to their canonical <see cref="Guid"/> identifiers.

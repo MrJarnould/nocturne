@@ -1,11 +1,12 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using Nocturne.API.Services;
+using Nocturne.API.Services.Devices;
 using Nocturne.Core.Models;
 using Xunit;
 using Nocturne.API.Tests.Services.Glucose;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Devices;
 
 /// <summary>
 /// Tests for OpenApsService with 1:1 legacy compatibility

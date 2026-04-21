@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Nocturne.API.Services;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Devices;
 
 namespace Nocturne.API.Tests.Services;
 

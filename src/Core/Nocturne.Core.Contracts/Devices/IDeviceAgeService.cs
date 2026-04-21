@@ -1,6 +1,6 @@
 using Nocturne.Core.Models;
 
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Devices;
 
 /// <summary>
 /// Service to provide device age information using the V4 DeviceEvents system
