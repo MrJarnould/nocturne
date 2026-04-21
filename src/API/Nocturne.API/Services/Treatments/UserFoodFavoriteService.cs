@@ -1,8 +1,9 @@
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Treatments;
 using Nocturne.Core.Contracts.Repositories;
 using Nocturne.Core.Models;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Treatments;
 
 /// <summary>
 /// Domain service for user food favourites and recently used foods. Manages the per-user

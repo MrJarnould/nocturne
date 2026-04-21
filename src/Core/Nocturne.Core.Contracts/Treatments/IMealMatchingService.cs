@@ -1,4 +1,4 @@
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Treatments;
 
 /// <summary>
 /// Service for matching connector food entries to treatments.

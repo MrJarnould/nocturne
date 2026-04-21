@@ -1,10 +1,12 @@
 using Nocturne.API.Services;
+using Nocturne.API.Services.Treatments;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Treatments;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.V4;
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Treatments;
 
 /// <summary>
 /// Complete IOB calculation tests with 1:1 legacy JavaScript compatibility

@@ -1,9 +1,10 @@
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Treatments;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.Configuration;
 using Nocturne.Infrastructure.Data.Repositories;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Treatments;
 
 /// <summary>
 /// Matches connector food entries (primarily from MyFitnessPal) to existing meal-bolus treatments

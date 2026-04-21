@@ -1,11 +1,13 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using Nocturne.API.Services;
+using Nocturne.API.Services.Treatments;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Treatments;
 using Nocturne.Core.Models;
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Treatments;
 
 /// <summary>
 /// Simple validation tests for the COB service with unified profile interface
@@ -17,9 +19,9 @@ public class CobServiceValidationTests
 
     public CobServiceValidationTests()
     {
-        var logger = new Mock<ILogger<Nocturne.API.Services.CobService>>();
+        var logger = new Mock<ILogger<Nocturne.API.Services.Treatments.CobService>>();
         var iobService = new Mock<IIobService>();
-        _cobService = new Nocturne.API.Services.CobService(logger.Object, iobService.Object);
+        _cobService = new Nocturne.API.Services.Treatments.CobService(logger.Object, iobService.Object);
         _testProfile = new TestProfileService();
     }
 

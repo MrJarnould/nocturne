@@ -7,7 +7,7 @@ using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.V4;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Treatments;
 
 /// <summary>
 /// Domain service implementation for <see cref="Treatment"/> operations using Store/Cache/EventSink ports.

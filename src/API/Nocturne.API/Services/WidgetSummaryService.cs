@@ -1,9 +1,12 @@
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Treatments;
 using Nocturne.Core.Contracts.Glucose;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.Widget;
 using Nocturne.Infrastructure.Data.Abstractions;
 using Nocturne.Infrastructure.Data.Entities;
+
+using Nocturne.API.Services.Treatments;
 
 namespace Nocturne.API.Services;
 

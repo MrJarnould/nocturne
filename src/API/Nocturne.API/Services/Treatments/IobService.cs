@@ -1,8 +1,9 @@
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Treatments;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.V4;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Treatments;
 
 /// <summary>
 /// Implementation of Insulin on Board (IOB) calculations with exact 1:1 legacy JavaScript compatibility.

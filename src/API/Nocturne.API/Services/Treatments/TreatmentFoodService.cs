@@ -1,11 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Treatments;
 using Nocturne.Core.Contracts.Repositories;
 using Nocturne.Core.Models;
 using Nocturne.Infrastructure.Data;
 using Nocturne.Infrastructure.Data.Entities.V4;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Treatments;
 
 /// <summary>
 /// Domain service for food breakdown operations linked to v4 carb intake records.

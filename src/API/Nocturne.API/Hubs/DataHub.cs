@@ -5,6 +5,7 @@ using Nocturne.API.Middleware;
 using Nocturne.Connectors.Core.Utilities;
 using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Glucose;
+using Nocturne.Core.Contracts.Treatments;
 
 namespace Nocturne.API.Hubs;
 

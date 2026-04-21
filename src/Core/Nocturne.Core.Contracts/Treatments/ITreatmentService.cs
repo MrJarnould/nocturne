@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Nocturne.Core.Models;
 
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Treatments;
 
 /// <summary>
 /// Domain service for treatment operations with WebSocket broadcasting

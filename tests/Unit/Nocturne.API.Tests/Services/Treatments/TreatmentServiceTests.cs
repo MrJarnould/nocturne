@@ -3,6 +3,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Nocturne.API.Services;
+using Nocturne.API.Services.Treatments;
 using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Repositories;
 using Nocturne.Core.Contracts.Events;
@@ -12,7 +13,7 @@ using Nocturne.Core.Models;
 using Nocturne.Core.Models.V4;
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Treatments;
 
 [Parity("api.treatments.test.js")]
 public class TreatmentServiceTests

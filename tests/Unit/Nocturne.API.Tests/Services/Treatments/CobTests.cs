@@ -1,11 +1,13 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using Nocturne.API.Services;
+using Nocturne.API.Services.Treatments;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Treatments;
 using Nocturne.Core.Models;
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Treatments;
 
 /// <summary>
 /// Tests for COB (Carbs on Board) functionality with 1:1 legacy compatibility
@@ -14,15 +16,15 @@ namespace Nocturne.API.Tests.Services;
 [Parity("cob.test.js")]
 public class CobTests
 {
-    private readonly Mock<ILogger<Nocturne.API.Services.CobService>> _mockLogger;
+    private readonly Mock<ILogger<Nocturne.API.Services.Treatments.CobService>> _mockLogger;
     private readonly Mock<IIobService> _mockIobService;
-    private readonly Nocturne.API.Services.CobService _cobService;
+    private readonly Nocturne.API.Services.Treatments.CobService _cobService;
 
     public CobTests()
     {
-        _mockLogger = new Mock<ILogger<Nocturne.API.Services.CobService>>();
+        _mockLogger = new Mock<ILogger<Nocturne.API.Services.Treatments.CobService>>();
         _mockIobService = new Mock<IIobService>();
-        _cobService = new Nocturne.API.Services.CobService(
+        _cobService = new Nocturne.API.Services.Treatments.CobService(
             _mockLogger.Object,
             _mockIobService.Object
         );
