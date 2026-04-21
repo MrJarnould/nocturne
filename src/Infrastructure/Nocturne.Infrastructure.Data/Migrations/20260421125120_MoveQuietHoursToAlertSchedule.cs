@@ -34,7 +34,7 @@ namespace Nocturne.Infrastructure.Data.Migrations
                 table: "alert_schedules",
                 type: "boolean",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: true);
 
             migrationBuilder.AddColumn<TimeOnly>(
                 name: "quiet_hours_start",
@@ -69,7 +69,7 @@ namespace Nocturne.Infrastructure.Data.Migrations
                 table: "tenants",
                 type: "boolean",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: true);
 
             migrationBuilder.AddColumn<TimeOnly>(
                 name: "quiet_hours_start",
