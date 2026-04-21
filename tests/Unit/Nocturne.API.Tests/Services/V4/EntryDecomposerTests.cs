@@ -25,7 +25,7 @@ public class EntryDecomposerTests : IDisposable
         var sgRepo = new SensorGlucoseRepository(_context, mockDedup.Object, NullLogger<SensorGlucoseRepository>.Instance);
         var mgRepo = new MeterGlucoseRepository(_context, NullLogger<MeterGlucoseRepository>.Instance);
         var calRepo = new CalibrationRepository(_context, NullLogger<CalibrationRepository>.Instance);
-        _decomposer = new EntryDecomposer(sgRepo, mgRepo, calRepo, NullLogger<EntryDecomposer>.Instance);
+        _decomposer = new EntryDecomposer(_context, sgRepo, mgRepo, calRepo, NullLogger<EntryDecomposer>.Instance);
     }
 
     public void Dispose()

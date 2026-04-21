@@ -1,9 +1,12 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nocturne.Connectors.Core.Constants;
 using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.V4;
 using Nocturne.Core.Models;
 using Nocturne.Core.Contracts.V4.Repositories;
+using Nocturne.Infrastructure.Data;
+using Nocturne.Infrastructure.Data.Entities.V4;
 
 using V4Models = Nocturne.Core.Models.V4;
 
@@ -28,6 +31,7 @@ namespace Nocturne.API.Services.V4;
 /// <seealso cref="IStateSpanService"/>
 public class TreatmentDecomposer : ITreatmentDecomposer, IDecomposer<Treatment>
 {
+    private readonly NocturneDbContext _dbContext;
     private readonly IBolusRepository _bolusRepository;
     private readonly ITempBasalRepository _tempBasalRepository;
     private readonly ICarbIntakeRepository _carbIntakeRepository;
@@ -50,6 +54,7 @@ public class TreatmentDecomposer : ITreatmentDecomposer, IDecomposer<Treatment>
         "TempBasal"
     ];
 
+    /// <param name="dbContext">EF Core context used to persist <see cref="DecompositionBatchEntity"/> records and look up treatment entity PKs.</param>
     /// <param name="bolusRepository">Repository for <see cref="V4Models.Bolus"/> records.</param>
     /// <param name="tempBasalRepository">Repository for <see cref="V4Models.TempBasal"/> records.</param>
     /// <param name="carbIntakeRepository">Repository for <see cref="V4Models.CarbIntake"/> records.</param>
@@ -62,6 +67,7 @@ public class TreatmentDecomposer : ITreatmentDecomposer, IDecomposer<Treatment>
     /// <param name="deviceService">Service that resolves or creates canonical device references.</param>
     /// <param name="logger">Logger instance for this decomposer.</param>
     public TreatmentDecomposer(
+        NocturneDbContext dbContext,
         IBolusRepository bolusRepository,
         ITempBasalRepository tempBasalRepository,
         ICarbIntakeRepository carbIntakeRepository,
@@ -74,6 +80,7 @@ public class TreatmentDecomposer : ITreatmentDecomposer, IDecomposer<Treatment>
         IDeviceService deviceService,
         ILogger<TreatmentDecomposer> logger)
     {
+        _dbContext = dbContext;
         _bolusRepository = bolusRepository;
         _tempBasalRepository = tempBasalRepository;
         _carbIntakeRepository = carbIntakeRepository;
@@ -90,9 +97,32 @@ public class TreatmentDecomposer : ITreatmentDecomposer, IDecomposer<Treatment>
     /// <inheritdoc />
     public async Task<V4Models.DecompositionResult> DecomposeAsync(Treatment treatment, CancellationToken ct = default)
     {
+        // Look up the Treatment entity's Guid PK via OriginalId for the cascade chain
+        Guid? sourceTreatmentId = null;
+        if (treatment.Id != null)
+        {
+            sourceTreatmentId = await _dbContext.Treatments
+                .Where(t => t.OriginalId == treatment.Id)
+                .Select(t => t.Id)
+                .FirstOrDefaultAsync(ct);
+            if (sourceTreatmentId == Guid.Empty)
+                sourceTreatmentId = null;
+        }
+
+        var batch = new DecompositionBatchEntity
+        {
+            TenantId = _dbContext.TenantId,
+            Source = "treatment_decomposer",
+            SourceRecordId = treatment.Id,
+            SourceTreatmentId = sourceTreatmentId,
+            CreatedAt = DateTime.UtcNow,
+        };
+        _dbContext.DecompositionBatches.Add(batch);
+        await _dbContext.SaveChangesAsync(ct);
+
         var result = new V4Models.DecompositionResult
         {
-            CorrelationId = Guid.CreateVersion7()
+            CorrelationId = batch.Id
         };
 
         var eventType = treatment.EventType?.Trim();

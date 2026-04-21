@@ -3,6 +3,7 @@ using Nocturne.Core.Contracts.V4;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.V4;
 using Nocturne.Infrastructure.Data;
+using Nocturne.Infrastructure.Data.Entities.V4;
 using Nocturne.Infrastructure.Data.Mappers;
 
 namespace Nocturne.API.Services.V4;
@@ -69,7 +70,17 @@ public class ActivityDecomposer : IActivityDecomposer, IDecomposer<Activity>
         CancellationToken ct = default
     )
     {
-        var result = new DecompositionResult { CorrelationId = Guid.CreateVersion7() };
+        var batch = new DecompositionBatchEntity
+        {
+            TenantId = _dbContext.TenantId,
+            Source = "activity_decomposer",
+            SourceRecordId = activity.Id,
+            CreatedAt = DateTime.UtcNow,
+        };
+        _dbContext.DecompositionBatches.Add(batch);
+        await _dbContext.SaveChangesAsync(ct);
+
+        var result = new DecompositionResult { CorrelationId = batch.Id };
 
         if (IsHeartRate(activity))
         {

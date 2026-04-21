@@ -112,6 +112,36 @@ public class NutritionController : ControllerBase
         if (request.Timestamp == default)
             return Problem(detail: "Timestamp must be set", statusCode: 400, title: "Bad Request");
 
+        Guid correlationId;
+        if (request.CorrelationId.HasValue)
+        {
+            var exists = await _context.DecompositionBatches.AnyAsync(b => b.Id == request.CorrelationId.Value, ct);
+            if (!exists)
+            {
+                _context.DecompositionBatches.Add(new DecompositionBatchEntity
+                {
+                    Id = request.CorrelationId.Value,
+                    TenantId = _context.TenantId,
+                    Source = "nutrition_controller",
+                    CreatedAt = DateTime.UtcNow,
+                });
+                await _context.SaveChangesAsync(ct);
+            }
+            correlationId = request.CorrelationId.Value;
+        }
+        else
+        {
+            var batch = new DecompositionBatchEntity
+            {
+                TenantId = _context.TenantId,
+                Source = "nutrition_controller",
+                CreatedAt = DateTime.UtcNow,
+            };
+            _context.DecompositionBatches.Add(batch);
+            await _context.SaveChangesAsync(ct);
+            correlationId = batch.Id;
+        }
+
         var model = new CarbIntake
         {
             Timestamp = request.Timestamp.UtcDateTime,
@@ -123,7 +153,7 @@ public class NutritionController : ControllerBase
             SyncIdentifier = request.SyncIdentifier,
             CarbTime = request.CarbTime,
             AbsorptionTime = request.AbsorptionTime,
-            CorrelationId = request.CorrelationId ?? Guid.CreateVersion7(),
+            CorrelationId = correlationId,
         };
 
         var created = await _carbIntakeRepo.CreateAsync(model, ct);
@@ -324,7 +354,36 @@ public class NutritionController : ControllerBase
         if (request.Timestamp == default)
             return Problem(detail: "Timestamp must be set", statusCode: 400, title: "Bad Request");
 
-        var correlationId = request.CorrelationId ?? Guid.CreateVersion7();
+        Guid correlationId;
+        if (request.CorrelationId.HasValue)
+        {
+            // Ensure a batch record exists for the supplied CorrelationId so the FK is satisfied
+            var exists = await _context.DecompositionBatches.AnyAsync(b => b.Id == request.CorrelationId.Value, ct);
+            if (!exists)
+            {
+                _context.DecompositionBatches.Add(new DecompositionBatchEntity
+                {
+                    Id = request.CorrelationId.Value,
+                    TenantId = _context.TenantId,
+                    Source = "nutrition_controller",
+                    CreatedAt = DateTime.UtcNow,
+                });
+                await _context.SaveChangesAsync(ct);
+            }
+            correlationId = request.CorrelationId.Value;
+        }
+        else
+        {
+            var batch = new DecompositionBatchEntity
+            {
+                TenantId = _context.TenantId,
+                Source = "nutrition_controller",
+                CreatedAt = DateTime.UtcNow,
+            };
+            _context.DecompositionBatches.Add(batch);
+            await _context.SaveChangesAsync(ct);
+            correlationId = batch.Id;
+        }
         var timestamp = request.Timestamp.UtcDateTime;
 
         var bolusModel = new Bolus

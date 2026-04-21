@@ -2,6 +2,8 @@ using Microsoft.Extensions.Logging;
 using Nocturne.Core.Contracts.V4;
 using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Models;
+using Nocturne.Infrastructure.Data;
+using Nocturne.Infrastructure.Data.Entities.V4;
 
 using V4Models = Nocturne.Core.Models.V4;
 
@@ -19,6 +21,7 @@ namespace Nocturne.API.Services.V4;
 /// <seealso cref="IDecomposer{T}"/>
 public class ProfileDecomposer : IProfileDecomposer, IDecomposer<Profile>
 {
+    private readonly NocturneDbContext _dbContext;
     private readonly ITherapySettingsRepository _therapySettingsRepo;
     private readonly IBasalScheduleRepository _basalScheduleRepo;
     private readonly ICarbRatioScheduleRepository _carbRatioScheduleRepo;
@@ -26,6 +29,7 @@ public class ProfileDecomposer : IProfileDecomposer, IDecomposer<Profile>
     private readonly ITargetRangeScheduleRepository _targetRangeScheduleRepo;
     private readonly ILogger<ProfileDecomposer> _logger;
 
+    /// <param name="dbContext">EF Core context used to persist <see cref="DecompositionBatchEntity"/> records.</param>
     /// <param name="therapySettingsRepo">Repository for <see cref="V4Models.TherapySettings"/> records.</param>
     /// <param name="basalScheduleRepo">Repository for <see cref="V4Models.BasalSchedule"/> records.</param>
     /// <param name="carbRatioScheduleRepo">Repository for <see cref="V4Models.CarbRatioSchedule"/> records.</param>
@@ -33,6 +37,7 @@ public class ProfileDecomposer : IProfileDecomposer, IDecomposer<Profile>
     /// <param name="targetRangeScheduleRepo">Repository for <see cref="V4Models.TargetRangeSchedule"/> records.</param>
     /// <param name="logger">Logger instance for this decomposer.</param>
     public ProfileDecomposer(
+        NocturneDbContext dbContext,
         ITherapySettingsRepository therapySettingsRepo,
         IBasalScheduleRepository basalScheduleRepo,
         ICarbRatioScheduleRepository carbRatioScheduleRepo,
@@ -40,6 +45,7 @@ public class ProfileDecomposer : IProfileDecomposer, IDecomposer<Profile>
         ITargetRangeScheduleRepository targetRangeScheduleRepo,
         ILogger<ProfileDecomposer> logger)
     {
+        _dbContext = dbContext;
         _therapySettingsRepo = therapySettingsRepo;
         _basalScheduleRepo = basalScheduleRepo;
         _carbRatioScheduleRepo = carbRatioScheduleRepo;
@@ -51,9 +57,19 @@ public class ProfileDecomposer : IProfileDecomposer, IDecomposer<Profile>
     /// <inheritdoc />
     public async Task<V4Models.DecompositionResult> DecomposeAsync(Profile profile, CancellationToken ct = default)
     {
+        var batch = new DecompositionBatchEntity
+        {
+            TenantId = _dbContext.TenantId,
+            Source = "profile_decomposer",
+            SourceRecordId = profile.Id,
+            CreatedAt = DateTime.UtcNow,
+        };
+        _dbContext.DecompositionBatches.Add(batch);
+        await _dbContext.SaveChangesAsync(ct);
+
         var result = new V4Models.DecompositionResult
         {
-            CorrelationId = Guid.CreateVersion7()
+            CorrelationId = batch.Id
         };
 
         if (profile.Store.Count == 0)

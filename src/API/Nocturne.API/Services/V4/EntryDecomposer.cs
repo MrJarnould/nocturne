@@ -3,6 +3,8 @@ using Nocturne.Core.Contracts.V4;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.V4;
 using Nocturne.Core.Contracts.V4.Repositories;
+using Nocturne.Infrastructure.Data;
+using Nocturne.Infrastructure.Data.Entities.V4;
 
 namespace Nocturne.API.Services.V4;
 
@@ -18,21 +20,25 @@ namespace Nocturne.API.Services.V4;
 /// <seealso cref="IDecomposer{T}"/>
 public class EntryDecomposer : IEntryDecomposer, IDecomposer<Entry>
 {
+    private readonly NocturneDbContext _dbContext;
     private readonly ISensorGlucoseRepository _sensorGlucoseRepository;
     private readonly IMeterGlucoseRepository _meterGlucoseRepository;
     private readonly ICalibrationRepository _calibrationRepository;
     private readonly ILogger<EntryDecomposer> _logger;
 
+    /// <param name="dbContext">EF Core context used to persist <see cref="DecompositionBatchEntity"/> records.</param>
     /// <param name="sensorGlucoseRepository">Repository for <see cref="SensorGlucose"/> records.</param>
     /// <param name="meterGlucoseRepository">Repository for <see cref="MeterGlucose"/> records.</param>
     /// <param name="calibrationRepository">Repository for <see cref="Calibration"/> records.</param>
     /// <param name="logger">Logger instance for this decomposer.</param>
     public EntryDecomposer(
+        NocturneDbContext dbContext,
         ISensorGlucoseRepository sensorGlucoseRepository,
         IMeterGlucoseRepository meterGlucoseRepository,
         ICalibrationRepository calibrationRepository,
         ILogger<EntryDecomposer> logger)
     {
+        _dbContext = dbContext;
         _sensorGlucoseRepository = sensorGlucoseRepository;
         _meterGlucoseRepository = meterGlucoseRepository;
         _calibrationRepository = calibrationRepository;
@@ -42,9 +48,19 @@ public class EntryDecomposer : IEntryDecomposer, IDecomposer<Entry>
     /// <inheritdoc />
     public async Task<DecompositionResult> DecomposeAsync(Entry entry, CancellationToken ct = default)
     {
+        var batch = new DecompositionBatchEntity
+        {
+            TenantId = _dbContext.TenantId,
+            Source = "entry_decomposer",
+            SourceRecordId = entry.Id,
+            CreatedAt = DateTime.UtcNow,
+        };
+        _dbContext.DecompositionBatches.Add(batch);
+        await _dbContext.SaveChangesAsync(ct);
+
         var result = new DecompositionResult
         {
-            CorrelationId = Guid.CreateVersion7()
+            CorrelationId = batch.Id
         };
 
         var entryType = entry.Type?.ToLowerInvariant();

@@ -31,6 +31,7 @@ public class DeviceStatusDecomposerTests : IDisposable
         _deviceServiceMock = new Mock<IDeviceService>();
 
         _decomposer = new DeviceStatusDecomposer(
+            _context,
             apsRepo, pumpRepo, uploaderRepo,
             _stateSpanServiceMock.Object,
             _deviceServiceMock.Object,

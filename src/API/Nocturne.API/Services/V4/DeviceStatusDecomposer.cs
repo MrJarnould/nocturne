@@ -4,6 +4,8 @@ using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.V4;
 using Nocturne.Core.Models;
 using Nocturne.Core.Contracts.V4.Repositories;
+using Nocturne.Infrastructure.Data;
+using Nocturne.Infrastructure.Data.Entities.V4;
 
 using V4Models = Nocturne.Core.Models.V4;
 
@@ -21,6 +23,7 @@ namespace Nocturne.API.Services.V4;
 /// <seealso cref="IDecomposer{T}"/>
 public class DeviceStatusDecomposer : IDeviceStatusDecomposer, IDecomposer<DeviceStatus>
 {
+    private readonly NocturneDbContext _dbContext;
     private readonly IApsSnapshotRepository _apsRepo;
     private readonly IPumpSnapshotRepository _pumpRepo;
     private readonly IUploaderSnapshotRepository _uploaderRepo;
@@ -33,6 +36,7 @@ public class DeviceStatusDecomposer : IDeviceStatusDecomposer, IDecomposer<Devic
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     };
 
+    /// <param name="dbContext">EF Core context used to persist <see cref="DecompositionBatchEntity"/> records.</param>
     /// <param name="apsRepo">Repository for <see cref="V4Models.ApsSnapshot"/> records.</param>
     /// <param name="pumpRepo">Repository for <see cref="V4Models.PumpSnapshot"/> records.</param>
     /// <param name="uploaderRepo">Repository for <see cref="V4Models.UploaderSnapshot"/> records.</param>
@@ -40,6 +44,7 @@ public class DeviceStatusDecomposer : IDeviceStatusDecomposer, IDecomposer<Devic
     /// <param name="deviceService">Service that resolves or creates canonical device references.</param>
     /// <param name="logger">Logger instance for this decomposer.</param>
     public DeviceStatusDecomposer(
+        NocturneDbContext dbContext,
         IApsSnapshotRepository apsRepo,
         IPumpSnapshotRepository pumpRepo,
         IUploaderSnapshotRepository uploaderRepo,
@@ -47,6 +52,7 @@ public class DeviceStatusDecomposer : IDeviceStatusDecomposer, IDecomposer<Devic
         IDeviceService deviceService,
         ILogger<DeviceStatusDecomposer> logger)
     {
+        _dbContext = dbContext;
         _apsRepo = apsRepo;
         _pumpRepo = pumpRepo;
         _uploaderRepo = uploaderRepo;
@@ -58,9 +64,19 @@ public class DeviceStatusDecomposer : IDeviceStatusDecomposer, IDecomposer<Devic
     /// <inheritdoc />
     public async Task<V4Models.DecompositionResult> DecomposeAsync(DeviceStatus ds, CancellationToken ct = default)
     {
+        var batch = new DecompositionBatchEntity
+        {
+            TenantId = _dbContext.TenantId,
+            Source = "device_status_decomposer",
+            SourceRecordId = ds.Id,
+            CreatedAt = DateTime.UtcNow,
+        };
+        _dbContext.DecompositionBatches.Add(batch);
+        await _dbContext.SaveChangesAsync(ct);
+
         var result = new V4Models.DecompositionResult
         {
-            CorrelationId = Guid.CreateVersion7()
+            CorrelationId = batch.Id
         };
 
         // AAPS sends "date" instead of "mills" — normalize before decomposition

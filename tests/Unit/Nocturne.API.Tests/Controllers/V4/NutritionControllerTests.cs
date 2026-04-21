@@ -36,8 +36,14 @@ public class NutritionControllerTests : IDisposable
             .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning))
             .Options;
 
-        _dbContext = new NocturneDbContext(options);
+        _dbContext = new NocturneDbContext(options) { TenantId = Guid.Parse("00000000-0000-0000-0000-000000000001") };
         _dbContext.Database.EnsureCreated();
+        _dbContext.Tenants.Add(new Nocturne.Infrastructure.Data.Entities.TenantEntity
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Slug = "test"
+        });
+        _dbContext.SaveChanges();
     }
 
     public void Dispose()

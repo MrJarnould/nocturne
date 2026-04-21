@@ -45,6 +45,7 @@ public class TreatmentDecomposerTests : IDisposable
             .ReturnsAsync((Guid?)null);
 
         _decomposer = new TreatmentDecomposer(
+            _context,
             bolusRepo, _tempBasalRepoMock.Object,
             carbIntakeRepo, bgCheckRepo, noteRepo, deviceEventRepo, bolusCalcRepo,
             _stateSpanServiceMock.Object,
