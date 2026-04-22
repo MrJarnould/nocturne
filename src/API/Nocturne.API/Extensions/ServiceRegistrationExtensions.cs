@@ -35,6 +35,7 @@ using Nocturne.Connectors.Core.Interfaces;
 using Nocturne.Connectors.HomeAssistant.WriteBack;
 using Nocturne.Connectors.Nightscout.Services.WriteBack;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.V4;
 using Nocturne.Core.Contracts.Health;
 using Nocturne.Core.Contracts.Legacy;
 using Nocturne.Core.Contracts.Monitoring;
