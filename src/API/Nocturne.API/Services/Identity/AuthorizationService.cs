@@ -3,11 +3,12 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Identity;
 using Nocturne.Core.Models;
 using AuthRole = Nocturne.Core.Models.Authorization.Role;
 using AuthSubject = Nocturne.Core.Models.Authorization.Subject;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Identity;
 
 /// <summary>
 /// Handles authorisation operations including JWT generation from access tokens and permission

@@ -1,6 +1,6 @@
 using Nocturne.Core.Models;
 
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Identity;
 
 /// <summary>
 /// Service for handling authorization operations including JWT generation and permission management.

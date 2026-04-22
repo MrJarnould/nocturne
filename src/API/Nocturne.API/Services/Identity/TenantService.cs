@@ -12,7 +12,7 @@ using Nocturne.Core.Models.Authorization;
 using Nocturne.Infrastructure.Data;
 using Nocturne.Infrastructure.Data.Entities;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Identity;
 
 /// <summary>
 /// Service for creating, resolving, updating, and deleting tenants.

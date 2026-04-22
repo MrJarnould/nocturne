@@ -1,9 +1,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Nocturne.API.Services;
 using Nocturne.API.Services.Auth;
+using Nocturne.API.Services.Identity;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Identity;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.Authorization;
 using AuthSubjectModel = Nocturne.Core.Models.Authorization.Subject;
@@ -12,7 +13,7 @@ using LegacySubject = Nocturne.Core.Models.Subject;
 using LegacyRole = Nocturne.Core.Models.Role;
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Identity;
 
 /// <summary>
 /// Tests for authorization service CRUD operations

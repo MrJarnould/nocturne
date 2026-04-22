@@ -5,7 +5,7 @@ using Nocturne.Core.Contracts.Multitenancy;
 using Nocturne.Infrastructure.Data;
 using Nocturne.Infrastructure.Data.Entities;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Identity;
 
 /// <summary>
 /// Manages tenant membership invite links: creates JWT-signed invite tokens,

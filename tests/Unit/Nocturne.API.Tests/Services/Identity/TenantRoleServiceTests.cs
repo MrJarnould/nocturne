@@ -1,11 +1,11 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Nocturne.API.Services;
+using Nocturne.API.Services.Identity;
 using Nocturne.Core.Models.Authorization;
 using Nocturne.Infrastructure.Data;
 using Nocturne.Infrastructure.Data.Entities;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Identity;
 
 public class TenantRoleServiceTests : IDisposable
 {

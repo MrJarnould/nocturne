@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Nocturne.Core.Contracts.Multitenancy;
 using Nocturne.Infrastructure.Data;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Identity;
 
 /// <summary>
 /// Provides tenant membership lookups: checking whether a subject belongs to a tenant and

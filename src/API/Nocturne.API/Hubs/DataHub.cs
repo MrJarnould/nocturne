@@ -5,6 +5,7 @@ using Nocturne.API.Middleware;
 using Nocturne.Connectors.Core.Utilities;
 using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Devices;
+using Nocturne.Core.Contracts.Identity;
 using Nocturne.Core.Contracts.Glucose;
 using Nocturne.Core.Contracts.Treatments;
 
@@ -16,11 +17,11 @@ namespace Nocturne.API.Hubs;
 public class DataHub : TenantAwareHub
 {
     private readonly ILogger<DataHub> _logger;
-    private readonly Nocturne.Core.Contracts.IAuthorizationService _authorizationService;
+    private readonly Nocturne.Core.Contracts.Identity.IAuthorizationService _authorizationService;
 
     public DataHub(
         ILogger<DataHub> logger,
-        Nocturne.Core.Contracts.IAuthorizationService authorizationService
+        Nocturne.Core.Contracts.Identity.IAuthorizationService authorizationService
     )
     {
         _logger = logger;

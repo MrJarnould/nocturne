@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Identity;
 using Nocturne.Core.Models;
 
 namespace Nocturne.API.Services;
