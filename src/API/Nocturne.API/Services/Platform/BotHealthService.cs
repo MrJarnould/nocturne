@@ -1,6 +1,6 @@
 using Nocturne.Core.Models.Alerts;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Platform;
 
 /// <summary>
 /// In-memory singleton that tracks bot heartbeat state and derives per-channel availability.

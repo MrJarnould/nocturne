@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Moq;
 using Nocturne.API.Controllers.V4.Treatments;
 using Nocturne.API.Services;
+using Nocturne.API.Services.Platform;
 using Nocturne.API.Services.Treatments;
 using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Treatments;

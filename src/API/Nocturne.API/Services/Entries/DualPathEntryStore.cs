@@ -4,6 +4,7 @@ using Nocturne.Core.Contracts.Repositories;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.Entries;
 using Nocturne.API.Services.Glucose;
+using Nocturne.API.Services.Platform;
 
 namespace Nocturne.API.Services.Entries;
 

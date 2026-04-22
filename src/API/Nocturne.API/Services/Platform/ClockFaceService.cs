@@ -2,11 +2,12 @@ using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Platform;
 using Nocturne.Core.Models;
 using Nocturne.Infrastructure.Data;
 using Nocturne.Infrastructure.Data.Entities;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Platform;
 
 /// <summary>
 /// Domain service for managing clock face configurations. Persists <see cref="ClockFace"/> entities

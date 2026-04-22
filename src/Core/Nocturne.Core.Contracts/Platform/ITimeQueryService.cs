@@ -1,6 +1,6 @@
 using Nocturne.Core.Models;
 
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Platform;
 
 /// <summary>
 /// Service for handling time-based queries and advanced data slicing

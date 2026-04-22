@@ -2,12 +2,14 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Nocturne.API.Services;
+using Nocturne.API.Services.Platform;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Platform;
 using Nocturne.Core.Contracts.Repositories;
 using Xunit;
 using TimePatternQuery = Nocturne.Core.Contracts.TimePatternQuery;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Platform;
 
 /// <summary>
 /// Comprehensive unit tests for TimeQueryService

@@ -1,6 +1,6 @@
 using Nocturne.Core.Models;
 
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Platform;
 
 /// <summary>
 /// Service for managing clock face configurations

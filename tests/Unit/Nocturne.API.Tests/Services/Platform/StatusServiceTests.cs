@@ -7,7 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Nocturne.API.Services;
+using Nocturne.API.Services.Platform;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Platform;
 using Nocturne.Core.Contracts.Multitenancy;
 using Nocturne.Core.Models.Authorization;
 using Nocturne.Tests.Shared.Mocks;
@@ -16,7 +18,7 @@ using Nocturne.Infrastructure.Data;
 using Nocturne.Infrastructure.Data.Entities;
 using Nocturne.Tests.Shared.Infrastructure;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Platform;
 
 /// <summary>
 /// Comprehensive unit tests for StatusService

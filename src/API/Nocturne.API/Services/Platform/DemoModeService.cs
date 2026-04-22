@@ -1,6 +1,6 @@
 using Nocturne.API.Services.BackgroundServices;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Platform;
 
 /// <summary>
 /// Interface for querying demo mode status.

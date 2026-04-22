@@ -6,12 +6,13 @@ using Microsoft.EntityFrameworkCore;
 using Nocturne.API.Extensions;
 using Nocturne.Core.Constants;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Platform;
 using Nocturne.Core.Contracts.Multitenancy;
 using Nocturne.Core.Models;
 using Nocturne.Infrastructure.Cache.Abstractions;
 using Nocturne.Infrastructure.Data;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Platform;
 
 /// <summary>
 /// Service implementation for status operations with 1:1 Nightscout compatibility.

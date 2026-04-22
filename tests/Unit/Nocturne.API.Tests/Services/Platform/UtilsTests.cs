@@ -1,7 +1,7 @@
 using System.Globalization;
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Platform;
 
 /// <summary>
 /// Tests for utility functions with 1:1 legacy compatibility

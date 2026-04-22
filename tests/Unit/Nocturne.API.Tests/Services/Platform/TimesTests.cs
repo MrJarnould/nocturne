@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Platform;
 
 /// <summary>
 /// Tests for time conversion utilities with 1:1 legacy compatibility

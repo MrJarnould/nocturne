@@ -1,9 +1,10 @@
 using System.Text.Json;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Platform;
 using Nocturne.Core.Models;
 using Nocturne.Core.Contracts.Repositories;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Platform;
 
 /// <summary>
 /// Implements time-based queries and advanced data slicing for the Nightscout

@@ -1,9 +1,10 @@
 using System.Globalization;
 using Nocturne.API.Services;
+using Nocturne.API.Services.Platform;
 using Nocturne.API.Services.Analytics;
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Platform;
 
 /// <summary>
 /// Tests for glucose unit conversions with 1:1 legacy compatibility

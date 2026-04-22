@@ -1,8 +1,9 @@
 using FluentAssertions;
 using Nocturne.API.Services;
+using Nocturne.API.Services.Platform;
 using Nocturne.Core.Models.Alerts;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Platform;
 
 [Trait("Category", "Unit")]
 public class BotHealthServiceTests

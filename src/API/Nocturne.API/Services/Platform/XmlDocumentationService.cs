@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Xml;
 using Nocturne.Core.Contracts;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Platform;
 
 /// <summary>
 /// Extracts XML documentation comment summaries from compiled assemblies. Used to surface

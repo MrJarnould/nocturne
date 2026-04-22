@@ -3,8 +3,9 @@ using System.Reflection;
 using System.Xml;
 using Microsoft.Extensions.Logging;
 using Nocturne.API.Services;
+using Nocturne.API.Services.Platform;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Platform;
 
 /// <summary>
 /// Test helper class with various method signatures for testing XML documentation
@@ -330,7 +331,7 @@ public class XmlDocumentationServiceTests
         var service = CreateServiceWithMockXmlDoc(
             "TestDocumentationClass",
             "SimpleMethod",
-            "<member name=\"M:Nocturne.API.Tests.Services.TestDocumentationClass.SimpleMethod\"><summary /></member>"
+            "<member name=\"M:Nocturne.API.Tests.Services.Platform.TestDocumentationClass.SimpleMethod\"><summary /></member>"
         );
 
         var method = typeof(TestDocumentationClass).GetMethod(
@@ -427,7 +428,7 @@ public class XmlDocumentationServiceTests
     )
     {
         var assemblyName = typeof(TestDocumentationClass).Assembly.GetName().Name;
-        var fullClassName = $"Nocturne.API.Tests.Services.{className}";
+        var fullClassName = $"Nocturne.API.Tests.Services.Platform.{className}";
         var memberName = $"M:{fullClassName}.{methodName}";
 
         if (methodName == "MethodWithParameters")
@@ -536,7 +537,7 @@ public class XmlDocumentationServiceTests
 
         // Add our test method
         xmlBuilder.AppendLine(
-            $@"        <member name=""M:Nocturne.API.Tests.Services.TestDocumentationClass.SimpleMethod"">
+            $@"        <member name=""M:Nocturne.API.Tests.Services.Platform.TestDocumentationClass.SimpleMethod"">
             <summary>A simple method with documentation</summary>
         </member>"
         );

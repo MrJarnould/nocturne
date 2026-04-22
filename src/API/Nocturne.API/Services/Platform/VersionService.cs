@@ -1,8 +1,9 @@
 using System.Reflection;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Platform;
 using Nocturne.Core.Models;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Platform;
 
 /// <summary>
 /// Provides Nightscout API version information, returning the list of supported API versions
