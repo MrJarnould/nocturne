@@ -621,7 +621,7 @@
         key: "dashboard-discovery.reports",
         title: "Your reports",
         description: "Your reports are organized by category \u2014 start with the Executive Summary.",
-        completeOn: { event: "click", target: "a" },
+        completeOn: { event: "click" },
       })}>
         {#each reportCategories as category, categoryIndex}
           {@const CategoryIcon = category.icon}

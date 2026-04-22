@@ -15,6 +15,7 @@ export class CoachMarkContext {
   private sequences: SequenceConfig;
   private settleDelay: number;
   private seenDwellMs: number;
+  private _keyToSequence: Map<string, string>;
 
   private _states = $state<Map<string, MarkState>>(new Map());
   private _registrations = $state<MarkRegistration[]>([]);
@@ -35,6 +36,14 @@ export class CoachMarkContext {
     this.sequences = sequences;
     this.settleDelay = settleDelay;
     this.seenDwellMs = seenDwellMs;
+
+    // Build O(1) lookup from mark key to sequence name
+    this._keyToSequence = new Map();
+    for (const [name, seq] of Object.entries(sequences)) {
+      for (const step of seq.steps) {
+        this._keyToSequence.set(step, name);
+      }
+    }
   }
 
   async initialize(): Promise<void> {
@@ -62,12 +71,6 @@ export class CoachMarkContext {
       );
       this.scheduleSelection();
     };
-  }
-
-  updateRegistration(key: string, step: number, updates: Partial<MarkRegistration>): void {
-    this._registrations = this._registrations.map((r) =>
-      r.key === key && r.step === step ? { ...r, ...updates } : r,
-    );
   }
 
   activate(key: string, step: number): void {
@@ -103,22 +106,11 @@ export class CoachMarkContext {
   }
 
   isMarkEligible(key: string): boolean {
-    // Find which sequence this mark belongs to (if any)
-    let markSequenceName: string | null = null;
-    for (const [name, seq] of Object.entries(this.sequences)) {
-      if (seq.steps.includes(key)) {
-        markSequenceName = name;
-        break;
-      }
-    }
+    const seqName = this._keyToSequence.get(key);
+    if (!seqName) return true; // standalone marks are always eligible
 
-    // Standalone marks are always eligible
-    if (!markSequenceName) return true;
-
-    const markSequence = this.sequences[markSequenceName];
-
-    // Check if this sequence's prerequisite is met
-    if (markSequence.prerequisite && !isSequenceDone(markSequence.prerequisite, this.sequences, this._states)) {
+    const seq = this.sequences[seqName];
+    if (seq.prerequisite && !isSequenceDone(seq.prerequisite, this.sequences, this._states)) {
       return false;
     }
 
