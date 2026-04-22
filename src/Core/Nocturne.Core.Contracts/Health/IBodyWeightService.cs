@@ -1,6 +1,6 @@
 using Nocturne.Core.Models;
 
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Health;
 
 /// <summary>
 /// Domain service for <see cref="BodyWeight"/> record operations with WebSocket broadcasting.

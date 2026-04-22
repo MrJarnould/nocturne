@@ -1,12 +1,13 @@
 using Nocturne.API.Services.V4;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Health;
 using Nocturne.Core.Contracts.Glucose;
 using Nocturne.Core.Contracts.Events;
 using Nocturne.Core.Contracts.V4;
 using Nocturne.Core.Models;
 using Nocturne.API.Services.Realtime;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Health;
 
 /// <summary>
 /// Domain service implementation for <see cref="Activity"/> operations with WebSocket broadcasting.

@@ -1,7 +1,7 @@
 using Nocturne.Core.Models;
 using Nocturne.Core.Contracts.Glucose;
 
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Health;
 
 /// <summary>
 /// Domain service for <see cref="Activity"/> operations with WebSocket broadcasting.

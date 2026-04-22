@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Health;
 using Nocturne.Core.Models;
 using Nocturne.Infrastructure.Data;
 using Nocturne.Infrastructure.Data.Entities;
 using Nocturne.Infrastructure.Data.Mappers;
 using Nocturne.API.Services.Realtime;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Health;
 
 /// <summary>
 /// Domain service for heart rate record operations. Inherits standard CRUD, SignalR broadcasting,
