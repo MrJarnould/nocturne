@@ -59,6 +59,7 @@
   import { toast } from "svelte-sonner";
   import { getCategoryIcon } from "$lib/utils/connector-display";
   import { getUploaderName } from "$lib/utils/uploader-labels";
+  import { coachmark } from "@nocturne/coach";
   import { getRealtimeStore } from "$lib/stores/realtime-store.svelte";
 
   let servicesOverview = $state<ServicesOverview | null>(null);
@@ -368,7 +369,7 @@
   <title>Connectors & Apps - Settings - Nocturne</title>
 </svelte:head>
 
-<div class="container mx-auto max-w-4xl p-6 space-y-6">
+<div class="container mx-auto max-w-4xl p-6 space-y-6" {@attach coachmark({ key: "power-user.connectors", title: "Data sources", description: "Connect data sources to pull glucose, insulin, and pump data automatically." })}>
   <!-- Header -->
   <div class="flex items-center justify-between">
     <div>

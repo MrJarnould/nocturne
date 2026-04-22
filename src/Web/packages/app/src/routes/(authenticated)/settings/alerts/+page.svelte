@@ -190,7 +190,7 @@
         Configure alert rules, schedules, and escalation chains
       </p>
     </div>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2" {@attach coachmark({ key: "power-user.alert-rules", title: "Custom alert rules", description: "Build custom alert rules with threshold, rate-of-change, or signal-loss conditions." })}>
       <Button variant="outline" onclick={() => goto("/settings/alerts/setup")}>
         <Zap class="h-4 w-4 mr-2" />
         Setup Wizard
