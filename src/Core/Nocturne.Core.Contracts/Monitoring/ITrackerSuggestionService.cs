@@ -1,6 +1,6 @@
 using Nocturne.Core.Models;
 
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Monitoring;
 
 /// <summary>
 /// Service for creating tracker reset suggestions based on detected events.

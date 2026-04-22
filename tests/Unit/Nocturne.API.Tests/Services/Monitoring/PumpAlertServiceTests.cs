@@ -1,13 +1,13 @@
 using Microsoft.Extensions.Logging;
 using Moq;
-using Nocturne.API.Services;
-using Nocturne.Core.Contracts;
+using Nocturne.API.Services.Monitoring;
+using Nocturne.Core.Contracts.Monitoring;
 using Nocturne.Core.Contracts.Profiles;
 using Nocturne.Core.Contracts.Devices;
 using Nocturne.Core.Models;
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Monitoring;
 
 /// <summary>
 /// Tests for PumpAlertService with 1:1 legacy compatibility

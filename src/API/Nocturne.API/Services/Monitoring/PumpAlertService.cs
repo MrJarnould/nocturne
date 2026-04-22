@@ -1,9 +1,9 @@
-using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Monitoring;
 using Nocturne.Core.Contracts.Profiles;
 using Nocturne.Core.Contracts.Devices;
 using Nocturne.Core.Models;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Monitoring;
 
 /// <summary>
 /// Monitors insulin pump status (reservoir, battery, clock, bolusing, suspended) and generates

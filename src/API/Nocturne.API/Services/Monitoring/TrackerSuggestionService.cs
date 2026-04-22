@@ -1,13 +1,13 @@
 using System.Text.Json;
 using Nocturne.API.Controllers.V4;
 using Nocturne.API.Controllers.V4.Monitoring;
-using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Monitoring;
 using Nocturne.Core.Models;
 using Nocturne.Infrastructure.Data.Abstractions;
 using Nocturne.Infrastructure.Data.Entities;
 using Nocturne.Infrastructure.Data.Repositories;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Monitoring;
 
 /// <summary>
 /// Detects events that warrant a tracker reset (e.g. sensor warmup gaps) and creates in-app

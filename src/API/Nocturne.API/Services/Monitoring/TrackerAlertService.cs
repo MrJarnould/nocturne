@@ -2,7 +2,7 @@ using Nocturne.Core.Models;
 using Nocturne.Infrastructure.Data.Abstractions;
 using Nocturne.Infrastructure.Data.Entities;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Monitoring;
 
 /// <summary>
 /// Represents an alert fired when a tracker crosses a configured threshold.

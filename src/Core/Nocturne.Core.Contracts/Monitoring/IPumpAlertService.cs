@@ -1,7 +1,7 @@
 using Nocturne.Core.Contracts.Profiles;
 using Nocturne.Core.Models;
 
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Monitoring;
 
 /// <summary>
 /// Service for monitoring pump status and generating alerts

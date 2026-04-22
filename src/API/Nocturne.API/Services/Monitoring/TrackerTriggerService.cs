@@ -3,7 +3,7 @@ using Nocturne.API.Controllers.V4.Monitoring;
 using Nocturne.Core.Models;
 using Nocturne.Infrastructure.Data.Abstractions;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Monitoring;
 
 /// <summary>
 /// Automatically starts tracker instances when matching treatments are created. When a treatment

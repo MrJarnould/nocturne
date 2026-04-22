@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using OpenApi.Remote.Attributes;
 using Nocturne.API.Extensions;
 using Nocturne.API.Services;
+using Nocturne.API.Services.Monitoring;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Monitoring;
 using Nocturne.Core.Contracts.Repositories;
 using Nocturne.Core.Models;
 
