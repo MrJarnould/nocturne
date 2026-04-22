@@ -54,7 +54,7 @@
   </div>
 
   <!-- Clinical Information -->
-  <Card.Root {@attach coachmark({ key: "onboarding.patient-details", title: "Patient details", description: "Clinical info so Nocturne can tailor readings", completed: patientConfigured })}>
+  <Card.Root {@attach coachmark({ key: "onboarding.patient-details", title: "Patient details", description: "Clinical info so Nocturne can tailor readings", completedWhen: () => patientConfigured })}>
     <Card.Header>
       <div class="flex items-center gap-2">
         <HeartPulse class="h-5 w-5 text-muted-foreground" />
@@ -80,7 +80,7 @@
   </Card.Root>
 
   <!-- Devices -->
-  <Card.Root {@attach coachmark({ key: "onboarding.devices", title: "Devices", description: "Your CGM, pump, and meter", completed: devicesConfigured })}>
+  <Card.Root {@attach coachmark({ key: "onboarding.devices", title: "Devices", description: "Your CGM, pump, and meter", completedWhen: () => devicesConfigured })}>
     <Card.Header>
       <div class="flex items-center gap-2">
         <Cpu class="h-5 w-5 text-muted-foreground" />
@@ -96,7 +96,7 @@
   </Card.Root>
 
   <!-- Insulins -->
-  <Card.Root {@attach coachmark({ key: "onboarding.insulins", title: "Insulins", description: "Current insulin types and regimen", completed: insulinsConfigured })}>
+  <Card.Root {@attach coachmark({ key: "onboarding.insulins", title: "Insulins", description: "Current insulin types and regimen", completedWhen: () => insulinsConfigured })}>
     <Card.Header>
       <div class="flex items-center gap-2">
         <Syringe class="h-5 w-5 text-muted-foreground" />

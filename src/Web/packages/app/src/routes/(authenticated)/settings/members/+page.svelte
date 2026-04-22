@@ -117,7 +117,7 @@
   <title>Members - Settings - Nocturne</title>
 </svelte:head>
 
-<div class="container mx-auto max-w-4xl p-6 space-y-6" {@attach coachmark({ key: "onboarding.sharing", title: "Sharing & Privacy", description: "Control who can see your data", completed: sharingConfigured })}>
+<div class="container mx-auto max-w-4xl p-6 space-y-6" {@attach coachmark({ key: "onboarding.sharing", title: "Sharing & Privacy", description: "Control who can see your data", completedWhen: () => sharingConfigured })}>
   <div class="space-y-1">
     <h1 class="text-2xl font-bold tracking-tight">Members</h1>
     <p class="text-muted-foreground">

@@ -181,7 +181,7 @@
   <title>Alerts - Settings - Nocturne</title>
 </svelte:head>
 
-<div class="container mx-auto max-w-4xl p-6 space-y-6" {@attach coachmark({ key: "onboarding.alerts", title: "Alerts", description: "Get notified about highs and lows", completed: alertsConfigured })}>
+<div class="container mx-auto max-w-4xl p-6 space-y-6" {@attach coachmark({ key: "onboarding.alerts", title: "Alerts", description: "Get notified about highs and lows", completedWhen: () => alertsConfigured })}>
   <!-- Header -->
   <div class="flex items-center justify-between">
     <div>
