@@ -1,10 +1,11 @@
 using Nocturne.API.Models;
 using Nocturne.Connectors.Core.Services;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Connectors;
 using Nocturne.Core.Models.Configuration;
 using Nocturne.Core.Contracts.Repositories;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Connectors;
 
 /// <summary>
 /// Aggregates connector health information by combining ASP.NET Core health check results with

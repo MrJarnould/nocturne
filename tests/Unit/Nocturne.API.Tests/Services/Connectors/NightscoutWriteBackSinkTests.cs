@@ -4,7 +4,7 @@ using Nocturne.Connectors.Nightscout.Configurations;
 using Nocturne.Connectors.Nightscout.Services.WriteBack;
 using Nocturne.Core.Constants;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Connectors;
 
 [Trait("Category", "Unit")]
 public class NightscoutWriteBackSinkTests

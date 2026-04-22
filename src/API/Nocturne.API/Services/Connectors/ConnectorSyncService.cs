@@ -2,7 +2,7 @@ using Nocturne.Connectors.Core.Interfaces;
 using Nocturne.Connectors.Core.Models;
 using Nocturne.Core.Contracts.Multitenancy;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Connectors;
 
 /// <summary>
 /// Service for triggering manual on-demand sync operations for data source connectors.

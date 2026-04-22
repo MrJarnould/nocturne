@@ -9,7 +9,7 @@ using Nocturne.Connectors.Nightscout.Services;
 using Nocturne.Core.Models;
 using Xunit;
 
-namespace Nocturne.API.Tests.Services;
+namespace Nocturne.API.Tests.Services.Connectors;
 
 public class NightscoutConnectorPaginationTests
 {

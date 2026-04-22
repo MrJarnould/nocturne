@@ -1,3 +1,5 @@
+using Nocturne.Core.Contracts.Connectors;
+
 namespace Nocturne.Core.Contracts.Treatments;
 
 /// <summary>

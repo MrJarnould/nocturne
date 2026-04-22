@@ -3,11 +3,12 @@ using Microsoft.Extensions.Logging;
 using Nocturne.Connectors.Core.Services;
 using Nocturne.Core.Constants;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Connectors;
 using Nocturne.Core.Models.Services;
 using Nocturne.Infrastructure.Data;
 using Nocturne.Core.Contracts.Repositories;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Connectors;
 
 /// <summary>
 /// Domain service for querying and managing the data sources (connectors and direct Nightscout uploads)

@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Connectors;
 using Nocturne.Core.Contracts.Treatments;
 using Nocturne.Core.Models;
 using Nocturne.Infrastructure.Data;
 using Nocturne.Infrastructure.Data.Entities;
 using Nocturne.Infrastructure.Data.Mappers;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Connectors;
 
 /// <summary>
 /// Imports food entries sourced from connectors (e.g. MyFitnessPal) and deduplicates them against

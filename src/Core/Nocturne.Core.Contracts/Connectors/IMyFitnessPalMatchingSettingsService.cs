@@ -1,6 +1,6 @@
 using Nocturne.Core.Models.Configuration;
 
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Connectors;
 
 /// <summary>
 /// Service interface for managing global MyFitnessPal matching settings.

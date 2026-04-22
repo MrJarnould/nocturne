@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenApi.Remote.Attributes;
 using Nocturne.Core.Contracts;
+using Nocturne.Core.Contracts.Connectors;
 
 namespace Nocturne.API.Controllers.V4.Connectors;
 

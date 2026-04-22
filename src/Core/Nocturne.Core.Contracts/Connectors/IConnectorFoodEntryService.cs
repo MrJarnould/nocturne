@@ -1,6 +1,6 @@
 using Nocturne.Core.Models;
 
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Connectors;
 
 /// <summary>
 /// Service interface for connector food entry imports.

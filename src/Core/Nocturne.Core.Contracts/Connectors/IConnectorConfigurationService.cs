@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Nocturne.Core.Models.Configuration;
 
-namespace Nocturne.Core.Contracts;
+namespace Nocturne.Core.Contracts.Connectors;
 
 /// <summary>
 /// Response model for connector configuration retrieval.

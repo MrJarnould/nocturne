@@ -1,6 +1,6 @@
 using Nocturne.API.Models;
 
-namespace Nocturne.API.Services;
+namespace Nocturne.API.Services.Connectors;
 
 /// <summary>
 /// Provides aggregated connector health status for the admin dashboard. See
