@@ -91,6 +91,7 @@
   import ReportsSkeleton from "$lib/components/reports/ReportsSkeleton.svelte";
   import SiteChangeIcon from "$lib/components/icons/SiteChangeIcon.svelte";
   import { resource } from "runed";
+  import { coachmark } from "@nocturne/coach";
   import { fly, fade, scale } from "svelte/transition";
   import { cubicOut, elasticOut } from "svelte/easing";
 
@@ -616,7 +617,12 @@
         </p>
       </div>
 
-      <div class="grid gap-6 md:grid-cols-2">
+      <div class="grid gap-6 md:grid-cols-2" {@attach coachmark({
+        key: "dashboard-discovery.reports",
+        title: "Your reports",
+        description: "Your reports are organized by category \u2014 start with the Executive Summary.",
+        completeOn: { event: "click", target: "a" },
+      })}>
         {#each reportCategories as category, categoryIndex}
           {@const CategoryIcon = category.icon}
           {@const styles = categoryVariants({
