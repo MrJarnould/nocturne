@@ -1,3 +1,12 @@
 // @nocturne/coach — Progressive disclosure system
-// Exports will be added as modules are created
-export {};
+export type {
+  CoachMarkAdapter,
+  CoachMarkOptions,
+  CoachMarkProviderOptions,
+  CoachMarkStep,
+  MarkRegistration,
+  MarkState,
+  MarkStatus,
+  SequenceConfig,
+  SequenceDefinition,
+} from "./types.js";
