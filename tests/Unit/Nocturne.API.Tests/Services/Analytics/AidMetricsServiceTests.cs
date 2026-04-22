@@ -1,8 +1,6 @@
 using FluentAssertions;
-using Nocturne.API.Services;
 using Nocturne.API.Services.Analytics;
 using Nocturne.API.Services.AidDetection;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Analytics;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.V4;

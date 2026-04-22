@@ -1,5 +1,4 @@
 using Nocturne.Connectors.Core.Interfaces;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Treatments;
 using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Models;

@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Devices;
 using Nocturne.Core.Contracts.Multitenancy;
 using Nocturne.Core.Contracts.V4.Repositories;

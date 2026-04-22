@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Legacy;
 using Nocturne.Core.Contracts.Treatments;
 using Nocturne.Core.Contracts.Events;

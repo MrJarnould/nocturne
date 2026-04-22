@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Nocturne.Connectors.Core.Interfaces;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Glucose;
 using Nocturne.Core.Contracts.Alerts;
 using Nocturne.Core.Contracts.Multitenancy;

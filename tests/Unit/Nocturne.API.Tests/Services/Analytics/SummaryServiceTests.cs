@@ -1,9 +1,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Nocturne.API.Services;
 using Nocturne.API.Services.Analytics;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Analytics;
 using Nocturne.Core.Contracts.Legacy;
 using Nocturne.Core.Contracts.Profiles;

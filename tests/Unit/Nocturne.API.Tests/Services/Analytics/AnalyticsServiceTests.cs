@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Nocturne.API.Configuration;
-using Nocturne.API.Services;
 using Nocturne.API.Services.Analytics;
 using Nocturne.Core.Models;
 using Xunit;

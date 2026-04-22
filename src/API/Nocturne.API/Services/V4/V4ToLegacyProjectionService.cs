@@ -1,5 +1,4 @@
 using Nocturne.Connectors.Core.Constants;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.V4;
 using Nocturne.Core.Contracts.Treatments;
 using Nocturne.Core.Contracts.V4.Repositories;

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 using Nocturne.API.Hubs;
 using Nocturne.Connectors.Core.Models;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Multitenancy;
 using Nocturne.Core.Models;
 

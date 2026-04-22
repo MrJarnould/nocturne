@@ -1,7 +1,6 @@
 using System.Data.Common;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Infrastructure;
 using Nocturne.Core.Models;
 using Nocturne.Infrastructure.Data.Entities.V4;

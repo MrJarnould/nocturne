@@ -4,7 +4,6 @@ using Nocturne.API.Configuration;
 using Nocturne.API.Services.Compatibility;
 using Nocturne.Connectors.Nightscout.Configurations;
 using Nocturne.Connectors.Nightscout.Services.WriteBack;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Connectors;
 using Nocturne.Core.Models.V4;
 

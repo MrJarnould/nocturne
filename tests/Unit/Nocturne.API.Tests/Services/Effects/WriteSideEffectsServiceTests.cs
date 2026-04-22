@@ -1,8 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Moq;
-using Nocturne.API.Services;
 using Nocturne.API.Services.Effects;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Multitenancy;
 using Nocturne.Core.Contracts.V4;
 using Nocturne.Core.Models;

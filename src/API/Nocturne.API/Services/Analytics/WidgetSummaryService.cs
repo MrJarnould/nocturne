@@ -1,4 +1,3 @@
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Notifications;
 using Nocturne.Core.Contracts.Analytics;
 using Nocturne.Core.Contracts.Devices;

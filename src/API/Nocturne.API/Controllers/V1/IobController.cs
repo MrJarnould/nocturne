@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Nocturne.API.Attributes;
 using OpenApi.Remote.Attributes;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Devices;
 using Nocturne.Core.Contracts.Treatments;
 using Nocturne.Core.Models;

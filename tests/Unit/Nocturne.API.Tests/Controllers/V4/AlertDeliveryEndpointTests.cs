@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Nocturne.API.Controllers.V4.Monitoring;
 using Nocturne.API.Controllers.V4.Platform;
-using Nocturne.API.Services;
 using Nocturne.API.Services.Platform;
 using Nocturne.Core.Contracts.Alerts;
 using Nocturne.Core.Contracts.Multitenancy;

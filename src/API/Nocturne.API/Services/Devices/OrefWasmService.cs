@@ -1,6 +1,5 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Devices;
 using Wasmtime;
 

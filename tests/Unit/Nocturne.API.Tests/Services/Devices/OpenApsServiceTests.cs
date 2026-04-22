@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using Moq;
-using Nocturne.API.Services;
 using Nocturne.API.Services.Devices;
 using Nocturne.Core.Models;
 using Xunit;

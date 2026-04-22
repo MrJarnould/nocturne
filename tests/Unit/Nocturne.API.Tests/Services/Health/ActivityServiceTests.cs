@@ -1,8 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Moq;
-using Nocturne.API.Services;
 using Nocturne.API.Services.Health;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Health;
 using Nocturne.Core.Contracts.Legacy;
 using Nocturne.Core.Contracts.Glucose;

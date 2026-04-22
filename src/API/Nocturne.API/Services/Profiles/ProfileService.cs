@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Profiles;
 using Nocturne.Core.Contracts.Multitenancy;
 using Nocturne.Core.Contracts.V4.Repositories;

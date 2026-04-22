@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Notifications;
 using Nocturne.Core.Contracts.Profiles;
 using Nocturne.Core.Contracts.Glucose;

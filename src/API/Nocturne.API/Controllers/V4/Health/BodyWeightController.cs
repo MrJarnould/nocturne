@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using OpenApi.Remote.Attributes;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Health;
 using Nocturne.Core.Models;
 

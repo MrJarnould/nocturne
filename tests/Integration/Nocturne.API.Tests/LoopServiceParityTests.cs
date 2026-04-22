@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using Nocturne.API.Services;
 using Nocturne.API.Services.Devices;
 using Nocturne.API.Tests.Integration.Infrastructure;
 using Nocturne.Core.Models;

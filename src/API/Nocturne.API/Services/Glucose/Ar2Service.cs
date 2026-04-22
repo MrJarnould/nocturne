@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Glucose;
 using Nocturne.Core.Models;
 

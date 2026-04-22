@@ -1,6 +1,5 @@
 using FluentAssertions;
 using Moq;
-using Nocturne.API.Services;
 using Nocturne.API.Services.Devices;
 using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Models.V4;

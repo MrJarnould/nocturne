@@ -1,7 +1,6 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Nocturne.API.Attributes;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Legacy;
 using Nocturne.Core.Models;
 

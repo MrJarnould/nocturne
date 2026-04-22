@@ -1,9 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Nocturne.API.Services;
 using Nocturne.API.Services.Notifications;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Notifications;
 using Xunit;
 

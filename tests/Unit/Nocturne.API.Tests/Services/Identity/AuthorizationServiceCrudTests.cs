@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Nocturne.API.Services.Auth;
 using Nocturne.API.Services.Identity;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Identity;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.Authorization;

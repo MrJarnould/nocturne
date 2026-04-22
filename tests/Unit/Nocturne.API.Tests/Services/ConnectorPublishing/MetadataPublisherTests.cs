@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Nocturne.API.Services.ConnectorPublishing;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Health;
 using Nocturne.Core.Contracts.Connectors;
 using Nocturne.Core.Contracts.Profiles;

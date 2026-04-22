@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Nocturne.Core.Constants;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Multitenancy;
 using Nocturne.Infrastructure.Data;
 using Nocturne.Infrastructure.Data.Entities;

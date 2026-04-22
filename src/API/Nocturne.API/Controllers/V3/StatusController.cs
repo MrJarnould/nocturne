@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Nocturne.API.Attributes;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Platform;
 using Nocturne.Core.Models;
 

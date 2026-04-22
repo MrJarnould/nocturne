@@ -1,4 +1,3 @@
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Glucose;
 using Nocturne.Core.Contracts.Entries;
 using Nocturne.Core.Contracts.Events;

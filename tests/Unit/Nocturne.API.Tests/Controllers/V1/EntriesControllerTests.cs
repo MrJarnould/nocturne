@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Nocturne.API.Controllers.V1;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Glucose;
 using Nocturne.Core.Contracts.Legacy;
 using Nocturne.Core.Contracts.Alerts;

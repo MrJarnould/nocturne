@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nocturne.API.Models;
-using Nocturne.API.Services;
 using Nocturne.API.Services.Connectors;
 using OpenApi.Remote.Attributes;
 

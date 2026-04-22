@@ -12,8 +12,6 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Nocturne.API.Hubs;
 using Nocturne.API.Multitenancy;
-using Nocturne.API.Services;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Identity;
 using Nocturne.Core.Contracts.Multitenancy;
 using Nocturne.Core.Models;

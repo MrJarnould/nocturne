@@ -1,4 +1,3 @@
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Treatments;
 using Nocturne.Core.Contracts.Repositories;
 using Nocturne.Core.Models;

@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nocturne.API.Attributes;
 using Nocturne.API.Models.Requests.V4;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Health;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.Authorization;

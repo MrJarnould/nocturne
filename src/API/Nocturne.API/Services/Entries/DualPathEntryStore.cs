@@ -1,4 +1,3 @@
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.V4;
 using Nocturne.Core.Contracts.Entries;
 using Nocturne.Core.Contracts.Repositories;

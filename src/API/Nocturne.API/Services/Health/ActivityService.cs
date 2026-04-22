@@ -1,5 +1,4 @@
 using Nocturne.API.Services.V4;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Health;
 using Nocturne.Core.Contracts.Legacy;
 using Nocturne.Core.Contracts.Glucose;

@@ -1,5 +1,4 @@
 using Nocturne.Connectors.Core.Interfaces;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Health;
 using Nocturne.Core.Contracts.Connectors;
 using Nocturne.Core.Contracts.Profiles;

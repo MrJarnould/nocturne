@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Notifications;
 using Nocturne.Core.Contracts.Identity;
 using Nocturne.Core.Models;

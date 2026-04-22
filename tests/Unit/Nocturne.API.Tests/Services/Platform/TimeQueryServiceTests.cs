@@ -1,9 +1,7 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Nocturne.API.Services;
 using Nocturne.API.Services.Platform;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Legacy;
 using Nocturne.Core.Contracts.Platform;
 using Nocturne.Core.Contracts.Repositories;

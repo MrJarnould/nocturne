@@ -9,7 +9,6 @@ using Nocturne.Connectors.Core.Extensions;
 using Nocturne.Connectors.Core.Interfaces;
 using Nocturne.Connectors.Core.Models;
 using Nocturne.Connectors.Core.Services;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Connectors;
 using Nocturne.Core.Models.Configuration;
 using Nocturne.Infrastructure.Data;

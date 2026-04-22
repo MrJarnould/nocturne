@@ -1,9 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Nocturne.API.Services;
 using Nocturne.API.Services.Analytics;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Analytics;
 using Nocturne.Core.Contracts.Profiles;
 using Nocturne.Infrastructure.Data;

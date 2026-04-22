@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nocturne.API.Extensions;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Connectors;
 using Nocturne.Core.Models;
 

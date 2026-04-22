@@ -1,7 +1,6 @@
 using System.Text;
 using System.Text.Json;
 using Nocturne.Core.Constants;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Notifications;
 using Nocturne.Core.Models;
 

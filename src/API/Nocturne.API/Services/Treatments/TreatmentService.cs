@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Repositories;
 using Nocturne.Core.Contracts.Events;
 using Nocturne.Core.Contracts.Treatments;

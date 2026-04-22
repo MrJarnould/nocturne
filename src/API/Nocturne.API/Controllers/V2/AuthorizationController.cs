@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nocturne.API.Attributes;
 using OpenApi.Remote.Attributes;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Identity;
 using Nocturne.Core.Models;
 using IAuthorizationService = Nocturne.Core.Contracts.Identity.IAuthorizationService;

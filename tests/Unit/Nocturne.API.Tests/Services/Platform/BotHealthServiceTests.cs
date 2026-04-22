@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Nocturne.API.Services;
 using Nocturne.API.Services.Platform;
 using Nocturne.Core.Models.Alerts;
 

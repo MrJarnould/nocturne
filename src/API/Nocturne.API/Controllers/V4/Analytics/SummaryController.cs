@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nocturne.API.Extensions;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Analytics;
 using Nocturne.Core.Models.Widget;
 using Nocturne.API.Services.Glucose;

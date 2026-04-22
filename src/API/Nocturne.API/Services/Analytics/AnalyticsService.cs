@@ -3,7 +3,6 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Options;
 using Nocturne.API.Configuration;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Analytics;
 using Nocturne.Core.Models;
 

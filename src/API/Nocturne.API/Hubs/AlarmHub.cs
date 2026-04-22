@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
 using Nocturne.API.Middleware;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Identity;
 using Nocturne.Core.Contracts.Notifications;
 using Nocturne.Core.Models;

@@ -1,6 +1,5 @@
 using Nocturne.API.Models;
 using Nocturne.Connectors.Core.Services;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Connectors;
 using Nocturne.Core.Models.Configuration;
 using Nocturne.Core.Contracts.Repositories;

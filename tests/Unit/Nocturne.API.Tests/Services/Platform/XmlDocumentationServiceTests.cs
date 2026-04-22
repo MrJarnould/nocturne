@@ -2,7 +2,6 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using System.Xml;
 using Microsoft.Extensions.Logging;
-using Nocturne.API.Services;
 using Nocturne.API.Services.Platform;
 
 namespace Nocturne.API.Tests.Services.Platform;

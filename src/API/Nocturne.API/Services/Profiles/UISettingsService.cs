@@ -1,6 +1,5 @@
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Profiles;
 using Nocturne.Core.Models.Configuration;
 using Nocturne.Infrastructure.Data;

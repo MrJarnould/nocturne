@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Profiles;
 using Nocturne.Core.Contracts.Events;
 using Nocturne.Core.Contracts.Multitenancy;

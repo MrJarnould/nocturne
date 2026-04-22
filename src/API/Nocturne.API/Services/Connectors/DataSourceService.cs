@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nocturne.Connectors.Core.Services;
 using Nocturne.Core.Constants;
-using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Connectors;
 using Nocturne.Core.Models.Services;
 using Nocturne.Infrastructure.Data;
