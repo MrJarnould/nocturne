@@ -19,6 +19,7 @@
   import { Button } from "$lib/components/ui/button";
   import MealsFilterBar from "$lib/components/meals/MealsFilterBar.svelte";
   import MealsTable from "$lib/components/meals/MealsTable.svelte";
+  import { coachmark } from "@nocturne/coach";
 
   let dateRange = $state<{ from?: string; to?: string }>({});
   let filterMode = $state<"all" | "unattributed">("all");
@@ -387,35 +388,48 @@
     </p>
   </div>
 
-  <MealsFilterBar
-    bind:dateRange
-    bind:filterMode
-    bind:searchQuery
-    bind:selectedFoods
-    {uniqueFoods}
-    onClearFilters={clearAllFilters}
-  />
+  <div {@attach coachmark({
+    key: "feature-intro.meals-attribution",
+    title: "Meal attribution",
+    description: "Link foods to meals to track carb attribution over time.",
+  })}>
+    <MealsFilterBar
+      bind:dateRange
+      bind:filterMode
+      bind:searchQuery
+      bind:selectedFoods
+      {uniqueFoods}
+      onClearFilters={clearAllFilters}
+    />
+  </div>
 
-  <MealsTable
-    {mealsByDay}
-    {sortColumn}
-    {sortDirection}
-    {expandedRows}
-    {collapsedDates}
-    {isLoading}
-    filteredAndSortedMealsCount={filteredAndSortedMeals.length}
-    mealsCount={meals.length}
-    {suggestionsByCarbIntake}
-    onSort={toggleSort}
-    onToggleRow={toggleRow}
-    onToggleDate={toggleDate}
-    onAddFood={openAddFood}
-    onEditFood={openEditFoodEntry}
-    onUnlinkFood={confirmUnlinkFood}
-    onAcceptSuggestion={handleQuickAccept}
-    onDismissSuggestion={handleDismiss}
-    onReviewSuggestion={openReviewDialog}
-  />
+  <div {@attach coachmark({
+    key: "feature-intro.meals-matching",
+    title: "Smart matching",
+    description: "Nocturne suggests food matches based on your history \u2014 review them here.",
+    completeOn: { event: "click" },
+  })}>
+    <MealsTable
+      {mealsByDay}
+      {sortColumn}
+      {sortDirection}
+      {expandedRows}
+      {collapsedDates}
+      {isLoading}
+      filteredAndSortedMealsCount={filteredAndSortedMeals.length}
+      mealsCount={meals.length}
+      {suggestionsByCarbIntake}
+      onSort={toggleSort}
+      onToggleRow={toggleRow}
+      onToggleDate={toggleDate}
+      onAddFood={openAddFood}
+      onEditFood={openEditFoodEntry}
+      onUnlinkFood={confirmUnlinkFood}
+      onAcceptSuggestion={handleQuickAccept}
+      onDismissSuggestion={handleDismiss}
+      onReviewSuggestion={openReviewDialog}
+    />
+  </div>
 </div>
 
 <TreatmentFoodSelectorDialog
