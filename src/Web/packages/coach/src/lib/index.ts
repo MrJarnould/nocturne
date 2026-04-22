@@ -11,5 +11,8 @@ export type {
   SequenceDefinition,
 } from "./types.js";
 
+export { default as CoachMarkProvider } from "./CoachMarkProvider.svelte";
+export { coachmark } from "./coachmark.svelte.js";
+export { getCoachMarkContext, createCoachMarkContext } from "./context.svelte.js";
 export { selectActiveMark, isSequenceDone, sequenceProgress } from "./sequencing.js";
 export type { SelectionResult } from "./sequencing.js";
