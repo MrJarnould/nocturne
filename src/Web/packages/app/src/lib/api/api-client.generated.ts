@@ -22,6 +22,7 @@ import {
   ChatIdentityClient,
   ChatIdentityDirectoryClient,
   ClockFacesClient,
+  CoachMarkClient,
   CompatibilityClient,
   CompressionLowClient,
   ConfigurationClient,
@@ -113,6 +114,7 @@ export class ApiClient {
   public readonly chatIdentity: ChatIdentityClient;
   public readonly chatIdentityDirectory: ChatIdentityDirectoryClient;
   public readonly clockFaces: ClockFacesClient;
+  public readonly coachMark: CoachMarkClient;
   public readonly compatibility: CompatibilityClient;
   public readonly compressionLow: CompressionLowClient;
   public readonly configuration: ConfigurationClient;
@@ -204,6 +206,7 @@ export class ApiClient {
     this.chatIdentity = new ChatIdentityClient(apiBaseUrl, http);
     this.chatIdentityDirectory = new ChatIdentityDirectoryClient(apiBaseUrl, http);
     this.clockFaces = new ClockFacesClient(apiBaseUrl, http);
+    this.coachMark = new CoachMarkClient(apiBaseUrl, http);
     this.compatibility = new CompatibilityClient(apiBaseUrl, http);
     this.compressionLow = new CompressionLowClient(apiBaseUrl, http);
     this.configuration = new ConfigurationClient(apiBaseUrl, http);
