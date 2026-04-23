@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Nocturne.Infrastructure.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Nocturne.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(NocturneDbContext))]
-    partial class NocturneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260420065252_DropTenantIsDefault")]
+    partial class DropTenantIsDefault
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -593,18 +596,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)")
                         .HasColumnName("name");
-
-                    b.Property<TimeOnly?>("QuietHoursEnd")
-                        .HasColumnType("time without time zone")
-                        .HasColumnName("quiet_hours_end");
-
-                    b.Property<bool>("QuietHoursOverrideCritical")
-                        .HasColumnType("boolean")
-                        .HasColumnName("quiet_hours_override_critical");
-
-                    b.Property<TimeOnly?>("QuietHoursStart")
-                        .HasColumnType("time without time zone")
-                        .HasColumnName("quiet_hours_start");
 
                     b.Property<TimeOnly?>("StartTime")
                         .HasColumnType("time without time zone")
@@ -2553,89 +2544,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
                     b.ToTable("migration_sources");
                 });
 
-            modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.MutationAuditLogEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("action");
-
-                    b.Property<string>("AuthType")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("auth_type");
-
-                    b.Property<string>("ChangesJson")
-                        .HasColumnType("jsonb")
-                        .HasColumnName("changes");
-
-                    b.Property<string>("CorrelationId")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("correlation_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<string>("Endpoint")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("endpoint");
-
-                    b.Property<Guid>("EntityId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("entity_id");
-
-                    b.Property<string>("EntityType")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("entity_type");
-
-                    b.Property<string>("IpAddress")
-                        .HasMaxLength(45)
-                        .HasColumnType("character varying(45)")
-                        .HasColumnName("ip_address");
-
-                    b.Property<Guid?>("SubjectId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("subject_id");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("tenant_id");
-
-                    b.Property<Guid?>("TokenId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("token_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CorrelationId")
-                        .HasDatabaseName("ix_mutation_audit_log_correlation")
-                        .HasFilter("correlation_id IS NOT NULL");
-
-                    b.HasIndex("TenantId", "CreatedAt")
-                        .HasDatabaseName("ix_mutation_audit_log_created");
-
-                    b.HasIndex("TenantId", "EntityType", "EntityId")
-                        .HasDatabaseName("ix_mutation_audit_log_entity");
-
-                    b.HasIndex("TenantId", "SubjectId", "CreatedAt")
-                        .HasDatabaseName("ix_mutation_audit_log_subject");
-
-                    b.ToTable("mutation_audit_log");
-                });
-
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.OAuthAuthorizationCodeEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3739,47 +3647,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
                     b.ToTable("step_counts");
                 });
 
-            modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.SubjectAvatarEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
-                        .HasColumnName("content_type");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<byte[]>("Data")
-                        .IsRequired()
-                        .HasColumnType("bytea")
-                        .HasColumnName("data");
-
-                    b.Property<int>("FileSize")
-                        .HasColumnType("integer")
-                        .HasColumnName("file_size");
-
-                    b.Property<Guid>("SubjectId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("subject_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SubjectId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_subject_avatars_subject_id");
-
-                    b.ToTable("subject_avatars", (string)null);
-                });
-
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.SubjectEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3807,11 +3674,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("approval_status");
-
-                    b.Property<string>("AvatarUrl")
-                        .HasMaxLength(2048)
-                        .HasColumnType("character varying(2048)")
-                        .HasColumnName("avatar_url");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -4082,6 +3944,18 @@ namespace Nocturne.Infrastructure.Data.Migrations
                     b.Property<DateTime?>("LastReadingAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_reading_at");
+
+                    b.Property<TimeOnly?>("QuietHoursEnd")
+                        .HasColumnType("time without time zone")
+                        .HasColumnName("quiet_hours_end");
+
+                    b.Property<bool>("QuietHoursOverrideCritical")
+                        .HasColumnType("boolean")
+                        .HasColumnName("quiet_hours_override_critical");
+
+                    b.Property<TimeOnly?>("QuietHoursStart")
+                        .HasColumnType("time without time zone")
+                        .HasColumnName("quiet_hours_start");
 
                     b.Property<string>("Slug")
                         .IsRequired()
@@ -5484,14 +5358,8 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApsSnapshotId");
-
-                    b.HasIndex("BolusCalculationId");
-
                     b.HasIndex("CorrelationId")
                         .HasDatabaseName("ix_boluses_correlation_id");
-
-                    b.HasIndex("DeviceId");
 
                     b.HasIndex("Timestamp")
                         .IsDescending()
@@ -5772,45 +5640,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
                         .HasFilter("legacy_id IS NOT NULL");
 
                     b.ToTable("carb_ratio_schedules");
-                });
-
-            modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.DecompositionBatchEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("Source")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
-                        .HasColumnName("source");
-
-                    b.Property<string>("SourceRecordId")
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
-                        .HasColumnName("source_record_id");
-
-                    b.Property<Guid?>("SourceTreatmentId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("source_treatment_id");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("tenant_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SourceTreatmentId");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("decomposition_batches");
                 });
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.DeviceEntity", b =>
@@ -6195,8 +6024,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DeviceId");
-
                     b.HasIndex("TenantId", "IsCurrent")
                         .HasDatabaseName("ix_patient_devices_tenant_is_current");
 
@@ -6444,8 +6271,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
                         .HasColumnName("utc_offset");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DeviceId");
 
                     b.HasIndex("LegacyId")
                         .HasDatabaseName("ix_pump_snapshots_legacy_id");
@@ -6820,12 +6645,8 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApsSnapshotId");
-
                     b.HasIndex("CorrelationId")
                         .HasDatabaseName("ix_temp_basals_correlation_id");
-
-                    b.HasIndex("DeviceId");
 
                     b.HasIndex("EndTimestamp")
                         .HasDatabaseName("ix_temp_basals_end_timestamp");
@@ -7067,8 +6888,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
                         .HasColumnName("utc_offset");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DeviceId");
 
                     b.HasIndex("LegacyId")
                         .HasDatabaseName("ix_uploader_snapshots_legacy_id");
@@ -7463,15 +7282,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
                     b.Navigation("Source");
                 });
 
-            modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.MutationAuditLogEntity", b =>
-                {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.OAuthAuthorizationCodeEntity", b =>
                 {
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.OAuthClientEntity", "Client")
@@ -7636,17 +7446,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.SubjectAvatarEntity", b =>
-                {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.SubjectEntity", "Subject")
-                        .WithMany()
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Subject");
                 });
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.SubjectOidcIdentityEntity", b =>
@@ -8249,11 +8048,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.BGCheckEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DecompositionBatchEntity", null)
-                        .WithMany()
-                        .HasForeignKey("CorrelationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -8263,11 +8057,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.BasalScheduleEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DecompositionBatchEntity", null)
-                        .WithMany()
-                        .HasForeignKey("CorrelationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -8277,11 +8066,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.BolusCalculationEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DecompositionBatchEntity", null)
-                        .WithMany()
-                        .HasForeignKey("CorrelationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -8291,26 +8075,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.BolusEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.ApsSnapshotEntity", null)
-                        .WithMany()
-                        .HasForeignKey("ApsSnapshotId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.BolusCalculationEntity", null)
-                        .WithMany()
-                        .HasForeignKey("BolusCalculationId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DecompositionBatchEntity", null)
-                        .WithMany()
-                        .HasForeignKey("CorrelationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DeviceEntity", null)
-                        .WithMany()
-                        .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -8320,11 +8084,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.CalibrationEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DecompositionBatchEntity", null)
-                        .WithMany()
-                        .HasForeignKey("CorrelationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -8334,11 +8093,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.CarbIntakeEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DecompositionBatchEntity", null)
-                        .WithMany()
-                        .HasForeignKey("CorrelationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -8348,25 +8102,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.CarbRatioScheduleEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DecompositionBatchEntity", null)
-                        .WithMany()
-                        .HasForeignKey("CorrelationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.DecompositionBatchEntity", b =>
-                {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.TreatmentEntity", null)
-                        .WithMany()
-                        .HasForeignKey("SourceTreatmentId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -8385,11 +8120,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.DeviceEventEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DecompositionBatchEntity", null)
-                        .WithMany()
-                        .HasForeignKey("CorrelationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -8399,11 +8129,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.MeterGlucoseEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DecompositionBatchEntity", null)
-                        .WithMany()
-                        .HasForeignKey("CorrelationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -8413,11 +8138,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.NoteEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DecompositionBatchEntity", null)
-                        .WithMany()
-                        .HasForeignKey("CorrelationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -8427,11 +8147,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.PatientDeviceEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DeviceEntity", null)
-                        .WithMany()
-                        .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -8459,11 +8174,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.PumpSnapshotEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DeviceEntity", null)
-                        .WithMany()
-                        .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -8473,11 +8183,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.SensitivityScheduleEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DecompositionBatchEntity", null)
-                        .WithMany()
-                        .HasForeignKey("CorrelationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -8487,11 +8192,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.SensorGlucoseEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DecompositionBatchEntity", null)
-                        .WithMany()
-                        .HasForeignKey("CorrelationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -8501,11 +8201,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.TargetRangeScheduleEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DecompositionBatchEntity", null)
-                        .WithMany()
-                        .HasForeignKey("CorrelationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -8515,21 +8210,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.TempBasalEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.ApsSnapshotEntity", null)
-                        .WithMany()
-                        .HasForeignKey("ApsSnapshotId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DecompositionBatchEntity", null)
-                        .WithMany()
-                        .HasForeignKey("CorrelationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DeviceEntity", null)
-                        .WithMany()
-                        .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -8539,11 +8219,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.TherapySettingsEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DecompositionBatchEntity", null)
-                        .WithMany()
-                        .HasForeignKey("CorrelationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")
@@ -8553,11 +8228,6 @@ namespace Nocturne.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.V4.UploaderSnapshotEntity", b =>
                 {
-                    b.HasOne("Nocturne.Infrastructure.Data.Entities.V4.DeviceEntity", null)
-                        .WithMany()
-                        .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("Nocturne.Infrastructure.Data.Entities.TenantEntity", null)
                         .WithMany()
                         .HasForeignKey("TenantId")

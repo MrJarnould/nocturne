@@ -112,7 +112,6 @@ public static class TenantCommandExtensions
             foreach (var t in tenants)
             {
                 var flags = new List<string>();
-                if (t.IsDefault) flags.Add("default");
                 if (!t.IsActive) flags.Add("inactive");
                 var flagStr = flags.Count > 0 ? $" ({string.Join(", ", flags)})" : "";
 
@@ -196,12 +195,7 @@ public static class TenantCommandExtensions
             if (tenants is null or { Count: 0 })
                 return CommandResults.Failure("No tenants found.");
 
-            // Check if snapshot exists and which slugs it contains
-            var snapshotPath = ResolveSnapshotPath();
-            var snapshotSlugs = GetSnapshotTenantSlugs(snapshotPath);
-            var snapshotExists = snapshotSlugs.Count > 0;
-
-            // Step 1: Pick a tenant (all tenants, including default)
+            // Step 1: Pick a tenant
             var inputs = new List<InteractionInput>
             {
                 new()
@@ -211,16 +205,15 @@ public static class TenantCommandExtensions
                     Required = true,
                     Options = tenants.Select(t =>
                     {
-                        var suffix = t.IsDefault ? " (default — will reset)" : "";
-                        var label = $"{t.Slug}{suffix} — {t.Entries:N0} entries, {t.Treatments:N0} treatments";
+                        var label = $"{t.Slug} — {t.Entries:N0} entries, {t.Treatments:N0} treatments";
                         return KeyValuePair.Create(t.Id.ToString(), label);
                     }).ToList(),
                 },
             };
 
             var pickResult = await interactionService.PromptInputsAsync(
-                "Delete / Reset Tenant",
-                "Select a tenant. The default tenant will be **reset** (wiped and recreated); others will be permanently deleted.",
+                "Delete Tenant",
+                "Select a tenant to permanently delete.",
                 inputs);
 
             if (pickResult.Canceled)
@@ -228,11 +221,8 @@ public static class TenantCommandExtensions
 
             var selectedId = Guid.Parse(pickResult.Data[0].Value!);
             var selected = tenants.First(t => t.Id == selectedId);
-            var isReset = selected.IsDefault;
-            var action = isReset ? "reset" : "permanently deleted";
-            var hasSnapshotMatch = snapshotSlugs.Contains(selected.Slug);
 
-            // Step 2: Confirm by typing the slug, optionally with snapshot checkbox
+            // Step 2: Confirm by typing the slug
             var confirmInputs = new List<InteractionInput>
             {
                 new()
@@ -244,19 +234,9 @@ public static class TenantCommandExtensions
                 },
             };
 
-            if (snapshotExists && hasSnapshotMatch)
-            {
-                confirmInputs.Add(new InteractionInput
-                {
-                    Name = "Initialize with snapshot",
-                    InputType = InputType.Boolean,
-                    Required = false,
-                });
-            }
-
             var confirmResult = await interactionService.PromptInputsAsync(
-                isReset ? "Confirm Reset" : "Confirm Deletion",
-                $"**{selected.DisplayName}** (`{selected.Slug}`) will be {action}.\n\n" +
+                "Confirm Deletion",
+                $"**{selected.DisplayName}** (`{selected.Slug}`) will be permanently deleted.\n\n" +
                 $"This will destroy **{selected.Entries:N0}** entries, **{selected.Treatments:N0}** treatments, " +
                 $"**{selected.DeviceStatuses:N0}** device statuses, and all other tenant data.\n\n" +
                 $"Type **{selected.Slug}** to confirm:",
@@ -269,12 +249,8 @@ public static class TenantCommandExtensions
             if (!string.Equals(typedSlug, selected.Slug, StringComparison.OrdinalIgnoreCase))
                 return CommandResults.Failure($"Slug mismatch: expected \"{selected.Slug}\", got \"{typedSlug}\". Aborted.");
 
-            var initWithSnapshot = confirmInputs.Count > 1
-                && bool.TryParse(confirmResult.Data[1].Value, out var snap) && snap;
-
-            // Step 3: Delete / reset
-            logger.LogInformation("{Action} tenant '{Slug}' ({Id})...",
-                isReset ? "Resetting" : "Deleting", selected.Slug, selected.Id);
+            // Step 3: Delete
+            logger.LogInformation("Deleting tenant '{Slug}' ({Id})...", selected.Slug, selected.Id);
 
             var deleteResponse = await http.DeleteAsync(
                 $"api/v4/dev-only/admin/tenants/{selected.Id}",
@@ -286,37 +262,13 @@ public static class TenantCommandExtensions
                 return CommandResults.Failure($"{deleteResponse.StatusCode}: {error}");
             }
 
-            logger.LogInformation("Tenant '{Slug}' {Action} successfully",
-                selected.Slug, isReset ? "reset" : "deleted");
-
-            // Step 4: Import scoped snapshot if requested
-            if (initWithSnapshot)
-            {
-                // For reset, the tenant was recreated — fetch the new ID
-                var newTenantId = selected.Id;
-                if (isReset)
-                {
-                    var refreshResponse = await http.GetAsync(
-                        "api/v4/dev-only/admin/tenants",
-                        context.CancellationToken);
-                    refreshResponse.EnsureSuccessStatusCode();
-                    var refreshed = await refreshResponse.Content.ReadFromJsonAsync<List<TenantSummary>>(
-                        JsonOptions, context.CancellationToken);
-                    var match = refreshed?.FirstOrDefault(t => t.Slug == selected.Slug);
-                    if (match is not null) newTenantId = match.Id;
-                }
-
-                var importResult = await ImportScopedSnapshotAsync(
-                    http, newTenantId, selected.Slug, snapshotPath, logger, context.CancellationToken);
-                if (importResult is not null)
-                    return importResult;
-            }
+            logger.LogInformation("Tenant '{Slug}' deleted successfully", selected.Slug);
 
             return CommandResults.Success();
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to delete/reset tenant");
+            logger.LogError(ex, "Failed to delete tenant");
             return CommandResults.Failure(ex.Message);
         }
     }
@@ -557,7 +509,7 @@ public static class TenantCommandExtensions
     };
 
     private sealed record TenantSummary(
-        Guid Id, string Slug, string DisplayName, bool IsActive, bool IsDefault,
+        Guid Id, string Slug, string DisplayName, bool IsActive,
         string Timezone, DateTime CreatedAt, long Entries, long Treatments,
         long DeviceStatuses, int Profiles, int Members, DateTime? LatestEntry,
         List<ConnectorSummary> Connectors);

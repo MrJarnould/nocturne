@@ -6,7 +6,8 @@ import { getRequestEvent, query } from "$app/server";
 import { error, redirect } from "@sveltejs/kit";
 
 /**
- * Get the current (default) tenant ID for the authenticated user.
+ * Get the current tenant ID for the authenticated user.
+ * Returns the first tenant the user is a member of.
  */
 export const getCurrentTenantId = query(async () => {
   const { locals, url } = getRequestEvent();
@@ -18,8 +19,7 @@ export const getCurrentTenantId = query(async () => {
   const apiClient = locals.apiClient;
   try {
     const tenants = await apiClient.myTenants.getMyTenants();
-    const defaultTenant = tenants.find((t) => t.isDefault);
-    return defaultTenant?.id ?? null;
+    return tenants[0]?.id ?? null;
   } catch (err) {
     const status = (err as any)?.status;
     if (status === 401) {

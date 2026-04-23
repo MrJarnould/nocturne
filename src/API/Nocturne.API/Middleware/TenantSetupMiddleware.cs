@@ -10,8 +10,10 @@ namespace Nocturne.API.Middleware;
 /// credentials) or tenants in recovery mode (orphaned subjects with no
 /// passkey and no OIDC binding). Allows passkey setup, admin, and metadata
 /// endpoints through so setup/recovery flows can complete.
-/// Only active in multi-tenant mode (runs after <see cref="Multitenancy.TenantResolutionMiddleware"/>).
-/// Single-tenant setup/recovery is handled by <see cref="RecoveryModeMiddleware"/>.
+///
+/// Runs after TenantResolutionMiddleware in both single-tenant and
+/// multi-tenant modes. When no tenant is resolved (e.g. tenantless
+/// cross-tenant paths, or zero-tenant setup), the middleware passes through.
 /// </summary>
 /// <remarks>
 /// <para>

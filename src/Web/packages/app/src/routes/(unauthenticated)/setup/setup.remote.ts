@@ -21,3 +21,52 @@ export const markSetupComplete = command(z.void(), async () => {
 
   return { success: true };
 });
+
+/**
+ * Create the initial tenant during setup.
+ * Calls POST /api/v4/setup/tenant before account creation.
+ */
+export const setupTenant = command(
+  z.object({ slug: z.string(), displayName: z.string() }),
+  async (input) => {
+    const event = getRequestEvent();
+    const apiBaseUrl = event.locals.apiBaseUrl;
+
+    const res = await event.fetch(`${apiBaseUrl}/api/v4/setup/tenant`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(body || `Setup tenant failed (${res.status})`);
+    }
+
+    return await res.json();
+  },
+);
+
+/**
+ * Validate a slug for availability during setup.
+ * Calls POST /api/v4/setup/validate-slug before account creation.
+ */
+export const validateSetupSlug = command(
+  z.object({ slug: z.string() }),
+  async (input) => {
+    const event = getRequestEvent();
+    const apiBaseUrl = event.locals.apiBaseUrl;
+
+    const res = await event.fetch(`${apiBaseUrl}/api/v4/setup/validate-slug`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+
+    if (!res.ok) {
+      return { isValid: false, message: "Could not validate slug" };
+    }
+
+    return await res.json();
+  },
+);
