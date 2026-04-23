@@ -31,6 +31,7 @@ export interface AuthUser {
   roles: string[];
   permissions: string[];
   expiresAt?: Date;
+  avatarUrl?: string;
 }
 
 /**
@@ -54,6 +55,7 @@ export interface SessionInfo {
   roles?: string[];
   permissions?: string[];
   expiresAt?: string;
+  avatarUrl?: string;
 }
 
 export type AuthState = "idle" | "loading" | "authenticated" | "unauthenticated" | "error";
@@ -186,6 +188,7 @@ export class AuthStore {
           roles: session.roles ?? [],
           permissions: session.permissions ?? [],
           expiresAt: session.expiresAt ? new Date(session.expiresAt) : undefined,
+          avatarUrl: session.avatarUrl,
         };
         this._expiresAt = session.expiresAt ? new Date(session.expiresAt) : null;
         this._state = "authenticated";
@@ -423,6 +426,15 @@ export class AuthStore {
     if (this._loginResolver) {
       this._loginResolver(false);
       this._loginResolver = null;
+    }
+  }
+
+  /**
+   * Update the avatar URL after upload or deletion
+   */
+  updateAvatarUrl(url: string | undefined): void {
+    if (this._user) {
+      this._user = { ...this._user, avatarUrl: url };
     }
   }
 

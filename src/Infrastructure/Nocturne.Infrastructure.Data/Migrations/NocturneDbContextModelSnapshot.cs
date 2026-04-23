@@ -3701,6 +3701,47 @@ namespace Nocturne.Infrastructure.Data.Migrations
                     b.ToTable("step_counts");
                 });
 
+            modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.SubjectAvatarEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("content_type");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("data");
+
+                    b.Property<int>("FileSize")
+                        .HasColumnType("integer")
+                        .HasColumnName("file_size");
+
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("subject_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubjectId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_subject_avatars_subject_id");
+
+                    b.ToTable("subject_avatars", (string)null);
+                });
+
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.SubjectEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3728,6 +3769,11 @@ namespace Nocturne.Infrastructure.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("approval_status");
+
+                    b.Property<string>("AvatarUrl")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)")
+                        .HasColumnName("avatar_url");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -7556,6 +7602,17 @@ namespace Nocturne.Infrastructure.Data.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.SubjectAvatarEntity", b =>
+                {
+                    b.HasOne("Nocturne.Infrastructure.Data.Entities.SubjectEntity", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subject");
                 });
 
             modelBuilder.Entity("Nocturne.Infrastructure.Data.Entities.SubjectOidcIdentityEntity", b =>
