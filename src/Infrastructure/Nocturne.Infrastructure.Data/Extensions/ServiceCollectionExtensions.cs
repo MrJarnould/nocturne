@@ -46,9 +46,9 @@ public static class ServiceCollectionExtensions
             );
         }
 
-        // Register the tenant connection interceptor as a singleton so the
-        // role-attribute cache is shared across all DbContext instances.
+        // Register interceptors as singletons so caches are shared across all DbContext instances.
         services.TryAddSingleton<TenantConnectionInterceptor>();
+        services.TryAddSingleton<MutationAuditInterceptor>();
 
         // Register NpgsqlDataSource as a singleton - this manages the connection pool
         var dataSourceBuilder = new Npgsql.NpgsqlDataSourceBuilder(
@@ -86,7 +86,9 @@ public static class ServiceCollectionExtensions
                 }
 
                 options.EnableServiceProviderCaching();
-                options.AddInterceptors(sp.GetRequiredService<TenantConnectionInterceptor>());
+                options.AddInterceptors(
+                    sp.GetRequiredService<TenantConnectionInterceptor>(),
+                    sp.GetRequiredService<MutationAuditInterceptor>());
             },
             poolSize: 128
         );
@@ -171,9 +173,9 @@ public static class ServiceCollectionExtensions
             options.CommandTimeoutSeconds = config.CommandTimeoutSeconds;
         });
 
-        // Register the tenant connection interceptor as a singleton so the
-        // role-attribute cache is shared across all DbContext instances.
+        // Register interceptors as singletons so caches are shared across all DbContext instances.
         services.TryAddSingleton<TenantConnectionInterceptor>();
+        services.TryAddSingleton<MutationAuditInterceptor>();
 
         // Register NpgsqlDataSource as a singleton - this manages the connection pool
         var dataSourceBuilder = new Npgsql.NpgsqlDataSourceBuilder(config.ConnectionString);
@@ -209,7 +211,9 @@ public static class ServiceCollectionExtensions
                 }
 
                 options.EnableServiceProviderCaching();
-                options.AddInterceptors(sp.GetRequiredService<TenantConnectionInterceptor>());
+                options.AddInterceptors(
+                    sp.GetRequiredService<TenantConnectionInterceptor>(),
+                    sp.GetRequiredService<MutationAuditInterceptor>());
             },
             poolSize: 128
         );
