@@ -12,8 +12,12 @@ export const load: PageServerLoad = async ({ locals }) => {
   try {
     const status = await locals.apiClient.passkey.getAuthStatus();
     setupRequired = status?.setupRequired ?? false;
-  } catch {
-    // If the API call fails, default to login
+  } catch (err) {
+    // 503 means zero tenants exist — setup is definitely required
+    if (err && typeof err === "object" && "status" in err && err.status === 503) {
+      setupRequired = true;
+    }
+    // Other failures → default to login
   }
 
   if (setupRequired) {

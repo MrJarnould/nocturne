@@ -13,9 +13,9 @@ namespace Nocturne.API.Controllers.V4.Identity;
 /// Returns the list of tenants the authenticated user belongs to and allows switching the active tenant context.
 /// </summary>
 /// <remarks>
-/// In single-tenant mode only the default tenant is listed. In multi-tenant mode all tenants for which
-/// the authenticated subject has an active membership are returned. Tenant switching writes a new
-/// <c>X-Tenant-Slug</c> cookie that is read by subsequent requests' tenant-resolution middleware.
+/// All tenants for which the authenticated subject has an active membership are returned.
+/// Tenant switching writes a new <c>X-Tenant-Slug</c> cookie that is read by subsequent
+/// requests' tenant-resolution middleware.
 /// </remarks>
 /// <seealso cref="ITenantService"/>
 [ApiController]

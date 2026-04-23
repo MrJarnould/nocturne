@@ -115,7 +115,7 @@
     if (foods.length === 0) return "Meal";
     if (foods.length === 1 && foods[0].foodName) return foods[0].foodName;
     return getMealNameForTime(
-      new Date(meal.timestamp ?? Date.now())
+      new Date(meal.carbIntakes?.[0]?.mills ?? Date.now())
     );
   }
 
@@ -152,7 +152,7 @@
       switch (sortColumn) {
         case "time":
           comparison =
-            (a.timestamp?.getTime() ?? 0) - (b.timestamp?.getTime() ?? 0);
+            (a.carbIntakes?.[0]?.mills ?? 0) - (b.carbIntakes?.[0]?.mills ?? 0);
           break;
         case "meal":
           comparison = getMealSortLabel(a).localeCompare(getMealSortLabel(b));
@@ -184,10 +184,10 @@
     const grouped = new Map<string, MealEvent[]>();
 
     for (const meal of filteredAndSortedMeals) {
-      const ts = meal.timestamp;
-      if (!ts) continue;
+      const mills = meal.carbIntakes?.[0]?.mills;
+      if (!mills) continue;
 
-      const date = new Date(ts);
+      const date = new Date(mills);
       const dateKey = date.toLocaleDateString();
 
       if (!grouped.has(dateKey)) {
@@ -201,7 +201,7 @@
       result.push({
         date,
         displayDate: new Date(
-          dayMeals[0].timestamp ?? 0
+          dayMeals[0].carbIntakes?.[0]?.mills ?? 0
         ).toLocaleDateString(undefined, {
           weekday: "long",
           year: "numeric",

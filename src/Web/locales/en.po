@@ -1435,7 +1435,7 @@ msgstr "<0/> Platform Admin"
 msgid "Defines what unauthenticated users can access"
 msgstr "Defines what unauthenticated users can access"
 
-#. placeholder {0}: subject.roles .map((r) => r.name ?? "") .filter((n) => n !== "admin") .join(", ") || "Admin"
+#. placeholder {0}: subject.roles .map((r: TenantMemberRoleDto) => r.name ?? "") .filter((n: string) => n !== "admin") .join(", ") || "Admin"
 #: src/lib/components/admin/UsersTabContent.svelte
 msgid "Roles: {0}"
 msgstr "Roles: {0}"
@@ -5078,7 +5078,7 @@ msgstr "<0/> IOB"
 #. placeholder {0}: monthSummary.tdd.toFixed(1)
 #. placeholder {0}: insulin.toFixed(1)
 #. placeholder {0}: dayTotalInsulin.toFixed(1)
-#. placeholder {0}: meal.correlatedBolus.insulin.toFixed(1)
+#. placeholder {0}: meal.totalInsulin.toFixed(1)
 #. placeholder {0}: totalIob.toFixed(2)
 #. placeholder {0}: snapshot.enactedBolusVolume.toFixed(2)
 #. placeholder {0}: snapshot.recommendedBolus.toFixed(2)
@@ -17500,3 +17500,19 @@ msgstr "You're all set"
 #: src/lib/components/dashboard/OnboardingProgress.svelte
 msgid "{0} of {1} set up"
 msgstr "{0} of {1} set up"
+
+#: src/lib/components/account/UserProfileCard.svelte
+msgid "Failed to upload avatar"
+msgstr "Failed to upload avatar"
+
+#: src/lib/components/account/UserProfileCard.svelte
+msgid "Failed to delete avatar"
+msgstr "Failed to delete avatar"
+
+#: src/lib/components/account/UserProfileCard.svelte
+msgid "Change avatar"
+msgstr "Change avatar"
+
+#: src/lib/components/account/UserProfileCard.svelte
+msgid "Remove avatar"
+msgstr "Remove avatar"

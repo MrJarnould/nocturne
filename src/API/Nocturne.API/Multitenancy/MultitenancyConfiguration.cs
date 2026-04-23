@@ -10,10 +10,10 @@ public class MultitenancyConfiguration
 
     /// <summary>
     /// Base domain for subdomain tenant resolution.
-    /// e.g. "nocturnecgm.com" - requests to rhys.nocturnecgm.com resolve tenant "rhys".
-    /// When null or empty, all requests resolve to the default tenant (self-hosted mode).
+    /// e.g. "nocturnecgm.com" — requests to rhys.nocturnecgm.com resolve tenant "rhys".
+    /// Aspire always injects this (either the custom domain or localhost:port).
     /// </summary>
-    public string? BaseDomain { get; set; }
+    public string BaseDomain { get; set; } = "";
 
     /// <summary>
     /// Whether authenticated users can create their own tenants.

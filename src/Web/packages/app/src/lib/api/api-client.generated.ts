@@ -63,6 +63,7 @@ import {
   OidcProviderAdminClient,
   PasskeyClient,
   PatientRecordClient,
+  PlatformClient,
   PredictionClient,
   ProcessingClient,
   ProfileClient,
@@ -71,6 +72,7 @@ import {
   RoleClient,
   SensorGlucoseClient,
   ServicesClient,
+  SetupClient,
   StateSpansClient,
   StatisticsClient,
   StatusClient,
@@ -156,6 +158,7 @@ export class ApiClient {
   public readonly oidcProviderAdmin: OidcProviderAdminClient;
   public readonly passkey: PasskeyClient;
   public readonly patientRecord: PatientRecordClient;
+  public readonly platform: PlatformClient;
   public readonly predictions: PredictionClient;
   public readonly processing: ProcessingClient;
   public readonly profile: ProfileClient;
@@ -164,6 +167,7 @@ export class ApiClient {
   public readonly role: RoleClient;
   public readonly sensorGlucose: SensorGlucoseClient;
   public readonly services: ServicesClient;
+  public readonly setup: SetupClient;
   public readonly stateSpans: StateSpansClient;
   public readonly statistics: StatisticsClient;
   public readonly status: StatusClient;
@@ -249,6 +253,7 @@ export class ApiClient {
     this.oidcProviderAdmin = new OidcProviderAdminClient(apiBaseUrl, http);
     this.passkey = new PasskeyClient(apiBaseUrl, http);
     this.patientRecord = new PatientRecordClient(apiBaseUrl, http);
+    this.platform = new PlatformClient(apiBaseUrl, http);
     this.predictions = new PredictionClient(apiBaseUrl, http);
     this.processing = new ProcessingClient(apiBaseUrl, http);
     this.profile = new ProfileClient(apiBaseUrl, http);
@@ -257,6 +262,7 @@ export class ApiClient {
     this.role = new RoleClient(apiBaseUrl, http);
     this.sensorGlucose = new SensorGlucoseClient(apiBaseUrl, http);
     this.services = new ServicesClient(apiBaseUrl, http);
+    this.setup = new SetupClient(apiBaseUrl, http);
     this.stateSpans = new StateSpansClient(apiBaseUrl, http);
     this.statistics = new StatisticsClient(apiBaseUrl, http);
     this.status = new StatusClient(apiBaseUrl, http);

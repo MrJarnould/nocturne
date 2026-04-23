@@ -1227,7 +1227,7 @@ msgstr ""
 #. placeholder {0}: snapshot.enactedBolusVolume.toFixed(2)
 #. placeholder {0}: insulin.toFixed(1)
 #. placeholder {0}: dayTotalInsulin.toFixed(1)
-#. placeholder {0}: meal.correlatedBolus.insulin.toFixed(1)
+#. placeholder {0}: meal.totalInsulin.toFixed(1)
 #. placeholder {0}: totalIob.toFixed(2)
 #. placeholder {0}: snapshot.enactedBolusVolume.toFixed(2)
 #. placeholder {0}: snapshot.recommendedBolus.toFixed(2)
@@ -10678,7 +10678,7 @@ msgstr ""
 #~ msgid "Shows what users without login can see"
 #~ msgstr ""
 
-#. placeholder {0}: subject.roles .map((r) => r.name ?? "") .filter((n) => n !== "admin") .join(", ") || "Admin"
+#. placeholder {0}: subject.roles .map((r: TenantMemberRoleDto) => r.name ?? "") .filter((n: string) => n !== "admin") .join(", ") || "Admin"
 #: src/lib/components/admin/UsersTabContent.svelte
 #: src/routes/settings/admin/+page.svelte
 msgid "Roles: {0}"
@@ -27898,4 +27898,20 @@ msgstr ""
 #. placeholder {1}: progress.total
 #: src/lib/components/dashboard/OnboardingProgress.svelte
 msgid "{0} of {1} set up"
+msgstr ""
+
+#: src/lib/components/account/UserProfileCard.svelte
+msgid "Failed to upload avatar"
+msgstr ""
+
+#: src/lib/components/account/UserProfileCard.svelte
+msgid "Failed to delete avatar"
+msgstr ""
+
+#: src/lib/components/account/UserProfileCard.svelte
+msgid "Change avatar"
+msgstr ""
+
+#: src/lib/components/account/UserProfileCard.svelte
+msgid "Remove avatar"
 msgstr ""
