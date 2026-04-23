@@ -4,6 +4,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using Nocturne.Core.Contracts.Audit;
 using Nocturne.Core.Contracts.Infrastructure;
 using Nocturne.Core.Models.V4;
 using Nocturne.Infrastructure.Data.Entities;
@@ -70,6 +71,7 @@ public class BolusRepositoryTests : IDisposable
         _repo = new BolusRepository(
             _context,
             _mockDeduplicationService.Object,
+            new Mock<IAuditContext>().Object,
             NullLogger<BolusRepository>.Instance);
     }
 

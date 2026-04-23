@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Nocturne.API.Services.V4;
+using Nocturne.Core.Contracts.Audit;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.V4;
 using Nocturne.Infrastructure.Data;
@@ -21,7 +22,7 @@ public class EntryDecomposerTests : IDisposable
         _context = TestDbContextFactory.CreateInMemoryContext();
         _context.TenantId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var mockDedup = new Mock<IDeduplicationService>();
-        var sgRepo = new SensorGlucoseRepository(_context, mockDedup.Object, NullLogger<SensorGlucoseRepository>.Instance);
+        var sgRepo = new SensorGlucoseRepository(_context, mockDedup.Object, new Mock<IAuditContext>().Object, NullLogger<SensorGlucoseRepository>.Instance);
         var mgRepo = new MeterGlucoseRepository(_context, NullLogger<MeterGlucoseRepository>.Instance);
         var calRepo = new CalibrationRepository(_context, NullLogger<CalibrationRepository>.Instance);
         _decomposer = new EntryDecomposer(_context, sgRepo, mgRepo, calRepo, NullLogger<EntryDecomposer>.Instance);
