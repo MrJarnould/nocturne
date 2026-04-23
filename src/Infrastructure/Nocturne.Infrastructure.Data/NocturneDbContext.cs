@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Nocturne.Core.Contracts.Audit;
 using Nocturne.Core.Models;
 using Nocturne.Infrastructure.Data.Entities;
 using Nocturne.Infrastructure.Data.Entities.V4;
@@ -27,6 +28,13 @@ public class NocturneDbContext : DbContext
     /// With context pooling, this property is set each time the context is checked out.
     /// </summary>
     public Guid TenantId { get; set; }
+
+    /// <summary>
+    /// Audit context for the current operation. Populated from HttpContext for HTTP
+    /// requests (via <see cref="Interceptors.MutationAuditInterceptor"/>), or set
+    /// directly by background services that have no HttpContext.
+    /// </summary>
+    public IAuditContext? AuditContext { get; set; }
 
     /// <summary>
     /// Gets or sets the Entries table for glucose entries
@@ -140,6 +148,11 @@ public class NocturneDbContext : DbContext
     /// Gets or sets the AuthAuditLog table for security event auditing
     /// </summary>
     public DbSet<AuthAuditLogEntity> AuthAuditLog { get; set; }
+
+    /// <summary>
+    /// Gets or sets the MutationAuditLog table for clinical data mutation auditing
+    /// </summary>
+    public DbSet<MutationAuditLogEntity> MutationAuditLog { get; set; }
 
     /// <summary>
     /// Gets or sets the PasskeyCredentials table for WebAuthn/passkey credentials
@@ -1937,6 +1950,10 @@ public class NocturneDbContext : DbContext
             .Entity<AuthAuditLogEntity>()
             .Property(a => a.Id)
             .HasValueGenerator<GuidV7ValueGenerator>();
+        modelBuilder
+            .Entity<MutationAuditLogEntity>()
+            .Property(a => a.Id)
+            .HasValueGenerator<GuidV7ValueGenerator>();
 
         // Tracker entity UUID generators
         modelBuilder
@@ -2515,6 +2532,25 @@ public class NocturneDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(e => e.RefreshTokenId)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Configure Mutation Audit Log entity defaults and indexes
+        modelBuilder.Entity<MutationAuditLogEntity>(entity =>
+        {
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasIndex(e => new { e.TenantId, e.EntityType, e.EntityId })
+                .HasDatabaseName("ix_mutation_audit_log_entity");
+
+            entity.HasIndex(e => new { e.TenantId, e.SubjectId, e.CreatedAt })
+                .HasDatabaseName("ix_mutation_audit_log_subject");
+
+            entity.HasIndex(e => e.CorrelationId)
+                .HasDatabaseName("ix_mutation_audit_log_correlation")
+                .HasFilter("correlation_id IS NOT NULL");
+
+            entity.HasIndex(e => new { e.TenantId, e.CreatedAt })
+                .HasDatabaseName("ix_mutation_audit_log_created");
         });
 
         // Configure LinkedRecordEntity defaults

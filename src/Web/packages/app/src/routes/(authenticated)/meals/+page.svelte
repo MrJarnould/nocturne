@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Calendar } from "lucide-svelte";
   import type {
-    MealCarbIntake,
+    MealEvent,
     TreatmentFood,
     CarbIntakeFoodRequest,
     SuggestedMealMatch,
@@ -38,12 +38,12 @@
 
   // Add food dialog state
   let showAddFoodDialog = $state(false);
-  let addFoodMeal = $state<MealCarbIntake | null>(null);
+  let addFoodMeal = $state<MealEvent | null>(null);
 
   // Edit food entry dialog state
   let showEditFoodEntryDialog = $state(false);
   let editFoodEntry = $state<TreatmentFood | null>(null);
-  let editFoodEntryMeal = $state<MealCarbIntake | null>(null);
+  let editFoodEntryMeal = $state<MealEvent | null>(null);
 
   // Meal match review dialog state
   let showReviewDialog = $state(false);
@@ -51,7 +51,7 @@
 
   // Unlink food confirmation state
   let showUnlinkConfirm = $state(false);
-  let unlinkTarget = $state<{ meal: MealCarbIntake; food: TreatmentFood } | null>(null);
+  let unlinkTarget = $state<{ meal: MealEvent; food: TreatmentFood } | null>(null);
   let isUnlinking = $state(false);
 
   const queryParams = $derived({
@@ -65,7 +65,7 @@
   });
 
   const mealsQuery = $derived(getMeals(queryParams));
-  const meals = $derived<MealCarbIntake[]>(mealsQuery.current ?? []);
+  const meals = $derived<MealEvent[]>(mealsQuery.current ?? []);
 
   // Query for suggested meal matches using the endpoint
   const suggestionsQueryParams = $derived({
@@ -109,12 +109,12 @@
 
 
   // Helper to get meal label for sorting
-  function getMealSortLabel(meal: MealCarbIntake): string {
+  function getMealSortLabel(meal: MealEvent): string {
     const foods = meal.foods ?? [];
     if (foods.length === 0) return "Meal";
     if (foods.length === 1 && foods[0].foodName) return foods[0].foodName;
     return getMealNameForTime(
-      new Date(meal.carbIntake?.mills ?? Date.now())
+      new Date(meal.timestamp ?? Date.now())
     );
   }
 
@@ -151,19 +151,19 @@
       switch (sortColumn) {
         case "time":
           comparison =
-            (a.carbIntake?.mills ?? 0) - (b.carbIntake?.mills ?? 0);
+            (a.timestamp?.getTime() ?? 0) - (b.timestamp?.getTime() ?? 0);
           break;
         case "meal":
           comparison = getMealSortLabel(a).localeCompare(getMealSortLabel(b));
           break;
         case "carbs":
           comparison =
-            (a.carbIntake?.carbs ?? 0) - (b.carbIntake?.carbs ?? 0);
+            (a.totalCarbs ?? 0) - (b.totalCarbs ?? 0);
           break;
         case "insulin":
           comparison =
-            (a.correlatedBolus?.insulin ?? 0) -
-            (b.correlatedBolus?.insulin ?? 0);
+            (a.totalInsulin ?? 0) -
+            (b.totalInsulin ?? 0);
           break;
       }
       return sortDirection === "asc" ? comparison : -comparison;
@@ -176,17 +176,17 @@
   interface MealsByDay {
     date: string;
     displayDate: string;
-    meals: MealCarbIntake[];
+    meals: MealEvent[];
   }
 
   const mealsByDay = $derived.by(() => {
-    const grouped = new Map<string, MealCarbIntake[]>();
+    const grouped = new Map<string, MealEvent[]>();
 
     for (const meal of filteredAndSortedMeals) {
-      const mills = meal.carbIntake?.mills;
-      if (!mills) continue;
+      const ts = meal.timestamp;
+      if (!ts) continue;
 
-      const date = new Date(mills);
+      const date = new Date(ts);
       const dateKey = date.toLocaleDateString();
 
       if (!grouped.has(dateKey)) {
@@ -200,7 +200,7 @@
       result.push({
         date,
         displayDate: new Date(
-          dayMeals[0].carbIntake?.mills ?? 0
+          dayMeals[0].timestamp ?? 0
         ).toLocaleDateString(undefined, {
           weekday: "long",
           year: "numeric",
@@ -250,30 +250,30 @@
     collapsedDates = newSet;
   }
 
-  function openAddFood(meal: MealCarbIntake) {
+  function openAddFood(meal: MealEvent) {
     addFoodMeal = meal;
     showAddFoodDialog = true;
   }
 
-  function openEditFoodEntry(meal: MealCarbIntake, food: TreatmentFood) {
+  function openEditFoodEntry(meal: MealEvent, food: TreatmentFood) {
     editFoodEntryMeal = meal;
     editFoodEntry = food;
     showEditFoodEntryDialog = true;
   }
 
   function getRemainingCarbsForEntry(
-    meal: MealCarbIntake,
+    meal: MealEvent,
     entryId: string | undefined
   ): number {
-    const totalCarbs = meal.carbIntake?.carbs ?? 0;
+    const totalCarbs = meal.totalCarbs ?? 0;
     const otherAttributedCarbs =
       meal.foods
-        ?.filter((f) => f.id !== entryId)
-        .reduce((sum, f) => sum + (f.carbs ?? 0), 0) ?? 0;
+        ?.filter((f: TreatmentFood) => f.id !== entryId)
+        .reduce((sum: number, f: TreatmentFood) => sum + (f.carbs ?? 0), 0) ?? 0;
     return Math.round((totalCarbs - otherAttributedCarbs) * 10) / 10;
   }
 
-  function confirmUnlinkFood(meal: MealCarbIntake, food: TreatmentFood) {
+  function confirmUnlinkFood(meal: MealEvent, food: TreatmentFood) {
     unlinkTarget = { meal, food };
     showUnlinkConfirm = true;
   }
@@ -281,12 +281,13 @@
   async function handleUnlinkFood() {
     if (!unlinkTarget) return;
     const { meal, food } = unlinkTarget;
-    if (!meal.carbIntake?.id || !food.id) return;
+    const carbIntakeId = meal.carbIntakes?.[0]?.id;
+    if (!carbIntakeId || !food.id) return;
 
     isUnlinking = true;
     try {
       await deleteCarbIntakeFood({
-        id: meal.carbIntake.id,
+        id: carbIntakeId,
         foodEntryId: food.id,
       });
       toast.success("Food unlinked");
@@ -306,11 +307,12 @@
   }
 
   async function handleAddFoodSubmit(request: CarbIntakeFoodRequest) {
-    if (!addFoodMeal?.carbIntake?.id) return;
+    const carbIntakeId = addFoodMeal?.carbIntakes?.[0]?.id;
+    if (!carbIntakeId) return;
 
     try {
       await addCarbIntakeFood({
-        id: addFoodMeal.carbIntake.id,
+        id: carbIntakeId,
         request,
       });
       toast.success("Food added");
@@ -425,9 +427,9 @@
     if (!value) addFoodMeal = null;
   }}
   onSubmit={handleAddFoodSubmit}
-  totalCarbs={addFoodMeal?.carbIntake?.carbs ?? 0}
+  totalCarbs={addFoodMeal?.totalCarbs ?? 0}
   unspecifiedCarbs={addFoodMeal?.unspecifiedCarbs ??
-    addFoodMeal?.carbIntake?.carbs ??
+    addFoodMeal?.totalCarbs ??
     0}
 />
 
@@ -441,8 +443,8 @@
     }
   }}
   entry={editFoodEntry}
-  treatmentId={editFoodEntryMeal?.carbIntake?.id}
-  totalCarbs={editFoodEntryMeal?.carbIntake?.carbs ?? 0}
+  treatmentId={editFoodEntryMeal?.carbIntakes?.[0]?.id}
+  totalCarbs={editFoodEntryMeal?.totalCarbs ?? 0}
   remainingCarbs={editFoodEntryMeal
     ? getRemainingCarbsForEntry(editFoodEntryMeal, editFoodEntry?.id)
     : 0}

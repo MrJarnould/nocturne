@@ -8,7 +8,7 @@ namespace Nocturne.Infrastructure.Data.Entities;
 /// Maps to Nocturne.Core.Models.DeviceStatus
 /// </summary>
 [Table("devicestatus")]
-public class DeviceStatusEntity : ITenantScoped
+public class DeviceStatusEntity : ITenantScoped, IAuditable
 {
     /// <summary>
     /// Identifier of the tenant this device status belongs to
@@ -133,12 +133,14 @@ public class DeviceStatusEntity : ITenantScoped
     /// <summary>
     /// System tracking: when record was inserted
     /// </summary>
+    [AuditIgnored]
     [Column("sys_created_at")]
     public DateTime SysCreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// System tracking: when record was last updated
     /// </summary>
+    [AuditIgnored]
     [Column("sys_updated_at")]
     public DateTime SysUpdatedAt { get; set; } = DateTime.UtcNow;
 

@@ -248,8 +248,20 @@ export interface UserAlarmConfiguration {
   customSounds: CustomSoundReference[];
   /** Emergency contacts to notify for urgent alarms */
   emergencyContacts: EmergencyContactConfig[];
+  /** Quiet hours configuration */
+  quietHours: QuietHoursConfig;
   /** Notification channels configuration */
   channels: NotificationChannelsConfig;
+}
+
+/** Quiet hours configuration for reducing alarm volume during sleep */
+export interface QuietHoursConfig {
+  enabled: boolean;
+  startTime: string;
+  endTime: string;
+  allowCritical: boolean;
+  reduceVolume: boolean;
+  quietVolume: number;
 }
 
 /** Built-in sound presets */

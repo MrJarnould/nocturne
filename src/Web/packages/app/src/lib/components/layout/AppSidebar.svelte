@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from "$app/state";
-  import { invalidateAll } from "$app/navigation";
   import { browser } from "$app/environment";
 
   import * as Sidebar from "$lib/components/ui/sidebar";

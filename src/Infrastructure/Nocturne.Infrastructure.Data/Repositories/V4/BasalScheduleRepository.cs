@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Nocturne.Core.Contracts.Audit;
 using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Models.V4;
+using Nocturne.Infrastructure.Data.Extensions;
 using Nocturne.Infrastructure.Data.Mappers.V4;
 
 namespace Nocturne.Infrastructure.Data.Repositories.V4;
@@ -12,16 +14,19 @@ namespace Nocturne.Infrastructure.Data.Repositories.V4;
 public class BasalScheduleRepository : IBasalScheduleRepository
 {
     private readonly NocturneDbContext _context;
+    private readonly IAuditContext _auditContext;
     private readonly ILogger<BasalScheduleRepository> _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BasalScheduleRepository"/> class.
     /// </summary>
     /// <param name="context">The database context.</param>
+    /// <param name="auditContext">The audit context for tracking mutations.</param>
     /// <param name="logger">The logger instance.</param>
-    public BasalScheduleRepository(NocturneDbContext context, ILogger<BasalScheduleRepository> logger)
+    public BasalScheduleRepository(NocturneDbContext context, IAuditContext auditContext, ILogger<BasalScheduleRepository> logger)
     {
         _context = context;
+        _auditContext = auditContext;
         _logger = logger;
     }
 
@@ -158,7 +163,8 @@ public class BasalScheduleRepository : IBasalScheduleRepository
     /// <returns>The number of deleted records.</returns>
     public async Task<int> DeleteByLegacyIdAsync(string legacyId, CancellationToken ct = default)
     {
-        return await _context.BasalSchedules.Where(e => e.LegacyId == legacyId).ExecuteDeleteAsync(ct);
+        return await _context.AuditedExecuteDeleteAsync(
+            _context.BasalSchedules.Where(e => e.LegacyId == legacyId), _auditContext, ct);
     }
 
     /// <summary>
@@ -169,9 +175,9 @@ public class BasalScheduleRepository : IBasalScheduleRepository
     /// <returns>The number of deleted records.</returns>
     public async Task<int> DeleteByLegacyIdPrefixAsync(string prefix, CancellationToken ct = default)
     {
-        return await _context
-            .BasalSchedules.Where(e => e.LegacyId != null && e.LegacyId.StartsWith(prefix))
-            .ExecuteDeleteAsync(ct);
+        return await _context.AuditedExecuteDeleteAsync(
+            _context.BasalSchedules.Where(e => e.LegacyId != null && e.LegacyId.StartsWith(prefix)),
+            _auditContext, ct);
     }
 
     /// <summary>

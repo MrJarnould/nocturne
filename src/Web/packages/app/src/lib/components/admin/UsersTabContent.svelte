@@ -21,8 +21,6 @@
     Plus,
   } from "lucide-svelte";
   import type { TenantMemberDto } from "$api";
-  import type { Component } from "svelte";
-
   let {
     subjects,
     currentUserSubjectId,
@@ -112,7 +110,7 @@
                         Unauthenticated Access
                       </Badge>
                     {/if}
-                    {#if subject.roles && subject.roles.some((r) => r.name === "admin")}
+                    {#if subject.roles && subject.roles.some((r: { name?: string }) => r.name === "admin")}
                       <Badge variant="default" class="text-xs">
                         Admin
                       </Badge>
@@ -132,8 +130,8 @@
                   <div class="text-sm text-muted-foreground">
                     {#if subject.roles && subject.roles.length > 0}
                       Roles: {subject.roles
-                        .map((r) => r.name ?? "")
-                        .filter((n) => n !== "admin")
+                        .map((r: { name?: string }) => r.name ?? "")
+                        .filter((n: string) => n !== "admin")
                         .join(", ") || "Admin"}
                     {:else}
                       No roles assigned

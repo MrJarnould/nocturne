@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Nocturne.Core.Contracts.Audit;
 using Nocturne.Core.Contracts.Infrastructure;
 using Nocturne.Core.Contracts.Repositories;
 using Nocturne.Core.Models;
 using Nocturne.Infrastructure.Data.Entities;
+using Nocturne.Infrastructure.Data.Extensions;
 using Nocturne.Infrastructure.Data.Mappers;
 
 namespace Nocturne.Infrastructure.Data.Repositories;
@@ -15,6 +17,7 @@ public class StateSpanRepository : IStateSpanRepository
 {
     private readonly NocturneDbContext _context;
     private readonly IDeduplicationService _deduplicationService;
+    private readonly IAuditContext _auditContext;
     private readonly ILogger<StateSpanRepository> _logger;
 
     /// <summary>
@@ -33,15 +36,18 @@ public class StateSpanRepository : IStateSpanRepository
     /// </summary>
     /// <param name="context">The database context</param>
     /// <param name="deduplicationService">Service for deduplicating records</param>
+    /// <param name="auditContext">The audit context for tracking mutations</param>
     /// <param name="logger">Logger instance</param>
     public StateSpanRepository(
         NocturneDbContext context,
         IDeduplicationService deduplicationService,
+        IAuditContext auditContext,
         ILogger<StateSpanRepository> logger
     )
     {
         _context = context;
         _deduplicationService = deduplicationService;
+        _auditContext = auditContext;
         _logger = logger;
     }
 
@@ -335,9 +341,8 @@ public class StateSpanRepository : IStateSpanRepository
         CancellationToken cancellationToken = default
     )
     {
-        var deletedCount = await _context
-            .StateSpans.Where(s => s.Source == source)
-            .ExecuteDeleteAsync(cancellationToken);
+        var deletedCount = await _context.AuditedExecuteDeleteAsync(
+            _context.StateSpans.Where(s => s.Source == source), _auditContext, cancellationToken);
         return deletedCount;
     }
 

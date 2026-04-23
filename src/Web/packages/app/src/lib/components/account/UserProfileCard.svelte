@@ -77,7 +77,7 @@
     avatarError = null;
 
     try {
-      const result = await uploadAvatar(file);
+      const result = await uploadAvatar(file) as { avatarUrl: string };
       localAvatarUrl = result.avatarUrl;
       authStore.updateAvatarUrl(result.avatarUrl);
     } catch (err) {

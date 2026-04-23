@@ -9,7 +9,7 @@ namespace Nocturne.Infrastructure.Data.Entities;
 /// Maps to Nocturne.Core.Models.Treatment
 /// </summary>
 [Table("treatments")]
-public class TreatmentEntity : ITenantScoped, ISoftDeletable
+public class TreatmentEntity : ITenantScoped, ISoftDeletable, IAuditable
 {
     /// <summary>
     /// Identifier of the tenant this treatment record belongs to.
@@ -218,12 +218,14 @@ public class TreatmentEntity : ITenantScoped, ISoftDeletable
     /// <summary>
     /// System tracking: when record was inserted
     /// </summary>
+    [AuditIgnored]
     [Column("sys_created_at")]
     public DateTime SysCreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// System tracking: when record was last updated
     /// </summary>
+    [AuditIgnored]
     [Column("sys_updated_at")]
     public DateTime SysUpdatedAt { get; set; } = DateTime.UtcNow;
 
