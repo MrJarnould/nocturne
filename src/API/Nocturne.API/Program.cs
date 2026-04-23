@@ -7,7 +7,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
 using Nocturne.API.Authorization;
 using Nocturne.API.Configuration;
+using Nocturne.API.Services.Audit;
 using Nocturne.API.Services.Auth;
+using Nocturne.Core.Contracts.Audit;
 using Nocturne.API.Extensions;
 using Nocturne.API.Hubs;
 using Nocturne.API.Middleware;
@@ -138,6 +140,7 @@ Console.WriteLine(
 builder.Services.AddResponseCaching();
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IAuditContext, AuditContext>();
 
 // Add native API services for strangler pattern
 // Note: NightscoutJsonFilter is added globally to apply null-omission and
@@ -333,6 +336,9 @@ app.UseMiddleware<AuthenticationMiddleware>();
 
 // Add member scope middleware (resolves membership role and restricts scopes)
 app.UseMiddleware<MemberScopeMiddleware>();
+
+// Add audit context middleware (captures actor metadata for mutation audit log)
+app.UseMiddleware<AuditContextMiddleware>();
 
 // Add site security middleware (enforces authentication when site lockdown is enabled)
 app.UseMiddleware<SiteSecurityMiddleware>();
