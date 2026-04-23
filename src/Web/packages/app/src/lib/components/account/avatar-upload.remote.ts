@@ -38,7 +38,7 @@ function buildHeaders(event: ReturnType<typeof getRequestEvent>): Headers {
  * Upload an avatar image. The API resizes to 256x256 WebP.
  * Returns the public avatar URL on success.
  */
-export const uploadAvatar = command(async (file: File) => {
+export const uploadAvatar = command("unchecked", async (file: File) => {
   const event = getRequestEvent();
   const baseUrl = getApiBaseUrl();
   if (!baseUrl) throw new Error("API URL not configured");

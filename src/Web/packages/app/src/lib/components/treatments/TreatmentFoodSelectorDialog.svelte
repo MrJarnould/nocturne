@@ -70,7 +70,7 @@
   // Treatment request fields - both portions and carbs are editable
   let portions = $state(1);
   let entryCarbs = $state(0);
-  let timeOffsetMinutes = $state<number | undefined>(0);
+  let timeOffsetMinutes = $state<number>(0);
   let note = $state("");
 
   // Track which field was last edited

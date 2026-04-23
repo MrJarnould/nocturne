@@ -179,7 +179,7 @@
           ) {
             failed = true;
             error =
-              status.errorMessage ?? `Migration ${status.state?.toLowerCase()}`;
+              status.errorMessage ?? `Migration ${String(status.state).toLowerCase()}`;
             break;
           }
 
