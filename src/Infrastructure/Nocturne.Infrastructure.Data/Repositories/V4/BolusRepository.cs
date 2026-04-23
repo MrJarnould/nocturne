@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Nocturne.Core.Contracts.Audit;
 using Nocturne.Core.Contracts.Infrastructure;
 using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.V4;
 using Nocturne.Infrastructure.Data.Entities.V4;
+using Nocturne.Infrastructure.Data.Extensions;
 using Nocturne.Infrastructure.Data.Mappers.V4;
 
 namespace Nocturne.Infrastructure.Data.Repositories.V4;
@@ -17,6 +19,7 @@ public class BolusRepository : IBolusRepository
 {
     private readonly NocturneDbContext _context;
     private readonly IDeduplicationService _deduplicationService;
+    private readonly IAuditContext _auditContext;
     private readonly ILogger<BolusRepository> _logger;
 
     /// <summary>
@@ -24,14 +27,17 @@ public class BolusRepository : IBolusRepository
     /// </summary>
     /// <param name="context">The database context.</param>
     /// <param name="deduplicationService">The deduplication service.</param>
+    /// <param name="auditContext">The audit context for tracking mutations.</param>
     /// <param name="logger">The logger instance.</param>
     public BolusRepository(
         NocturneDbContext context,
         IDeduplicationService deduplicationService,
+        IAuditContext auditContext,
         ILogger<BolusRepository> logger)
     {
         _context = context;
         _deduplicationService = deduplicationService;
+        _auditContext = auditContext;
         _logger = logger;
     }
 
@@ -217,7 +223,8 @@ public class BolusRepository : IBolusRepository
     /// <returns>The number of deleted records.</returns>
     public async Task<int> DeleteByLegacyIdAsync(string legacyId, CancellationToken ct = default)
     {
-        return await _context.Boluses.Where(e => e.LegacyId == legacyId).ExecuteDeleteAsync(ct);
+        return await _context.AuditedExecuteDeleteAsync(
+            _context.Boluses.Where(e => e.LegacyId == legacyId), _auditContext, ct);
     }
 
     /// <summary>

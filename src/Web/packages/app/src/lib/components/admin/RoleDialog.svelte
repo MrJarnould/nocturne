@@ -95,7 +95,7 @@
 
   function togglePermission(perm: string) {
     if (roleFormPermissions.includes(perm)) {
-      roleFormPermissions = roleFormPermissions.filter((p) => p !== perm);
+      roleFormPermissions = roleFormPermissions.filter((p: string) => p !== perm);
     } else {
       roleFormPermissions = [...roleFormPermissions, perm];
     }

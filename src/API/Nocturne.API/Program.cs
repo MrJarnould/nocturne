@@ -3,11 +3,14 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
 using Nocturne.API.Authorization;
 using Nocturne.API.Configuration;
+using Nocturne.API.Services.Audit;
 using Nocturne.API.Services.Auth;
+using Nocturne.Core.Contracts.Audit;
 using Nocturne.API.Extensions;
 using Nocturne.API.Hubs;
 using Nocturne.API.Middleware;
@@ -138,6 +141,7 @@ Console.WriteLine(
 builder.Services.AddResponseCaching();
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IAuditContext, AuditContext>();
 
 // Add native API services for strangler pattern
 // Note: NightscoutJsonFilter is added globally to apply null-omission and
@@ -311,13 +315,10 @@ app.UseForwardedHeaders();
 // UseRouting so the rewritten path is what the router sees.
 app.UseMiddleware<JsonExtensionMiddleware>();
 
-// Explicit UseRouting so TenantSetupMiddleware and RecoveryModeMiddleware can
-// read endpoint metadata (e.g. [AllowDuringSetup]). Minimal hosting would
-// insert this automatically but we make it explicit for clarity.
+// Explicit UseRouting so TenantSetupMiddleware can read endpoint metadata
+// (e.g. [AllowDuringSetup]). Minimal hosting would insert this automatically
+// but we make it explicit for clarity.
 app.UseRouting();
-
-// Block most API traffic when recovery mode is active (orphaned subjects detected)
-app.UseMiddleware<RecoveryModeMiddleware>();
 
 // Redirect OIDC callbacks from apex to the originating tenant subdomain
 app.UseMiddleware<OidcCallbackRedirectMiddleware>();
@@ -333,6 +334,9 @@ app.UseMiddleware<AuthenticationMiddleware>();
 
 // Add member scope middleware (resolves membership role and restricts scopes)
 app.UseMiddleware<MemberScopeMiddleware>();
+
+// Add audit context middleware (captures actor metadata for mutation audit log)
+app.UseMiddleware<AuditContextMiddleware>();
 
 // Add site security middleware (enforces authentication when site lockdown is enabled)
 app.UseMiddleware<SiteSecurityMiddleware>();
@@ -427,6 +431,22 @@ app.MapDefaultEndpoints();
 var isNSwagGeneration = IsRunningInNSwagContext();
 if (!isNSwagGeneration && !app.Environment.IsEnvironment("Testing"))
 {
+    // Validate multitenancy configuration: multiple tenants require BaseDomain for subdomain routing.
+    {
+        using var scope = app.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<NocturneDbContext>();
+        var multitenancyConfig = app.Services.GetRequiredService<IOptions<MultitenancyConfiguration>>();
+
+        var tenantCount = await dbContext.Tenants.CountAsync();
+        if (tenantCount > 1 && string.IsNullOrEmpty(multitenancyConfig.Value.BaseDomain))
+        {
+            throw new InvalidOperationException(
+                $"Multiple tenants exist ({tenantCount}) but Multitenancy:BaseDomain is not configured. " +
+                "Set the BaseDomain in configuration to enable subdomain-based routing, " +
+                "or remove extra tenants to run in single-tenant mode.");
+        }
+    }
+
     // Validate that the migrator connection string is present and uses a different role.
     if (string.IsNullOrWhiteSpace(migratorConnectionString))
     {
@@ -448,8 +468,8 @@ if (!isNSwagGeneration && !app.Environment.IsEnvironment("Testing"))
     // Validate RLS, ownership, default privileges, and NoResetOnClose under the app role.
     await app.Services.ValidateDatabaseConfigurationAsync();
 
-    // Seed default tenant if none exists and backfill tenant_id on existing rows
-    await DefaultTenantSeeder.SeedDefaultTenantAsync(app.Services);
+    // Revoke refresh tokens if BaseDomain was newly configured (single→multi-tenant transition)
+    await BaseDomainTransitionService.CheckAndRevokeAsync(app.Services);
 
     // Sync config-managed OIDC providers to the database (satisfies FK constraints)
     await OidcProviderService.SyncConfigProvidersAsync(app.Services);

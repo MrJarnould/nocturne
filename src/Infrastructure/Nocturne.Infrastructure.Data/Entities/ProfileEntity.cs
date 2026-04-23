@@ -8,7 +8,7 @@ namespace Nocturne.Infrastructure.Data.Entities;
 /// Maps to Nocturne.Core.Models.Profile
 /// </summary>
 [Table("profiles")]
-public class ProfileEntity : ITenantScoped
+public class ProfileEntity : ITenantScoped, IAuditable
 {
     /// <summary>
     /// Identifier of the tenant this profile record belongs to
@@ -75,12 +75,14 @@ public class ProfileEntity : ITenantScoped
     /// <summary>
     /// Timestamp when this entity was created in PostgreSQL
     /// </summary>
+    [AuditIgnored]
     [Column("created_at_pg")]
     public DateTime CreatedAtPg { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Timestamp when this entity was last updated in PostgreSQL
     /// </summary>
+    [AuditIgnored]
     [Column("updated_at_pg")]
     public DateTime UpdatedAtPg { get; set; } = DateTime.UtcNow;
 

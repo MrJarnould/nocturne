@@ -16,11 +16,6 @@ public class MultitenancyConfiguration
     public string? BaseDomain { get; set; }
 
     /// <summary>
-    /// Slug used for the auto-created default tenant.
-    /// </summary>
-    public string DefaultTenantSlug { get; set; } = "default";
-
-    /// <summary>
     /// Whether authenticated users can create their own tenants.
     /// SaaS operators set this to false to gate tenant creation behind billing.
     /// </summary>

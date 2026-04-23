@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using Nocturne.Core.Contracts.Audit;
 using Nocturne.Core.Contracts.Infrastructure;
 using Nocturne.Core.Models;
 using Nocturne.Infrastructure.Data.Repositories;
@@ -23,7 +24,7 @@ public class StateSpanRepositoryTests : IDisposable
         _context.TenantId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         _mockDedup = new Mock<IDeduplicationService>();
         _repository = new StateSpanRepository(
-            _context, _mockDedup.Object, NullLogger<StateSpanRepository>.Instance);
+            _context, _mockDedup.Object, new Mock<IAuditContext>().Object, NullLogger<StateSpanRepository>.Instance);
     }
 
     public void Dispose()

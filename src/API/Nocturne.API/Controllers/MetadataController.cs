@@ -195,7 +195,6 @@ public class MetadataController : ControllerBase
         return Ok(new MultitenancyInfo
         {
             BaseDomain = config.Value.BaseDomain,
-            DefaultTenantSlug = config.Value.DefaultTenantSlug,
             SubdomainResolution = !string.IsNullOrEmpty(config.Value.BaseDomain),
             AllowSelfServiceCreation = config.Value.AllowSelfServiceCreation,
             CurrentTenantSlug = tenantContext?.Slug,
@@ -570,11 +569,6 @@ public class MultitenancyInfo
     /// Base domain for subdomain-based tenant resolution (e.g. "nocturnecgm.com")
     /// </summary>
     public string? BaseDomain { get; set; }
-
-    /// <summary>
-    /// Slug of the auto-created default tenant
-    /// </summary>
-    public string DefaultTenantSlug { get; set; } = "default";
 
     /// <summary>
     /// Whether subdomain-based tenant resolution is active

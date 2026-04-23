@@ -60,20 +60,11 @@ public interface ITenantService
         CancellationToken ct = default);
 }
 
-/// <summary>
-/// Lightweight projection of a tenant for list views.
-/// </summary>
-public record TenantDto(Guid Id, string Slug, string DisplayName, bool IsActive, bool IsDefault, DateTime SysCreatedAt);
+public record TenantDto(Guid Id, string Slug, string DisplayName, bool IsActive, DateTime SysCreatedAt);
 
-/// <summary>
-/// Returned after tenant creation, including the generated API secret for initial configuration.
-/// </summary>
-public record TenantCreatedDto(Guid Id, string Slug, string DisplayName, bool IsActive, bool IsDefault, DateTime SysCreatedAt, string ApiSecret);
+public record TenantCreatedDto(Guid Id, string Slug, string DisplayName, bool IsActive, DateTime SysCreatedAt, string ApiSecret);
 
-/// <summary>
-/// Detailed tenant view including the full member list, used for admin UIs.
-/// </summary>
-public record TenantDetailDto(Guid Id, string Slug, string DisplayName, bool IsActive, bool IsDefault, DateTime SysCreatedAt, List<TenantMemberDto> Members);
+public record TenantDetailDto(Guid Id, string Slug, string DisplayName, bool IsActive, DateTime SysCreatedAt, List<TenantMemberDto> Members);
 
 /// <summary>
 /// Projection of a tenant member, including their assigned roles and direct permissions.

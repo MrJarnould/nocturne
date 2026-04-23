@@ -9,7 +9,7 @@ namespace Nocturne.Infrastructure.Data.Entities;
 /// Maps to Nocturne.Core.Models.Entry
 /// </summary>
 [Table("entries")]
-public class EntryEntity : ITenantScoped, ISoftDeletable
+public class EntryEntity : ITenantScoped, ISoftDeletable, IAuditable
 {
     /// <summary>
     /// Identifier of the tenant this entry belongs to
@@ -242,12 +242,14 @@ public class EntryEntity : ITenantScoped, ISoftDeletable
     /// <summary>
     /// System tracking: when record was inserted
     /// </summary>
+    [AuditIgnored]
     [Column("sys_created_at")]
     public DateTime SysCreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// System tracking: when record was last updated
     /// </summary>
+    [AuditIgnored]
     [Column("sys_updated_at")]
     public DateTime SysUpdatedAt { get; set; } = DateTime.UtcNow;
 

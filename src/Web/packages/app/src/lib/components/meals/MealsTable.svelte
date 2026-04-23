@@ -11,7 +11,7 @@
     Utensils,
     X,
   } from "lucide-svelte";
-  import type { MealCarbIntake, TreatmentFood, SuggestedMealMatch } from "$lib/api";
+  import type { MealEvent, TreatmentFood, SuggestedMealMatch } from "$lib/api";
   import { cn } from "$lib/utils";
   import SortableColumnHeader from "./SortableColumnHeader.svelte";
   import MealSuggestionRow from "./MealSuggestionRow.svelte";
@@ -22,7 +22,7 @@
   interface MealsByDay {
     date: string;
     displayDate: string;
-    meals: MealCarbIntake[];
+    meals: MealEvent[];
   }
 
   interface Props {
@@ -38,9 +38,9 @@
     onSort: (column: string) => void;
     onToggleRow: (id: string) => void;
     onToggleDate: (date: string) => void;
-    onAddFood: (meal: MealCarbIntake) => void;
-    onEditFood: (meal: MealCarbIntake, food: TreatmentFood) => void;
-    onUnlinkFood: (meal: MealCarbIntake, food: TreatmentFood) => void;
+    onAddFood: (meal: MealEvent) => void;
+    onEditFood: (meal: MealEvent, food: TreatmentFood) => void;
+    onUnlinkFood: (meal: MealEvent, food: TreatmentFood) => void;
     onAcceptSuggestion: (suggestion: SuggestedMealMatch) => void;
     onDismissSuggestion: (suggestion: SuggestedMealMatch) => void;
     onReviewSuggestion: (suggestion: SuggestedMealMatch) => void;
@@ -75,7 +75,7 @@
     });
   }
 
-  function getMealLabel(meal: MealCarbIntake): string {
+  function getMealLabel(meal: MealEvent): string {
     const foods = meal.foods ?? [];
     if (foods.length === 0) {
       return "Meal";
@@ -83,7 +83,7 @@
     if (foods.length === 1 && foods[0].foodName) {
       return foods[0].foodName;
     }
-    const date = new Date(meal.carbIntake?.mills ?? Date.now());
+    const date = new Date(meal.timestamp ?? Date.now());
     return getMealNameForTime(date);
   }
 
@@ -154,11 +154,11 @@
           {#each mealsByDay as day}
             {@const isDateCollapsed = collapsedDates.has(day.date)}
             {@const dayTotalCarbs = day.meals.reduce(
-              (sum, m) => sum + (m.carbIntake?.carbs ?? 0),
+              (sum: number, m: MealEvent) => sum + (m.totalCarbs ?? 0),
               0
             )}
             {@const dayTotalInsulin = day.meals.reduce(
-              (sum, m) => sum + (m.correlatedBolus?.insulin ?? 0),
+              (sum: number, m: MealEvent) => sum + (m.totalInsulin ?? 0),
               0
             )}
             <!-- Day separator row -->
@@ -201,13 +201,13 @@
             </Table.Row>
 
             {#if !isDateCollapsed}
-              {#each day.meals as meal, mealIndex (`${day.date}-${mealIndex}-${meal.carbIntake?.id}`)}
+              {#each day.meals as meal, mealIndex (`${day.date}-${mealIndex}-${meal.carbIntakes?.[0]?.id}`)}
                 {@const isExpanded = expandedRows.has(
-                  meal.carbIntake?.id ?? ""
+                  meal.carbIntakes?.[0]?.id ?? ""
                 )}
                 {@const hasFoods = (meal.foods?.length ?? 0) > 0}
-                {@const totalCarbs = meal.carbIntake?.carbs ?? 0}
-                {@const mealSuggestions = suggestionsByCarbIntake.get(meal.carbIntake?.id ?? "") ?? []}
+                {@const totalCarbs = meal.totalCarbs ?? 0}
+                {@const mealSuggestions = suggestionsByCarbIntake.get(meal.carbIntakes?.[0]?.id ?? "") ?? []}
 
                 <!-- Main meal row -->
                 <Table.Row
@@ -217,7 +217,7 @@
                     isExpanded && "bg-accent/30"
                   )}
                   onclick={() =>
-                    hasFoods && onToggleRow(meal.carbIntake?.id ?? "")}
+                    hasFoods && onToggleRow(meal.carbIntakes?.[0]?.id ?? "")}
                 >
                   <Table.Cell class="py-3">
                     {#if hasFoods}
@@ -227,7 +227,7 @@
                         class="h-6 w-6"
                         onclick={(e: MouseEvent) => {
                           e.stopPropagation();
-                          onToggleRow(meal.carbIntake?.id ?? "");
+                          onToggleRow(meal.carbIntakes?.[0]?.id ?? "");
                         }}
                       >
                         {#if isExpanded}
@@ -240,7 +240,7 @@
                   </Table.Cell>
                   <Table.Cell class="py-3">
                     <div class="text-lg font-semibold tabular-nums">
-                      {formatTime(meal.carbIntake?.mills)}
+                      {formatTime(meal.timestamp?.getTime())}
                     </div>
                   </Table.Cell>
                   <Table.Cell class="py-3">
@@ -279,9 +279,9 @@
                     </div>
                   </Table.Cell>
                   <Table.Cell class="py-3 text-right">
-                    {#if meal.correlatedBolus?.insulin}
+                    {#if meal.totalInsulin}
                       <span class="font-medium tabular-nums">
-                        {meal.correlatedBolus.insulin.toFixed(1)}U
+                        {meal.totalInsulin.toFixed(1)}U
                       </span>
                     {:else}
                       <span class="text-muted-foreground">—</span>

@@ -17,7 +17,7 @@
   } from "lucide-svelte";
   import { formatSessionExpiry, getAuthStore } from "$lib/stores/auth-store.svelte";
   import { formatDate } from "$lib/utils/formatting";
-  import { uploadAvatar, deleteAvatar } from "./avatar-upload.remote";
+  import { upload as uploadAvatar, remove as deleteAvatar } from "$lib/api/generated/avatars.generated.remote";
 
   interface User {
     name: string;
@@ -77,7 +77,7 @@
     avatarError = null;
 
     try {
-      const result = await uploadAvatar(file);
+      const result = await uploadAvatar(file) as { avatarUrl: string };
       localAvatarUrl = result.avatarUrl;
       authStore.updateAvatarUrl(result.avatarUrl);
     } catch (err) {

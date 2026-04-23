@@ -10,6 +10,7 @@ using Nocturne.API.Controllers.V4.Treatments;
 using Nocturne.API.Models.Requests.V4;
 using Nocturne.API.Services.Platform;
 using Nocturne.API.Services.Treatments;
+using Nocturne.Core.Contracts.Audit;
 using Nocturne.Core.Contracts.Treatments;
 using Nocturne.Core.Models.V4;
 using Nocturne.Infrastructure.Data;
@@ -53,13 +54,16 @@ public class NutritionControllerMealsTests : IDisposable
         _dbContext.SaveChanges();
 
         var dedupMock = new Mock<IDeduplicationService>();
+        var auditMock = new Mock<IAuditContext>().Object;
         _bolusRepo = new BolusRepository(
             _dbContext,
             dedupMock.Object,
+            auditMock,
             NullLogger<BolusRepository>.Instance);
         _carbIntakeRepo = new CarbIntakeRepository(
             _dbContext,
             dedupMock.Object,
+            auditMock,
             NullLogger<CarbIntakeRepository>.Instance);
     }
 

@@ -3,10 +3,10 @@ import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals }) => {
   if (locals.isAuthenticated) {
-    return {};
+    return { setupRequired: false };
   }
 
-  // No subjects → create account (covers fresh install and recovery mode)
+  // No subjects → setup required (covers fresh install and recovery mode)
   // Subjects exist → log in
   let setupRequired = false;
   try {
@@ -17,7 +17,9 @@ export const load: PageServerLoad = async ({ locals }) => {
   }
 
   if (setupRequired) {
-    redirect(302, "/setup/account");
+    // Stay on the setup page — it will show the two-step flow
+    // (tenant identity → account creation)
+    return { setupRequired: true };
   } else {
     redirect(302, "/auth/login?returnUrl=/setup");
   }

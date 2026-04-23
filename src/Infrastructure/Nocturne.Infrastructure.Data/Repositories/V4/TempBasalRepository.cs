@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Nocturne.Core.Contracts.Audit;
 using Nocturne.Core.Contracts.Infrastructure;
 using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Models;
 using Nocturne.Core.Models.V4;
+using Nocturne.Infrastructure.Data.Extensions;
 using Nocturne.Infrastructure.Data.Mappers.V4;
 
 namespace Nocturne.Infrastructure.Data.Repositories.V4;
@@ -16,6 +18,7 @@ public class TempBasalRepository : ITempBasalRepository
 {
     private readonly NocturneDbContext _context;
     private readonly IDeduplicationService _deduplicationService;
+    private readonly IAuditContext _auditContext;
     private readonly ILogger<TempBasalRepository> _logger;
 
     /// <summary>
@@ -23,14 +26,17 @@ public class TempBasalRepository : ITempBasalRepository
     /// </summary>
     /// <param name="context">The database context.</param>
     /// <param name="deduplicationService">The deduplication service.</param>
+    /// <param name="auditContext">The audit context for tracking mutations.</param>
     /// <param name="logger">The logger instance.</param>
     public TempBasalRepository(
         NocturneDbContext context,
         IDeduplicationService deduplicationService,
+        IAuditContext auditContext,
         ILogger<TempBasalRepository> logger)
     {
         _context = context;
         _deduplicationService = deduplicationService;
+        _auditContext = auditContext;
         _logger = logger;
     }
 
@@ -158,7 +164,8 @@ public class TempBasalRepository : ITempBasalRepository
     /// <returns>The number of deleted records.</returns>
     public async Task<int> DeleteByLegacyIdAsync(string legacyId, CancellationToken ct = default)
     {
-        return await _context.TempBasals.Where(e => e.LegacyId == legacyId).ExecuteDeleteAsync(ct);
+        return await _context.AuditedExecuteDeleteAsync(
+            _context.TempBasals.Where(e => e.LegacyId == legacyId), _auditContext, ct);
     }
 
     /// <summary>
@@ -281,8 +288,8 @@ public class TempBasalRepository : ITempBasalRepository
         CancellationToken ct = default
     )
     {
-        return await _context.TempBasals
-            .Where(e => e.DataSource == source && e.StartTimestamp >= from && e.StartTimestamp <= to)
-            .ExecuteDeleteAsync(ct);
+        return await _context.AuditedExecuteDeleteAsync(
+            _context.TempBasals.Where(e => e.DataSource == source && e.StartTimestamp >= from && e.StartTimestamp <= to),
+            _auditContext, ct);
     }
 }
