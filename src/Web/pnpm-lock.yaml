@@ -199,8 +199,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0(svelte@5.50.0)
       openapi-remote-codegen:
-        specifier: 0.1.0
-        version: 0.1.0
+        specifier: file:C:/Users/rhysg/Documents/Github/openapi-remote-codegen/packages/codegen
+        version: file:../../../../../openapi-remote-codegen/packages/codegen
       paneforge:
         specifier: ^1.0.2
         version: 1.0.2(svelte@5.50.0)
@@ -4606,8 +4606,8 @@ packages:
   one-time@1.0.0:
     resolution: {integrity: sha512-5DXOiRKwuSEcQ/l0kGCF6Q3jcADFv5tSmRaJck/OqkVFcOzutB134KRSfF0xDrL39MNnqxbHBbUUcjZIhTgb2g==}
 
-  openapi-remote-codegen@0.1.0:
-    resolution: {integrity: sha512-X/+0NxJoWgh9I8ai7ehiV0WSK5aWw0dqWsIcoUijIszY7cvxOEyEkkeAMrY5VSmjU7B193L8mZAwFVNjOliwOw==}
+  openapi-remote-codegen@file:../../../../../openapi-remote-codegen/packages/codegen:
+    resolution: {directory: ../../../../../openapi-remote-codegen/packages/codegen, type: directory}
     hasBin: true
 
   openapi-types@12.1.3:
@@ -10590,7 +10590,7 @@ snapshots:
     dependencies:
       fn.name: 1.1.0
 
-  openapi-remote-codegen@0.1.0:
+  openapi-remote-codegen@file:../../../../../openapi-remote-codegen/packages/codegen:
     dependencies:
       openapi-types: 12.1.3
 
