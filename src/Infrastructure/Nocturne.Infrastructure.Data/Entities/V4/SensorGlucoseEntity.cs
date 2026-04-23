@@ -10,7 +10,7 @@ namespace Nocturne.Infrastructure.Data.Entities.V4;
 /// Maps to Nocturne.Core.Models.V4.SensorGlucose
 /// </summary>
 [Table("sensor_glucose")]
-public class SensorGlucoseEntity : ITenantScoped
+public class SensorGlucoseEntity : ITenantScoped, IAuditable
 {
     /// <summary>
     /// The unique identifier of the tenant this record belongs to.
@@ -73,12 +73,14 @@ public class SensorGlucoseEntity : ITenantScoped
     /// <summary>
     /// System tracking: when record was inserted
     /// </summary>
+    [AuditIgnored]
     [Column("sys_created_at")]
     public DateTime SysCreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// System tracking: when record was last updated
     /// </summary>
+    [AuditIgnored]
     [Column("sys_updated_at")]
     public DateTime SysUpdatedAt { get; set; } = DateTime.UtcNow;
 

@@ -9,7 +9,7 @@ namespace Nocturne.Infrastructure.Data.Entities;
 /// Each rule owns schedules, which own escalation chains.
 /// </summary>
 [Table("alert_rules")]
-public class AlertRuleEntity : ITenantScoped
+public class AlertRuleEntity : ITenantScoped, IAuditable
 {
     /// <summary>
     /// Unique identifier for the alert rule
@@ -91,12 +91,14 @@ public class AlertRuleEntity : ITenantScoped
     /// <summary>
     /// When the alert rule was created
     /// </summary>
+    [AuditIgnored]
     [Column("created_at")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// When the alert rule was last updated
     /// </summary>
+    [AuditIgnored]
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
