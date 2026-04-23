@@ -142,6 +142,11 @@ public class NocturneDbContext : DbContext
     public DbSet<AuthAuditLogEntity> AuthAuditLog { get; set; }
 
     /// <summary>
+    /// Gets or sets the MutationAuditLog table for clinical data mutation auditing
+    /// </summary>
+    public DbSet<MutationAuditLogEntity> MutationAuditLog { get; set; }
+
+    /// <summary>
     /// Gets or sets the PasskeyCredentials table for WebAuthn/passkey credentials
     /// </summary>
     public DbSet<PasskeyCredentialEntity> PasskeyCredentials { get; set; }
@@ -1937,6 +1942,10 @@ public class NocturneDbContext : DbContext
             .Entity<AuthAuditLogEntity>()
             .Property(a => a.Id)
             .HasValueGenerator<GuidV7ValueGenerator>();
+        modelBuilder
+            .Entity<MutationAuditLogEntity>()
+            .Property(a => a.Id)
+            .HasValueGenerator<GuidV7ValueGenerator>();
 
         // Tracker entity UUID generators
         modelBuilder
@@ -2515,6 +2524,25 @@ public class NocturneDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(e => e.RefreshTokenId)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Configure Mutation Audit Log entity defaults and indexes
+        modelBuilder.Entity<MutationAuditLogEntity>(entity =>
+        {
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasIndex(e => new { e.TenantId, e.EntityType, e.EntityId })
+                .HasDatabaseName("ix_mutation_audit_log_entity");
+
+            entity.HasIndex(e => new { e.TenantId, e.SubjectId, e.CreatedAt })
+                .HasDatabaseName("ix_mutation_audit_log_subject");
+
+            entity.HasIndex(e => e.CorrelationId)
+                .HasDatabaseName("ix_mutation_audit_log_correlation")
+                .HasFilter("correlation_id IS NOT NULL");
+
+            entity.HasIndex(e => new { e.TenantId, e.CreatedAt })
+                .HasDatabaseName("ix_mutation_audit_log_created");
         });
 
         // Configure LinkedRecordEntity defaults
