@@ -18,6 +18,7 @@
   import "../../styles/coach-theme-overrides.css";
   import { createCoachMarkAdapter } from "$lib/coach-marks/adapter";
   import { sequences } from "$lib/coach-marks/sequences";
+  import CoachParamHandler from "$lib/coach-marks/CoachParamHandler.svelte";
 
   // LocalStorage key for title/favicon settings
   const SETTINGS_STORAGE_KEY = "nocturne-title-favicon-settings";
@@ -173,6 +174,7 @@
 </script>
 
 <CoachMarkProvider adapter={coachMarkAdapter} {sequences}>
+  <CoachParamHandler />
   <Sidebar.Provider>
     <AppSidebar user={data.user} tenantCount={data.tenantCount} effectivePermissions={data.effectivePermissions} isPlatformAdmin={data.isPlatformAdmin} />
     <MobileHeader />
