@@ -110,7 +110,24 @@ public static class TestDatabaseSeeder
             SysUpdatedAt = DateTime.UtcNow,
         });
 
-        // 5. Assign roles
+        // 5. If an API secret hash is provided, create a DirectGrant with LegacySecretHash
+        //    so ApiKeyHandler can resolve it (replaces the old TenantEntity.ApiSecretHash lookup)
+        if (apiSecretHash != null)
+        {
+            db.OAuthGrants.Add(new OAuthGrantEntity
+            {
+                Id = Guid.NewGuid(),
+                TenantId = TenantId,
+                SubjectId = TestSubjectId,
+                GrantType = OAuthGrantTypes.Direct,
+                LegacySecretHash = apiSecretHash,
+                Scopes = [OAuthScopes.FullAccess],
+                Label = "Legacy API Secret",
+                CreatedAt = DateTime.UtcNow,
+            });
+        }
+
+        // 6. Assign roles
         db.TenantMemberRoles.Add(new TenantMemberRoleEntity
         {
             Id = Guid.NewGuid(),

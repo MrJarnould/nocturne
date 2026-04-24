@@ -66,11 +66,17 @@ public class MemberScopeMiddleware
             return;
         }
 
-        // ApiSecret and InstanceKey auth grant superuser on the resolved tenant — no membership lookup needed
-        if (authContext.AuthType is AuthType.ApiSecret or AuthType.InstanceKey)
+        // ApiKey and InstanceKey auth grant superuser on the resolved tenant — no membership lookup needed
+        if (authContext.AuthType is AuthType.ApiKey or AuthType.InstanceKey)
         {
             var superuserScopes = new HashSet<string> { "*" };
             context.Items["GrantedScopes"] = (IReadOnlySet<string>)superuserScopes;
+
+            // Build permission trie so [Authorize(Policy = "HasPermissions")] passes
+            var permissionTrie = new PermissionTrie();
+            permissionTrie.Add(["*"]);
+            context.Items["PermissionTrie"] = permissionTrie;
+
             await _next(context);
             return;
         }
