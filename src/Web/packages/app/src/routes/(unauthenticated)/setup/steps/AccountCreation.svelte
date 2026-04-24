@@ -98,7 +98,7 @@
 
     try {
       const result = await setupOwnerOidc({
-        username: username.trim(),
+        username: username.trim().toLowerCase(),
         displayName: displayName.trim(),
         providerId,
       });
@@ -123,7 +123,7 @@
 
     try {
       const response = await setupOptions({
-        username: username.trim(),
+        username: username.trim().toLowerCase(),
         displayName: displayName.trim(),
       });
       const options = JSON.parse(response.options ?? "");

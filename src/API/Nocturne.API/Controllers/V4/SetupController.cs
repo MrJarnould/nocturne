@@ -81,8 +81,14 @@ public partial class SetupController : ControllerBase
     {
         await using var context = await _dbFactory.CreateDbContextAsync(ct);
 
-        var tenantCount = await context.Tenants.CountAsync(ct);
-        if (tenantCount > 0)
+        // Check for tenants that have real members with credentials (passkey or OIDC).
+        // The multitenancy migration seeds a 'default' tenant for backfilling, which
+        // has no members and should not block fresh setup.
+        var hasConfiguredTenant = await context.TenantMembers
+            .AnyAsync(m =>
+                context.PasskeyCredentials.Any(c => c.SubjectId == m.SubjectId) ||
+                context.SubjectOidcIdentities.Any(o => o.SubjectId == m.SubjectId), ct);
+        if (hasConfiguredTenant)
             return Conflict(new { error = "setup_already_complete" });
 
         if (string.IsNullOrWhiteSpace(request.Slug) || string.IsNullOrWhiteSpace(request.DisplayName))
@@ -411,8 +417,6 @@ public partial class SetupController : ControllerBase
             "SELECT set_config('app.current_tenant_id', {0}, false)",
             tenant.Id.ToString());
 
-        var normalizedUsername = username.ToLowerInvariant();
-
         var existingSubject = await context.Subjects
             .FirstOrDefaultAsync(s => !s.IsSystemSubject && s.IsActive, ct);
 
@@ -421,7 +425,7 @@ public partial class SetupController : ControllerBase
         {
             subjectId = existingSubject.Id;
             existingSubject.Name = displayName;
-            existingSubject.Username = normalizedUsername;
+            existingSubject.Username = username;
             await context.SaveChangesAsync(ct);
         }
         else
@@ -431,7 +435,7 @@ public partial class SetupController : ControllerBase
             {
                 Id = subjectId,
                 Name = displayName,
-                Username = normalizedUsername,
+                Username = username,
                 IsActive = true,
                 IsSystemSubject = false,
             });
@@ -439,7 +443,7 @@ public partial class SetupController : ControllerBase
 
             _logger.LogInformation(
                 "Setup: created owner {SubjectId} ({Username}) for tenant {TenantId}",
-                subjectId, normalizedUsername, tenant.Id);
+                subjectId, username, tenant.Id);
         }
 
         // Ensure tenant membership with owner role — required when reusing a
@@ -463,7 +467,7 @@ public partial class SetupController : ControllerBase
             .FirstOrDefaultAsync(m => m.TenantId == tenant.Id && m.SubjectId == subjectId, ct);
         if (membership != null)
         {
-            membership.Username = normalizedUsername;
+            membership.Username = username;
             await memberCtx.SaveChangesAsync(ct);
         }
 
