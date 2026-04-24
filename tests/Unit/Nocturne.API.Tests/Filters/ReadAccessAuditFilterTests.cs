@@ -149,7 +149,7 @@ public class ReadAccessAuditFilterTests
     }
 
     [Fact]
-    public async Task OnResultExecutionAsync_PaginatedResponse_ExtractsCountAndType()
+    public void OnResultExecutionAsync_PaginatedResponse_ExtractsCountAndType()
     {
         var paginated = new PaginatedResponse<SensorGlucoseEntity>
         {
@@ -164,7 +164,7 @@ public class ReadAccessAuditFilterTests
     }
 
     [Fact]
-    public async Task OnResultExecutionAsync_SingleObject_CountIsOne()
+    public void OnResultExecutionAsync_SingleObject_CountIsOne()
     {
         var single = new SensorGlucoseEntity();
 
@@ -182,7 +182,13 @@ public class ReadAccessAuditFilterTests
             .ReturnsAsync(new TenantAuditConfig(ReadAuditEnabled: true, null, null));
         _auditContext.Setup(a => a.AuthType).Returns("Bearer");
 
+        // Use a semaphore to observe the fire-and-forget DB write completing.
+        var saveCompleted = new SemaphoreSlim(0, 1);
         var mockDbContext = CreateMockDbContext();
+        mockDbContext
+            .Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .Callback(() => saveCompleted.Release())
+            .ReturnsAsync(1);
         _contextFactory
             .Setup(f => f.CreateDbContextAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockDbContext.Object);
@@ -193,8 +199,9 @@ public class ReadAccessAuditFilterTests
 
         await filter.OnResultExecutionAsync(ctx, next);
 
-        // Give fire-and-forget a moment to complete
-        await Task.Delay(100);
+        // Wait for the fire-and-forget write with a generous timeout.
+        var completed = await saveCompleted.WaitAsync(TimeSpan.FromSeconds(5));
+        completed.Should().BeTrue("the fire-and-forget audit write should complete");
 
         _contextFactory.Verify(
             f => f.CreateDbContextAsync(It.IsAny<CancellationToken>()),

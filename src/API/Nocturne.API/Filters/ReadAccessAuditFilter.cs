@@ -130,8 +130,7 @@ public class ReadAccessAuditFilter : IAsyncResultFilter
             var dataProperty = valueType.GetProperty("Data");
             if (dataProperty?.GetValue(value) is IEnumerable data)
             {
-                var count = 0;
-                foreach (var _ in data) count++;
+                var count = data is ICollection c ? c.Count : data.Cast<object>().Count();
                 var elementType = valueType.GetGenericArguments()[0];
                 return (count, elementType.Name);
             }
