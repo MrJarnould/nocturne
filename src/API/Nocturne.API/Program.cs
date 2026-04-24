@@ -12,6 +12,7 @@ using Nocturne.API.Services.Audit;
 using Nocturne.API.Services.Auth;
 using Nocturne.Core.Contracts.Audit;
 using Nocturne.API.Extensions;
+using Nocturne.API.Filters;
 using Nocturne.API.Hubs;
 using Nocturne.API.Middleware;
 using Nocturne.API.Multitenancy;
@@ -146,9 +147,11 @@ builder.Services.AddScoped<IAuditContext, AuditContext>();
 // Add native API services for strangler pattern
 // Note: NightscoutJsonFilter is added globally to apply null-omission and
 // NocturneOnly field exclusion to v1-v3 API responses only
+builder.Services.AddScoped<ReadAccessAuditFilter>();
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<NightscoutJsonFilter>();
+    options.Filters.AddService<ReadAccessAuditFilter>();
 })
 .ConfigureApplicationPartManager(manager =>
 {
