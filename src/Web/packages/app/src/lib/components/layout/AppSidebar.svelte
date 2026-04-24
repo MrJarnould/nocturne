@@ -63,9 +63,11 @@
     effectivePermissions?: string[];
     /** Whether the current user is a platform administrator */
     isPlatformAdmin?: boolean;
+    /** Whether the current session is a guest link session (read-only) */
+    isGuestSession?: boolean;
   }
 
-  const { user = null, tenantCount = 0, effectivePermissions = [], isPlatformAdmin = false }: Props = $props();
+  const { user = null, tenantCount = 0, effectivePermissions = [], isPlatformAdmin = false, isGuestSession = false }: Props = $props();
 
   const canManageRoles = $derived(
     effectivePermissions.includes("roles.manage") ||
@@ -170,6 +172,9 @@
     children?: NavItem[];
   };
 
+  /** Read-only navigation items shown to guest sessions. */
+  const guestNavTitles = new Set(["Dashboard", "Calendar", "Time Spans", "Reports", "Clock"]);
+
   const navigation: NavItem[] = $derived.by(() => {
     const items: NavItem[] = [
     {
@@ -259,6 +264,14 @@
       href: "/clock",
       icon: Clock,
     },
+    ];
+
+    // Guest sessions only see read-only navigation
+    if (isGuestSession) {
+      return items.filter((i) => guestNavTitles.has(i.title));
+    }
+
+    items.push(
     {
       title: "Food",
       href: "/food",
@@ -276,7 +289,7 @@
         { title: "Packing", href: "/tools/packing", icon: Wrench },
       ],
     },
-    ];
+    );
 
     if (tenantCount >= 2) {
       items.push({
@@ -421,8 +434,8 @@
 
   <Sidebar.Separator />
 
-  <!-- Tenant switcher (only visible when multiple tenants are available) -->
-  {#if tenantTargets.length > 0}
+  <!-- Tenant switcher (only visible when multiple tenants are available, hidden for guests) -->
+  {#if tenantTargets.length > 0 && !isGuestSession}
     <div class="border-b px-3 py-2 group-data-[collapsible=icon]:hidden">
       <p
         class="mb-1.5 text-xs font-medium text-muted-foreground flex items-center gap-1.5"
@@ -548,7 +561,7 @@
       <Sidebar.MenuItem
         class="flex items-center gap-2 min-w-0 group-data-[collapsible=icon]:flex-col"
       >
-        {#if user}
+        {#if user && !isGuestSession}
           <SidebarNotifications />
         {/if}
         <UserMenu
