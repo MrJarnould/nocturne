@@ -1,7 +1,4 @@
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Nocturne.Connectors.Core.Utilities;
 using Nocturne.Core.Contracts.Multitenancy;
 using Nocturne.Core.Contracts.Notifications;
 using Nocturne.Core.Models;
@@ -60,7 +57,7 @@ public class ApiKeyHandler : IAuthHandler
 
         if (apiKey.StartsWith("noc_", StringComparison.Ordinal))
         {
-            tokenHash = ComputeSha256Hex(apiKey);
+            tokenHash = DirectGrantTokenHandler.ComputeSha256Hex(apiKey);
         }
         else
         {
@@ -181,9 +178,4 @@ public class ApiKeyHandler : IAuthHandler
         }
     }
 
-    internal static string ComputeSha256Hex(string input)
-    {
-        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(input));
-        return Convert.ToHexStringLower(bytes);
-    }
 }

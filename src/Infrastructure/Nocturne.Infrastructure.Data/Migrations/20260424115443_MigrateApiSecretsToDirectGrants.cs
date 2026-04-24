@@ -59,14 +59,30 @@ namespace Nocturne.Infrastructure.Data.Migrations
                 nullable: true);
 
             migrationBuilder.Sql("""
-                UPDATE tenants t
-                SET api_secret_hash = g.legacy_secret_hash
-                FROM oauth_grants g
-                WHERE g.tenant_id = t.id
-                  AND g.grant_type = 'direct'
-                  AND g.legacy_secret_hash IS NOT NULL
-                  AND g.revoked_at IS NULL
-                  AND g.label = 'Legacy API secret';
+                DO $$
+                DECLARE
+                    r RECORD;
+                BEGIN
+                    FOR r IN
+                        SELECT t.id AS tenant_id
+                        FROM tenants t
+                    LOOP
+                        PERFORM set_config('app.current_tenant_id', r.tenant_id::text, true);
+
+                        UPDATE tenants
+                        SET api_secret_hash = (
+                            SELECT g.legacy_secret_hash
+                            FROM oauth_grants g
+                            WHERE g.tenant_id = r.tenant_id
+                              AND g.grant_type = 'direct'
+                              AND g.legacy_secret_hash IS NOT NULL
+                              AND g.revoked_at IS NULL
+                              AND g.label = 'Legacy API secret'
+                            LIMIT 1
+                        )
+                        WHERE id = r.tenant_id;
+                    END LOOP;
+                END $$;
                 """);
         }
     }
