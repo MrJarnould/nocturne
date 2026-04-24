@@ -143,6 +143,7 @@ builder.Services.AddResponseCaching();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IAuditContext, AuditContext>();
+builder.Services.AddHostedService<AuditRetentionService>();
 
 // Add native API services for strangler pattern
 // Note: NightscoutJsonFilter is added globally to apply null-omission and
