@@ -60,7 +60,7 @@ public class MemberScopeMiddleware
         var authContext = context.GetAuthContext();
 
         // Only process authenticated users with a resolved tenant
-        if (authContext is not { IsAuthenticated: true, SubjectId: not null, TenantId: not null })
+        if (authContext is not { IsAuthenticated: true, TenantId: not null })
         {
             await _next(context);
             return;
@@ -91,6 +91,26 @@ public class MemberScopeMiddleware
             permissionTrie.Add(permissions);
             context.Items["PermissionTrie"] = permissionTrie;
 
+            await _next(context);
+            return;
+        }
+
+        // Guest sessions get their scopes directly from the grant — no membership lookup
+        if (authContext.AuthType == AuthType.Guest)
+        {
+            var guestScopes = OAuthScopes.Normalize(authContext.Scopes);
+            context.Items["GrantedScopes"] = (IReadOnlySet<string>)guestScopes;
+            var guestPermissions = ScopeTranslator.ToPermissions(guestScopes);
+            var guestTrie = new PermissionTrie();
+            guestTrie.Add(guestPermissions);
+            context.Items["PermissionTrie"] = guestTrie;
+            await _next(context);
+            return;
+        }
+
+        // Remaining handlers require a SubjectId for membership lookup
+        if (authContext.SubjectId is null)
+        {
             await _next(context);
             return;
         }
