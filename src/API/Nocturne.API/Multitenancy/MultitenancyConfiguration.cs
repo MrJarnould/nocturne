@@ -27,4 +27,11 @@ public class MultitenancyConfiguration
     /// Used by SaaS operators to enforce custom naming rules or billing checks.
     /// </summary>
     public string? SlugValidationWebhookUrl { get; set; }
+
+    /// <summary>
+    /// Optional webhook URL for custom username validation.
+    /// When configured, Nocturne POSTs { "username": "xxx" } and expects { "isValid": bool, "message"?: string }.
+    /// Used by SaaS operators to enforce custom username rules (e.g. additional reserved words).
+    /// </summary>
+    public string? UsernameValidationWebhookUrl { get; set; }
 }

@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ using Nocturne.Core.Models.Configuration;
 using Nocturne.API.Services.Auth;
 using Nocturne.Infrastructure.Data;
 using Nocturne.Infrastructure.Data.Entities;
+using Nocturne.API.Multitenancy;
 using SameSiteMode = Nocturne.Core.Models.Configuration.SameSiteMode;
 
 namespace Nocturne.API.Controllers.V4;
@@ -38,6 +40,8 @@ public partial class SetupController : ControllerBase
     private readonly IDbContextFactory<NocturneDbContext> _dbFactory;
     private readonly OidcOptions _oidcOptions;
     private readonly IOidcAuthService _oidcAuthService;
+    private readonly MultitenancyConfiguration _multitenancyConfig;
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<SetupController> _logger;
 
     public SetupController(
@@ -50,6 +54,8 @@ public partial class SetupController : ControllerBase
         IDbContextFactory<NocturneDbContext> dbFactory,
         IOptions<OidcOptions> oidcOptions,
         IOidcAuthService oidcAuthService,
+        IOptions<MultitenancyConfiguration> multitenancyConfig,
+        IHttpClientFactory httpClientFactory,
         ILogger<SetupController> logger)
     {
         _tenantService = tenantService;
@@ -61,6 +67,8 @@ public partial class SetupController : ControllerBase
         _dbFactory = dbFactory;
         _oidcOptions = oidcOptions.Value;
         _oidcAuthService = oidcAuthService;
+        _multitenancyConfig = multitenancyConfig.Value;
+        _httpClientFactory = httpClientFactory;
         _logger = logger;
     }
 
@@ -140,6 +148,29 @@ public partial class SetupController : ControllerBase
 
         if (exists)
             return Ok(new SlugValidationResult(false, "This username is already taken"));
+
+        if (!string.IsNullOrEmpty(_multitenancyConfig.UsernameValidationWebhookUrl))
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient("username-validation");
+                var response = await client.PostAsJsonAsync(
+                    _multitenancyConfig.UsernameValidationWebhookUrl,
+                    new { username = normalized },
+                    ct);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<SlugValidationResult>(ct);
+                    if (result is { IsValid: false })
+                        return Ok(result);
+                }
+            }
+            catch
+            {
+                // Webhook failure should not block validation — fall through to success
+            }
+        }
 
         return Ok(new SlugValidationResult(true));
     }

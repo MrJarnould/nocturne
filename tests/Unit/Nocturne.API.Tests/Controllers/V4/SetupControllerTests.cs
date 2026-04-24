@@ -84,6 +84,8 @@ public class SetupControllerTests : IDisposable
             dbFactory.Object,
             oidcOptions,
             _oidcAuthService.Object,
+            Options.Create(new Nocturne.API.Multitenancy.MultitenancyConfiguration()),
+            new Mock<IHttpClientFactory>().Object,
             new Mock<ILogger<SetupController>>().Object);
 
         _controller.ControllerContext = new ControllerContext
