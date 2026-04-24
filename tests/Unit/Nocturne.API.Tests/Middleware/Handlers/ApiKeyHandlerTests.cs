@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Data.Sqlite;
 using Moq;
 using Nocturne.API.Middleware.Handlers;
 using Nocturne.Connectors.Core.Utilities;
 using Nocturne.Core.Contracts.Multitenancy;
+using Nocturne.Core.Contracts.Notifications;
+using Nocturne.Core.Models;
 using Nocturne.Core.Models.Authorization;
 using Nocturne.Infrastructure.Data;
 using Nocturne.Infrastructure.Data.Entities;
@@ -279,9 +282,125 @@ public class ApiKeyHandlerTests : IDisposable
         Assert.False(result.ShouldSkip);
     }
 
+    [Fact]
+    public async Task AuthenticateAsync_LegacyGrant_FirstUse_SendsRotationNudge()
+    {
+        var legacySecret = "firstusesecret";
+        var sha1Hash = HashUtils.Sha1Hex(legacySecret);
+        var grantId = Guid.CreateVersion7();
+
+        await using (var ctx = new NocturneDbContext(_dbOptions) { TenantId = _testTenantId })
+        {
+            ctx.OAuthGrants.Add(new OAuthGrantEntity
+            {
+                Id = grantId,
+                SubjectId = _subjectId,
+                TenantId = _testTenantId,
+                GrantType = OAuthGrantTypes.Direct,
+                LegacySecretHash = sha1Hash,
+                Scopes = ["*"],
+                CreatedAt = DateTime.UtcNow,
+                LastUsedAt = null,
+            });
+            await ctx.SaveChangesAsync();
+        }
+
+        var mockNotificationService = new Mock<IInAppNotificationService>();
+        mockNotificationService
+            .Setup(s => s.CreateNotificationAsync(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                It.IsAny<NotificationCategory?>(), It.IsAny<NotificationUrgency?>(),
+                It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>(),
+                It.IsAny<string?>(), It.IsAny<List<NotificationActionDto>?>(),
+                It.IsAny<ResolutionConditions?>(), It.IsAny<Dictionary<string, object>?>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new InAppNotificationDto());
+
+        var context = CreateHttpContextWithServices(mockNotificationService.Object);
+        context.Request.Headers["api-secret"] = sha1Hash;
+
+        var result = await _handler.AuthenticateAsync(context);
+
+        Assert.True(result.Succeeded);
+
+        // Allow the fire-and-forget task to complete
+        await Task.Delay(200);
+
+        mockNotificationService.Verify(s => s.CreateNotificationAsync(
+            _subjectId.ToString(),
+            "api-key-rotation",
+            "Rotate your API key",
+            NotificationCategory.ActionRequired,
+            NotificationUrgency.Info,
+            "key",
+            "api-key-handler",
+            "Your API key has full access. Create per-device keys with least privilege.",
+            grantId.ToString(),
+            It.Is<List<NotificationActionDto>>(a => a.Count == 1 && a[0].ActionId == "manage-keys" && a[0].Label == "Manage Keys"),
+            It.IsAny<ResolutionConditions?>(),
+            It.IsAny<Dictionary<string, object>?>(),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task AuthenticateAsync_LegacyGrant_AlreadyUsed_DoesNotSendNudge()
+    {
+        var legacySecret = "alreadyusedsecret";
+        var sha1Hash = HashUtils.Sha1Hex(legacySecret);
+
+        await using (var ctx = new NocturneDbContext(_dbOptions) { TenantId = _testTenantId })
+        {
+            ctx.OAuthGrants.Add(new OAuthGrantEntity
+            {
+                Id = Guid.CreateVersion7(),
+                SubjectId = _subjectId,
+                TenantId = _testTenantId,
+                GrantType = OAuthGrantTypes.Direct,
+                LegacySecretHash = sha1Hash,
+                Scopes = ["*"],
+                CreatedAt = DateTime.UtcNow,
+                LastUsedAt = DateTime.UtcNow.AddDays(-1),
+            });
+            await ctx.SaveChangesAsync();
+        }
+
+        var mockNotificationService = new Mock<IInAppNotificationService>();
+
+        var context = CreateHttpContextWithServices(mockNotificationService.Object);
+        context.Request.Headers["api-secret"] = sha1Hash;
+
+        var result = await _handler.AuthenticateAsync(context);
+
+        Assert.True(result.Succeeded);
+
+        await Task.Delay(200);
+
+        mockNotificationService.Verify(s => s.CreateNotificationAsync(
+            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+            It.IsAny<NotificationCategory?>(), It.IsAny<NotificationUrgency?>(),
+            It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>(),
+            It.IsAny<string?>(), It.IsAny<List<NotificationActionDto>?>(),
+            It.IsAny<ResolutionConditions?>(), It.IsAny<Dictionary<string, object>?>(),
+            It.IsAny<CancellationToken>()), Times.Never);
+    }
+
     private DefaultHttpContext CreateHttpContext()
     {
         var context = new DefaultHttpContext();
+        context.Items["TenantContext"] = new TenantContext(_testTenantId, "default", "Default", true);
+        return context;
+    }
+
+    private DefaultHttpContext CreateHttpContextWithServices(IInAppNotificationService notificationService)
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton(notificationService);
+        var serviceProvider = services.BuildServiceProvider();
+
+        var context = new DefaultHttpContext
+        {
+            RequestServices = serviceProvider,
+        };
         context.Items["TenantContext"] = new TenantContext(_testTenantId, "default", "Default", true);
         return context;
     }

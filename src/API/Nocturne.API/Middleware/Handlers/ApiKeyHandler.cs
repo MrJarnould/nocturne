@@ -3,6 +3,8 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Nocturne.Connectors.Core.Utilities;
 using Nocturne.Core.Contracts.Multitenancy;
+using Nocturne.Core.Contracts.Notifications;
+using Nocturne.Core.Models;
 using Nocturne.Core.Models.Authorization;
 using Nocturne.Infrastructure.Data;
 using Nocturne.Infrastructure.Data.Entities;
@@ -106,6 +108,16 @@ public class ApiKeyHandler : IAuthHandler
         var userAgent = context.Request.Headers.UserAgent.FirstOrDefault();
         _ = UpdateLastUsedAsync(grant.Id, ipAddress, userAgent);
 
+        // 7. If this is a legacy grant's first use, nudge rotation
+        if (grant.LegacySecretHash != null && grant.LastUsedAt == null)
+        {
+            var scopeFactory = context.RequestServices?.GetService<IServiceScopeFactory>();
+            if (scopeFactory != null)
+            {
+                _ = SendRotationNudgeAsync(scopeFactory, grant);
+            }
+        }
+
         _logger.LogDebug("API key authentication successful for grant {GrantId}, subject {SubjectId}",
             grant.Id, grant.SubjectId);
 
@@ -134,6 +146,38 @@ public class ApiKeyHandler : IAuthHandler
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Failed to update last used metadata for grant {GrantId}", grantId);
+        }
+    }
+
+    private async Task SendRotationNudgeAsync(IServiceScopeFactory scopeFactory, OAuthGrantEntity grant)
+    {
+        try
+        {
+            using var scope = scopeFactory.CreateScope();
+            var notificationService = scope.ServiceProvider.GetRequiredService<IInAppNotificationService>();
+
+            await notificationService.CreateNotificationAsync(
+                userId: grant.SubjectId.ToString(),
+                type: "api-key-rotation",
+                title: "Rotate your API key",
+                category: NotificationCategory.ActionRequired,
+                urgency: NotificationUrgency.Info,
+                icon: "key",
+                source: "api-key-handler",
+                subtitle: "Your API key has full access. Create per-device keys with least privilege.",
+                sourceId: grant.Id.ToString(),
+                actions:
+                [
+                    new NotificationActionDto
+                    {
+                        ActionId = "manage-keys",
+                        Label = "Manage Keys",
+                    },
+                ]);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to send rotation nudge notification for grant {GrantId}", grant.Id);
         }
     }
 
