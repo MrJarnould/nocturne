@@ -160,6 +160,11 @@
             variant="outline"
             size="sm"
             onclick={() => (showCreateInvite = true)}
+            {@attach coachmark({
+              key: "setup-invite.create-link",
+              title: "Start here",
+              description: "Create a shareable link to invite a caretaker, partner, or clinician.",
+            })}
           >
             <Link class="mr-1.5 h-3.5 w-3.5" />
             Create Invite Link
