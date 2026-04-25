@@ -16,18 +16,12 @@
     import { DEMO_ENABLED } from "$lib/config";
     import CommunitySection from "$lib/components/CommunitySection.svelte";
     import { getCommunityData } from "$lib/data/portal.remote";
-    import type { GitHubContributor } from "$lib/data/portal.remote";
 
-    let communityData = $state<{
-        stars: number;
-        forks: number;
-        contributors: GitHubContributor[];
-        latestRelease: string | null;
-    } | null>(null);
+    let communityData = $state<Awaited<ReturnType<typeof getCommunityData>> | null>(null);
 
     getCommunityData({}).then((data) => {
         communityData = data;
-    });
+    }).catch(() => {});
 </script>
 
 <!-- Hero Section -->
