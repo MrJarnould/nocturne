@@ -12935,6 +12935,250 @@ export class RoleClient {
     }
 }
 
+export class ActivityClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * Get activity records with pagination
+     * @param limit (optional) 
+     * @param offset (optional) 
+     */
+    getActivities(limit?: number | undefined, offset?: number | undefined, signal?: AbortSignal): Promise<PaginatedResponseOfActivity> {
+        let url_ = this.baseUrl + "/api/v4/Activity?";
+        if (limit === null)
+            throw new globalThis.Error("The parameter 'limit' cannot be null.");
+        else if (limit !== undefined)
+            url_ += "limit=" + encodeURIComponent("" + limit) + "&";
+        if (offset === null)
+            throw new globalThis.Error("The parameter 'offset' cannot be null.");
+        else if (offset !== undefined)
+            url_ += "offset=" + encodeURIComponent("" + offset) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetActivities(_response);
+        });
+    }
+
+    protected processGetActivities(response: Response): Promise<PaginatedResponseOfActivity> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as PaginatedResponseOfActivity;
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PaginatedResponseOfActivity>(null as any);
+    }
+
+    /**
+     * Create one or more activity records
+     */
+    createActivities(requests: UpsertActivityRequest[], signal?: AbortSignal): Promise<Activity[]> {
+        let url_ = this.baseUrl + "/api/v4/Activity";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(requests);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreateActivities(_response);
+        });
+    }
+
+    protected processCreateActivities(response: Response): Promise<Activity[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 201) {
+            return response.text().then((_responseText) => {
+            let result201: any = null;
+            result201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as Activity[];
+            return result201;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<Activity[]>(null as any);
+    }
+
+    /**
+     * Get a specific activity record by ID
+     */
+    getActivity(id: string, signal?: AbortSignal): Promise<Activity> {
+        let url_ = this.baseUrl + "/api/v4/Activity/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetActivity(_response);
+        });
+    }
+
+    protected processGetActivity(response: Response): Promise<Activity> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as Activity;
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<Activity>(null as any);
+    }
+
+    /**
+     * Update an existing activity record
+     */
+    updateActivity(id: string, request: UpsertActivityRequest, signal?: AbortSignal): Promise<Activity> {
+        let url_ = this.baseUrl + "/api/v4/Activity/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateActivity(_response);
+        });
+    }
+
+    protected processUpdateActivity(response: Response): Promise<Activity> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as Activity;
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<Activity>(null as any);
+    }
+
+    /**
+     * Delete an activity record by ID
+     */
+    deleteActivity(id: string, signal?: AbortSignal): Promise<void> {
+        let url_ = this.baseUrl + "/api/v4/Activity/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            signal,
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteActivity(_response);
+        });
+    }
+
+    protected processDeleteActivity(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
 export class BodyWeightClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -26784,6 +27028,67 @@ export interface UpdateRoleRequest {
     name?: string;
     description?: string | undefined;
     permissions?: string[];
+}
+
+export interface PaginatedResponseOfActivity {
+    data?: Activity[];
+    pagination?: PaginationInfo;
+}
+
+export interface Activity extends ProcessableDocumentBase {
+    _id?: string | undefined;
+    created_at?: string | undefined;
+    timestamp?: number | undefined;
+    mills?: number;
+    utcOffset?: number | undefined;
+    type?: string | undefined;
+    description?: string | undefined;
+    duration?: number | undefined;
+    intensity?: string | undefined;
+    notes?: string | undefined;
+    enteredBy?: string | undefined;
+    dateString?: string | undefined;
+    distance?: number | undefined;
+    distanceUnits?: string | undefined;
+    energy?: number | undefined;
+    energyUnits?: string | undefined;
+    name?: string | undefined;
+
+    [key: string]: any;
+}
+
+export function isActivity(object: any): object is Activity {
+    return object && object[''] === 'Activity';
+}
+
+/** Request body for upserting an activity record via the V4 API. */
+export interface UpsertActivityRequest {
+    /** When the activity occurred, as a Unix millisecond timestamp. */
+    mills?: number;
+    /** UTC offset in minutes at the time of the event, for local-time display. */
+    utcOffset?: number | undefined;
+    /** Activity type or category (e.g., "exercise", "walk", "run"). */
+    type?: string | undefined;
+    /** Activity description or notes. */
+    description?: string | undefined;
+    /** Duration of the activity in minutes. */
+    duration?: number | undefined;
+    /** Intensity level of the activity. */
+    intensity?: string | undefined;
+    /** Additional notes about the activity. */
+    notes?: string | undefined;
+    /** Name of the application or person that submitted this record. */
+    enteredBy?: string | undefined;
+    /** Distance covered during the activity. */
+    distance?: number | undefined;
+    /** Units for distance (e.g., "meters", "kilometers", "miles"). */
+    distanceUnits?: string | undefined;
+    /** Energy expended during the activity (calories). */
+    energy?: number | undefined;
+    /** Units for energy (e.g., "calories", "kilocalories", "joules"). */
+    energyUnits?: string | undefined;
+    /** Name or title of the activity. */
+    name?: string | undefined;
 }
 
 export interface BodyWeight extends ProcessableDocumentBase {
