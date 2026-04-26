@@ -42,18 +42,13 @@ public class BatteryService : IBatteryService
         {
             var from = DateTime.UtcNow.AddMinutes(-recentMinutes);
 
-            var uploaderTask = _uploaderSnapshots.GetAsync(
+            var uploaderSnapshots = (await _uploaderSnapshots.GetAsync(
                 from: from, to: null, device: null, source: null,
-                limit: 100, offset: 0, descending: true, ct: cancellationToken);
+                limit: 100, offset: 0, descending: true, ct: cancellationToken)).ToList();
 
-            var pumpTask = _pumpSnapshots.GetAsync(
+            var pumpSnapshots = (await _pumpSnapshots.GetAsync(
                 from: from, to: null, device: null, source: null,
-                limit: 100, offset: 0, descending: true, ct: cancellationToken);
-
-            await Task.WhenAll(uploaderTask, pumpTask);
-
-            var uploaderSnapshots = (await uploaderTask).ToList();
-            var pumpSnapshots = (await pumpTask).ToList();
+                limit: 100, offset: 0, descending: true, ct: cancellationToken)).ToList();
 
             var allReadings = new List<BatteryReading>();
             allReadings.AddRange(uploaderSnapshots
@@ -151,18 +146,13 @@ public class BatteryService : IBatteryService
                 ? DateTimeOffset.FromUnixTimeMilliseconds(toMills.Value).UtcDateTime
                 : (DateTime?)null;
 
-            var uploaderTask = _uploaderSnapshots.GetAsync(
+            var uploaderSnapshots = await _uploaderSnapshots.GetAsync(
                 from: from, to: to, device: device, source: null,
                 limit: 10000, offset: 0, descending: false, ct: cancellationToken);
 
-            var pumpTask = _pumpSnapshots.GetAsync(
+            var pumpSnapshots = await _pumpSnapshots.GetAsync(
                 from: from, to: to, device: device, source: null,
                 limit: 10000, offset: 0, descending: false, ct: cancellationToken);
-
-            await Task.WhenAll(uploaderTask, pumpTask);
-
-            var uploaderSnapshots = await uploaderTask;
-            var pumpSnapshots = await pumpTask;
 
             readings.AddRange(uploaderSnapshots.Select(ConvertUploaderToReading));
             readings.AddRange(pumpSnapshots.Select(ConvertPumpToReading));
@@ -268,18 +258,13 @@ public class BatteryService : IBatteryService
 
         try
         {
-            var uploaderTask = _uploaderSnapshots.GetAsync(
+            var uploaderSnapshots = await _uploaderSnapshots.GetAsync(
                 from: null, to: null, device: null, source: null,
                 limit: 1000, offset: 0, descending: true, ct: cancellationToken);
 
-            var pumpTask = _pumpSnapshots.GetAsync(
+            var pumpSnapshots = await _pumpSnapshots.GetAsync(
                 from: null, to: null, device: null, source: null,
                 limit: 1000, offset: 0, descending: true, ct: cancellationToken);
-
-            await Task.WhenAll(uploaderTask, pumpTask);
-
-            var uploaderSnapshots = await uploaderTask;
-            var pumpSnapshots = await pumpTask;
 
             foreach (var snapshot in uploaderSnapshots)
             {
