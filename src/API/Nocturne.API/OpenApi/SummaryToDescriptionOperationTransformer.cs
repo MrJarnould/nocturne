@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
@@ -10,7 +9,7 @@ namespace Nocturne.API.OpenApi;
 /// for runtime Scalar docs. Moves the XML summary into description and derives a readable
 /// title from the action method name.
 /// </summary>
-public sealed partial class SummaryToDescriptionOperationTransformer : IOpenApiOperationTransformer
+public sealed class SummaryToDescriptionOperationTransformer : IOpenApiOperationTransformer
 {
     public Task TransformAsync(
         OpenApiOperation operation,
@@ -31,12 +30,8 @@ public sealed partial class SummaryToDescriptionOperationTransformer : IOpenApiO
         if (methodName.EndsWith("Async", StringComparison.Ordinal))
             methodName = methodName[..^"Async".Length];
 
-        var words = PascalCaseBoundary().Replace(methodName, " ");
-        operation.Summary = char.ToUpper(words[0]) + words[1..].ToLowerInvariant();
+        operation.Summary = SummaryToDescriptionOperationProcessor.Humanize(methodName);
 
         return Task.CompletedTask;
     }
-
-    [GeneratedRegex(@"(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")]
-    private static partial Regex PascalCaseBoundary();
 }
