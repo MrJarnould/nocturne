@@ -177,6 +177,9 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<TenantConnectionInterceptor>();
         services.TryAddSingleton<MutationAuditInterceptor>();
 
+        // Audit config cache (singleton — uses IDbContextFactory internally)
+        services.TryAddSingleton<ITenantAuditConfigCache, TenantAuditConfigCache>();
+
         // Register NpgsqlDataSource as a singleton - this manages the connection pool
         var dataSourceBuilder = new Npgsql.NpgsqlDataSourceBuilder(config.ConnectionString);
         var dataSource = dataSourceBuilder.Build();
