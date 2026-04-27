@@ -10,6 +10,10 @@ diagrams:
     title: Request Flow
     description: HTTP request path from client through YARP to the database.
 
+  - source: type-safety-pipeline.mmd
+    title: Type Safety Pipeline
+    description: End-to-end type safety from .NET domain models through NSwag, Zod, and remote codegen to SvelteKit.
+
   - source: er-overview.mmd
     title: Entity Model Overview
     description: Domain modules and cross-module relationships.
