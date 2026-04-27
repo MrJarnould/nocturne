@@ -41,6 +41,8 @@ public static class KnownOAuthClients
                 OAuthScopes.EntriesReadWrite,
                 OAuthScopes.TreatmentsReadWrite,
                 OAuthScopes.DeviceStatusReadWrite,
+                OAuthScopes.HeartRateReadWrite,
+                OAuthScopes.StepCountReadWrite,
             ],
         },
         new()
