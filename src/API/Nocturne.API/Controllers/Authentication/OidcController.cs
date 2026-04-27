@@ -645,7 +645,7 @@ public class OidcController : ControllerBase
             {
                 HttpOnly = true,
                 Secure = _options.Cookie.Secure,
-                SameSite = MapSameSiteMode(_options.Cookie.SameSite),
+                SameSite = SessionCookieExtensions.MapSameSiteMode(_options.Cookie.SameSite),
                 Path = _options.Cookie.Path,
                 Domain = _options.Cookie.Domain,
                 Expires = expiresAt,
@@ -676,7 +676,7 @@ public class OidcController : ControllerBase
             {
                 HttpOnly = true,
                 Secure = _options.Cookie.Secure,
-                SameSite = MapSameSiteMode(_options.Cookie.SameSite),
+                SameSite = SessionCookieExtensions.MapSameSiteMode(_options.Cookie.SameSite),
                 Path = _options.Cookie.Path,
                 Domain = _options.Cookie.Domain,
                 Expires = expiresAt,
@@ -708,7 +708,7 @@ public class OidcController : ControllerBase
             {
                 HttpOnly = _options.Cookie.HttpOnly,
                 Secure = _options.Cookie.Secure,
-                SameSite = MapSameSiteMode(_options.Cookie.SameSite),
+                SameSite = SessionCookieExtensions.MapSameSiteMode(_options.Cookie.SameSite),
                 Path = _options.Cookie.Path,
                 Domain = _options.Cookie.Domain,
                 Expires = tokens.ExpiresAt,
@@ -723,7 +723,7 @@ public class OidcController : ControllerBase
             {
                 HttpOnly = true, // Always HttpOnly for refresh tokens
                 Secure = _options.Cookie.Secure,
-                SameSite = MapSameSiteMode(_options.Cookie.SameSite),
+                SameSite = SessionCookieExtensions.MapSameSiteMode(_options.Cookie.SameSite),
                 Path = _options.Cookie.Path,
                 Domain = _options.Cookie.Domain,
                 Expires = DateTimeOffset.UtcNow.Add(_options.Session.RefreshTokenLifetime),
@@ -738,7 +738,7 @@ public class OidcController : ControllerBase
             {
                 HttpOnly = false,
                 Secure = _options.Cookie.Secure,
-                SameSite = MapSameSiteMode(_options.Cookie.SameSite),
+                SameSite = SessionCookieExtensions.MapSameSiteMode(_options.Cookie.SameSite),
                 Path = _options.Cookie.Path,
                 Domain = _options.Cookie.Domain,
                 Expires = DateTimeOffset.UtcNow.Add(_options.Session.RefreshTokenLifetime),
@@ -810,20 +810,6 @@ public class OidcController : ControllerBase
         var returnUrl =
             $"/auth/error?error={Uri.EscapeDataString(error)}&description={Uri.EscapeDataString(description)}";
         return Redirect(returnUrl);
-    }
-
-    /// <summary>
-    /// Map our SameSite mode to ASP.NET Core's
-    /// </summary>
-    private static Microsoft.AspNetCore.Http.SameSiteMode MapSameSiteMode(SameSiteMode mode)
-    {
-        return mode switch
-        {
-            SameSiteMode.None => Microsoft.AspNetCore.Http.SameSiteMode.None,
-            SameSiteMode.Lax => Microsoft.AspNetCore.Http.SameSiteMode.Lax,
-            SameSiteMode.Strict => Microsoft.AspNetCore.Http.SameSiteMode.Strict,
-            _ => Microsoft.AspNetCore.Http.SameSiteMode.Lax,
-        };
     }
 
     #endregion
