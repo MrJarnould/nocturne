@@ -11,9 +11,6 @@
     Smartphone,
     CheckCircle,
     Loader2,
-    Eye,
-    EyeOff,
-    Copy,
     Check,
     Shield,
     AlertTriangle,
@@ -26,31 +23,12 @@
   interface Props {
     /** Origin URL of the Nocturne instance (trailing slash tolerated). */
     instanceUrl: string;
-    /** Optional API key to display in a censored format. */
-    apiKey?: string | null;
   }
 
-  let { instanceUrl, apiKey = null }: Props = $props();
+  let { instanceUrl }: Props = $props();
 
   let qrDataUrl = $state<string | null>(null);
   let isAndroid = $state(false);
-
-  // ── API key display state ──────────────────────────────────────
-  let showApiKey = $state(false);
-  let copiedApiKey = $state(false);
-
-  const censoredApiKey = $derived(
-    apiKey ? apiKey.slice(0, 8) + "\u2022".repeat(Math.max(0, apiKey.length - 8)) : null,
-  );
-
-  async function copyApiKey() {
-    if (!apiKey) return;
-    await navigator.clipboard.writeText(apiKey);
-    copiedApiKey = true;
-    setTimeout(() => {
-      copiedApiKey = false;
-    }, 2000);
-  }
 
   // ── Connection polling state ───────────────────────────────────
   type ConnectionState = "waiting" | "connected" | "timeout";
@@ -211,41 +189,6 @@
       Automatically configure xDrip+ with your Nocturne instance.
     </p>
   </div>
-
-  {#if apiKey}
-    <div class="space-y-1">
-      <p class="text-muted-foreground text-xs font-medium">API Key</p>
-      <div class="flex items-center gap-2">
-        <code class="bg-muted flex-1 rounded px-3 py-2 font-mono text-sm break-all">
-          {showApiKey ? apiKey : censoredApiKey}
-        </code>
-        <Button
-          variant="ghost"
-          size="icon"
-          onclick={() => (showApiKey = !showApiKey)}
-          aria-label={showApiKey ? "Hide API key" : "Show API key"}
-        >
-          {#if showApiKey}
-            <EyeOff class="h-4 w-4" />
-          {:else}
-            <Eye class="h-4 w-4" />
-          {/if}
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onclick={copyApiKey}
-          aria-label="Copy API key"
-        >
-          {#if copiedApiKey}
-            <Check class="h-4 w-4 text-green-600" />
-          {:else}
-            <Copy class="h-4 w-4" />
-          {/if}
-        </Button>
-      </div>
-    </div>
-  {/if}
 
   {#if isAndroid}
     <Button href={deepLink} class="w-full">

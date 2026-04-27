@@ -52,10 +52,14 @@
     }
   });
 
+  const hasOAuthFlow = $derived(selectedUploader?.id === "xdrip");
+
   async function loadSetup(uploaderId: string) {
     try {
       uploaderSetup = await getUploaderSetup(uploaderId);
-      await generateApiToken();
+      if (!hasOAuthFlow) {
+        await generateApiToken();
+      }
     } catch (e) {
       console.error("Failed to load setup instructions", e);
     }
@@ -120,7 +124,7 @@
       <div class="space-y-6 py-4">
         {#if selectedUploader?.id === "xdrip" && typeof window !== "undefined"}
           <div class="border-b pb-4 mb-4">
-            <XdripQuickConnect instanceUrl={window.location.origin} apiKey={apiToken} />
+            <XdripQuickConnect instanceUrl={window.location.origin} />
           </div>
         {/if}
 
@@ -152,6 +156,7 @@
             </div>
           </div>
 
+          {#if !hasOAuthFlow}
           <div class="space-y-2">
             <span class="text-sm text-muted-foreground">API Key</span>
             {#if apiTokenLoading}
@@ -190,6 +195,7 @@
               </div>
             {/if}
           </div>
+          {/if}
 
         <Separator />
 
