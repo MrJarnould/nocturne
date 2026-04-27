@@ -5,6 +5,17 @@ using Nocturne.Core.Models.Configuration;
 namespace Nocturne.API.Services.Auth;
 
 /// <summary>
+/// Thrown when a revoked refresh token is reused within the grace period,
+/// indicating a harmless race condition between concurrent requests rather
+/// than token theft. Handlers should skip cookie clearing when catching this.
+/// </summary>
+public class TokenRotationRaceException : Exception
+{
+    public TokenRotationRaceException()
+        : base("Refresh token reuse within grace period — concurrent request race condition.") { }
+}
+
+/// <summary>
 /// Service for creating, validating, rotating, and revoking refresh tokens stored in the database.
 /// Token values are never stored in plaintext — only the SHA-256 hash is persisted.
 /// Rotation on use prevents token replay attacks.
@@ -115,8 +126,22 @@ public class RefreshTokenService : IRefreshTokenService
         {
             if (oldRecord != null && oldRecord.RevokedAt != null && oldRecord.ReplacedByTokenId.HasValue)
             {
-                // Token reuse detected - this could be a token theft attempt
-                // Revoke all tokens in the family
+                // Check if this is a race condition (concurrent requests using the
+                // same token shortly after rotation) vs actual token theft.
+                // A 30-second grace period prevents nuking all tokens when parallel
+                // requests (SSR + preload, two tabs, page load + API call) both
+                // attempt to refresh with the same token.
+                var timeSinceRevocation = DateTime.UtcNow - oldRecord.RevokedAt.Value;
+                if (timeSinceRevocation < TimeSpan.FromSeconds(30))
+                {
+                    _logger.LogDebug(
+                        "Refresh token reuse within grace period ({Elapsed:F1}s) for subject {SubjectId}. " +
+                        "Likely a concurrent request — skipping family revocation.",
+                        timeSinceRevocation.TotalSeconds, oldRecord.SubjectId);
+                    throw new TokenRotationRaceException();
+                }
+
+                // Outside grace period — this looks like actual token theft
                 _logger.LogWarning(
                     "Refresh token reuse detected for subject {SubjectId}. Revoking all tokens in the family.",
                     oldRecord.SubjectId);

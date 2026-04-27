@@ -168,9 +168,9 @@ public class RefreshTokenServiceTests
 
     [Fact]
     [Trait("Category", "Unit")]
-    public async Task RotateRefreshTokenAsync_ReuseDetected_RevokesFamily()
+    public async Task RotateRefreshTokenAsync_ReuseOutsideGracePeriod_RevokesFamily()
     {
-        // Arrange — revoked token that was already replaced (theft detection)
+        // Arrange — revoked token reused after 5 minutes (well past grace period)
         _jwtService.Setup(j => j.HashRefreshToken("stolen")).Returns("hash-stolen");
 
         _repository.Setup(r => r.FindByHashAsync("hash-stolen", default))
@@ -193,7 +193,7 @@ public class RefreshTokenServiceTests
 
     [Fact]
     [Trait("Category", "Unit")]
-    public async Task RotateRefreshTokenAsync_ReuseDetected_ReturnsNull()
+    public async Task RotateRefreshTokenAsync_ReuseOutsideGracePeriod_ReturnsNull()
     {
         // Arrange
         _jwtService.Setup(j => j.HashRefreshToken("stolen")).Returns("hash-stolen");
@@ -211,6 +211,31 @@ public class RefreshTokenServiceTests
 
         // Assert
         result.Should().BeNull();
+    }
+
+    [Fact]
+    [Trait("Category", "Unit")]
+    public async Task RotateRefreshTokenAsync_ReuseWithinGracePeriod_ThrowsRaceException()
+    {
+        // Arrange — token rotated just 2 seconds ago (concurrent request race)
+        _jwtService.Setup(j => j.HashRefreshToken("raced")).Returns("hash-raced");
+
+        _repository.Setup(r => r.FindByHashAsync("hash-raced", default))
+            .ReturnsAsync(MakeRecord(
+                revokedAt: DateTime.UtcNow.AddSeconds(-2),
+                expiresAt: DateTime.UtcNow.AddHours(1),
+                replacedByTokenId: Guid.CreateVersion7()));
+
+        var service = CreateService();
+
+        // Act & Assert — throws instead of nuking all tokens
+        await service.Invoking(s => s.RotateRefreshTokenAsync("raced"))
+            .Should().ThrowAsync<TokenRotationRaceException>();
+
+        // Family should NOT be revoked
+        _repository.Verify(
+            r => r.RevokeAllForSubjectAsync(It.IsAny<Guid>(), It.IsAny<string>(), default),
+            Times.Never);
     }
 
     #endregion
