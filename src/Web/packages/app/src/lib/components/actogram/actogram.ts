@@ -9,8 +9,7 @@ export interface ActogramPoint {
 	[key: string]: unknown;
 }
 
-export interface GlucosePoint {
-	mills: number;
+export interface GlucosePoint extends ActogramPoint {
 	sgv: number;
 	color: string;
 }
