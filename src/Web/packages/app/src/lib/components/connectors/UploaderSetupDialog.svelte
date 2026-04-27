@@ -33,13 +33,21 @@
   let apiToken = $state<string | null>(null);
   let apiTokenLoading = $state(false);
   let apiTokenError = $state<string | null>(null);
+  let apiTokenGenerated = $state(false);
+  let lastUploaderId = $state<string | null>(null);
 
   // Watch for changes and fetch setup info
   $effect(() => {
     if (open && selectedUploader?.id) {
+      const uploaderChanged = selectedUploader.id !== lastUploaderId;
+      lastUploaderId = selectedUploader.id;
+
       uploaderSetup = null;
-      apiToken = null;
-      apiTokenError = null;
+      if (uploaderChanged) {
+        apiToken = null;
+        apiTokenError = null;
+        apiTokenGenerated = false;
+      }
       loadSetup(selectedUploader.id);
     }
   });
@@ -54,7 +62,7 @@
   }
 
   async function generateApiToken() {
-    if (!selectedUploader || apiToken || apiTokenLoading) return;
+    if (!selectedUploader || apiToken || apiTokenGenerated || apiTokenLoading) return;
     apiTokenLoading = true;
     apiTokenError = null;
     try {
@@ -63,6 +71,7 @@
         scopes: ["health.readwrite"],
       });
       apiToken = result.token ?? null;
+      apiTokenGenerated = true;
     } catch {
       apiTokenError = "Failed to generate API key. You can create one manually in Settings.";
     } finally {
@@ -170,6 +179,10 @@
               <p class="text-xs text-muted-foreground">
                 Copy this now. It cannot be shown again.
               </p>
+            {:else if apiTokenGenerated}
+              <div class="rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">
+                API key has already been generated. You can manage API keys in Settings.
+              </div>
             {:else if apiTokenError}
               <div class="flex items-start gap-2 rounded-md border border-destructive/20 bg-destructive/5 p-3">
                 <AlertTriangle class="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
