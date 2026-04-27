@@ -111,7 +111,7 @@
       <div class="space-y-6 py-4">
         {#if selectedUploader?.id === "xdrip" && typeof window !== "undefined"}
           <div class="border-b pb-4 mb-4">
-            <XdripQuickConnect instanceUrl={window.location.origin} />
+            <XdripQuickConnect instanceUrl={window.location.origin} apiKey={apiToken} />
           </div>
         {/if}
 

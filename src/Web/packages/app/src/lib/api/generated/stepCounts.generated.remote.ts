@@ -6,11 +6,11 @@ import { getRequestEvent, query } from '$app/server';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 
-/** Get step count records with optional pagination */
-export const getStepCounts = query(z.object({ count: z.number().optional(), skip: z.number().optional() }).optional(), async (params) => {
+/** Get step count records with optional pagination and date filtering */
+export const getStepCounts = query(z.object({ count: z.number().optional(), skip: z.number().optional(), from: z.coerce.date().optional(), to: z.coerce.date().optional() }).optional(), async (params) => {
   const apiClient = getRequestEvent().locals.apiClient;
   try {
-    return await apiClient.stepCount.getStepCounts(params?.count, params?.skip);
+    return await apiClient.stepCount.getStepCounts(params?.count, params?.skip, params?.from, params?.to);
   } catch (err) {
     const status = (err as any)?.status;
     if (status === 401) { const { url } = getRequestEvent(); throw redirect(302, `/auth/login?returnUrl=${encodeURIComponent(url.pathname + url.search)}`); }

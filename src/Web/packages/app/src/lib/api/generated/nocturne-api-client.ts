@@ -1352,6 +1352,62 @@ export class BolusClient {
     }
 
     /**
+     * Delete a bolus by its external sync identifier (dataSource + syncIdentifier pair).
+     * @param dataSource (optional) 
+     * @param syncIdentifier (optional) 
+     */
+    deleteBySyncIdentifier(dataSource?: string | undefined, syncIdentifier?: string | undefined, signal?: AbortSignal): Promise<void> {
+        let url_ = this.baseUrl + "/api/v4/insulin/boluses/by-sync-id?";
+        if (dataSource === null)
+            throw new globalThis.Error("The parameter 'dataSource' cannot be null.");
+        else if (dataSource !== undefined)
+            url_ += "dataSource=" + encodeURIComponent("" + dataSource) + "&";
+        if (syncIdentifier === null)
+            throw new globalThis.Error("The parameter 'syncIdentifier' cannot be null.");
+        else if (syncIdentifier !== undefined)
+            url_ += "syncIdentifier=" + encodeURIComponent("" + syncIdentifier) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            signal,
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteBySyncIdentifier(_response);
+        });
+    }
+
+    protected processDeleteBySyncIdentifier(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
      * Updates an existing record by ID and returns the updated record.
      * @param id The unique identifier of the record to update.
      * @param request The data to apply to the existing record.
@@ -2217,6 +2273,62 @@ export class NoteClient {
     }
 
     /**
+     * Delete a note by its external sync identifier (dataSource + syncIdentifier pair).
+     * @param dataSource (optional) 
+     * @param syncIdentifier (optional) 
+     */
+    deleteBySyncIdentifier(dataSource?: string | undefined, syncIdentifier?: string | undefined, signal?: AbortSignal): Promise<void> {
+        let url_ = this.baseUrl + "/api/v4/observations/notes/by-sync-id?";
+        if (dataSource === null)
+            throw new globalThis.Error("The parameter 'dataSource' cannot be null.");
+        else if (dataSource !== undefined)
+            url_ += "dataSource=" + encodeURIComponent("" + dataSource) + "&";
+        if (syncIdentifier === null)
+            throw new globalThis.Error("The parameter 'syncIdentifier' cannot be null.");
+        else if (syncIdentifier !== undefined)
+            url_ += "syncIdentifier=" + encodeURIComponent("" + syncIdentifier) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            signal,
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteBySyncIdentifier(_response);
+        });
+    }
+
+    protected processDeleteBySyncIdentifier(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
      * Creates a new record and returns it with a `Location` header pointing to the created resource.
      * @param request The data used to create the record.
      */
@@ -2741,6 +2853,62 @@ export class NutritionClient {
         if (status === 204) {
             return response.text().then((_responseText) => {
             return;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * Delete a carb intake by its external sync identifier (dataSource + syncIdentifier pair).
+     * @param dataSource (optional) 
+     * @param syncIdentifier (optional) 
+     */
+    deleteCarbIntakeBySyncIdentifier(dataSource?: string | undefined, syncIdentifier?: string | undefined, signal?: AbortSignal): Promise<void> {
+        let url_ = this.baseUrl + "/api/v4/nutrition/carbs/by-sync-id?";
+        if (dataSource === null)
+            throw new globalThis.Error("The parameter 'dataSource' cannot be null.");
+        else if (dataSource !== undefined)
+            url_ += "dataSource=" + encodeURIComponent("" + dataSource) + "&";
+        if (syncIdentifier === null)
+            throw new globalThis.Error("The parameter 'syncIdentifier' cannot be null.");
+        else if (syncIdentifier !== undefined)
+            url_ += "syncIdentifier=" + encodeURIComponent("" + syncIdentifier) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            signal,
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteCarbIntakeBySyncIdentifier(_response);
+        });
+    }
+
+    protected processDeleteCarbIntakeBySyncIdentifier(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
@@ -13507,12 +13675,14 @@ export class HeartRateClient {
     }
 
     /**
-     * Get heart rate records with optional pagination
-     * @param count (optional) Maximum number of records to return (default: 10)
-     * @param skip (optional) Number of records to skip for pagination (default: 0)
-     * @return List of heart rate records ordered by most recent first
+     * Get heart rate records with optional pagination and date filtering
+     * @param count (optional) Maximum number of records to return (default: 10, ignored when from/to are specified)
+     * @param skip (optional) Number of records to skip for pagination (default: 0, ignored when from/to are specified)
+     * @param from (optional) Start of date range (inclusive). When specified with 'to', returns all records in range.
+     * @param to (optional) End of date range (exclusive). When specified with 'from', returns all records in range.
+     * @return List of heart rate records
      */
-    getHeartRates(count?: number | undefined, skip?: number | undefined, signal?: AbortSignal): Promise<HeartRate[]> {
+    getHeartRates(count?: number | undefined, skip?: number | undefined, from?: Date | null | undefined, to?: Date | null | undefined, signal?: AbortSignal): Promise<HeartRate[]> {
         let url_ = this.baseUrl + "/api/v4/HeartRate?";
         if (count === null)
             throw new globalThis.Error("The parameter 'count' cannot be null.");
@@ -13522,6 +13692,10 @@ export class HeartRateClient {
             throw new globalThis.Error("The parameter 'skip' cannot be null.");
         else if (skip !== undefined)
             url_ += "skip=" + encodeURIComponent("" + skip) + "&";
+        if (from !== undefined && from !== null)
+            url_ += "from=" + encodeURIComponent(from ? "" + from.toISOString() : "") + "&";
+        if (to !== undefined && to !== null)
+            url_ += "to=" + encodeURIComponent(to ? "" + to.toISOString() : "") + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -14180,12 +14354,14 @@ export class StepCountClient {
     }
 
     /**
-     * Get step count records with optional pagination
-     * @param count (optional) Maximum number of records to return (default: 10)
-     * @param skip (optional) Number of records to skip for pagination (default: 0)
-     * @return List of step count records ordered by most recent first
+     * Get step count records with optional pagination and date filtering
+     * @param count (optional) Maximum number of records to return (default: 10, ignored when from/to are specified)
+     * @param skip (optional) Number of records to skip for pagination (default: 0, ignored when from/to are specified)
+     * @param from (optional) Start of date range (inclusive). When specified with 'to', returns all records in range.
+     * @param to (optional) End of date range (exclusive). When specified with 'from', returns all records in range.
+     * @return List of step count records
      */
-    getStepCounts(count?: number | undefined, skip?: number | undefined, signal?: AbortSignal): Promise<StepCount[]> {
+    getStepCounts(count?: number | undefined, skip?: number | undefined, from?: Date | null | undefined, to?: Date | null | undefined, signal?: AbortSignal): Promise<StepCount[]> {
         let url_ = this.baseUrl + "/api/v4/StepCount?";
         if (count === null)
             throw new globalThis.Error("The parameter 'count' cannot be null.");
@@ -14195,6 +14371,10 @@ export class StepCountClient {
             throw new globalThis.Error("The parameter 'skip' cannot be null.");
         else if (skip !== undefined)
             url_ += "skip=" + encodeURIComponent("" + skip) + "&";
+        if (from !== undefined && from !== null)
+            url_ += "from=" + encodeURIComponent(from ? "" + from.toISOString() : "") + "&";
+        if (to !== undefined && to !== null)
+            url_ += "to=" + encodeURIComponent(to ? "" + to.toISOString() : "") + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -16517,6 +16697,62 @@ export class DeviceEventClient {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         this.http = http ? http : window as any;
         this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * Delete a device event by its external sync identifier (dataSource + syncIdentifier pair).
+     * @param dataSource (optional) 
+     * @param syncIdentifier (optional) 
+     */
+    deleteBySyncIdentifier(dataSource?: string | undefined, syncIdentifier?: string | undefined, signal?: AbortSignal): Promise<void> {
+        let url_ = this.baseUrl + "/api/v4/observations/device-events/by-sync-id?";
+        if (dataSource === null)
+            throw new globalThis.Error("The parameter 'dataSource' cannot be null.");
+        else if (dataSource !== undefined)
+            url_ += "dataSource=" + encodeURIComponent("" + dataSource) + "&";
+        if (syncIdentifier === null)
+            throw new globalThis.Error("The parameter 'syncIdentifier' cannot be null.");
+        else if (syncIdentifier !== undefined)
+            url_ += "syncIdentifier=" + encodeURIComponent("" + syncIdentifier) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            signal,
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteBySyncIdentifier(_response);
+        });
+    }
+
+    protected processDeleteBySyncIdentifier(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
     }
 
     /**

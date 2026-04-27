@@ -1161,6 +1161,58 @@
         "x-remote-type": "form"
       }
     },
+    "/api/v4/insulin/boluses/by-sync-id": {
+      "delete": {
+        "tags": [
+          "Bolus"
+        ],
+        "summary": "Delete a bolus by its external sync identifier (dataSource + syncIdentifier pair).",
+        "operationId": "Bolus_DeleteBySyncIdentifier",
+        "parameters": [
+          {
+            "name": "dataSource",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "syncIdentifier",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v4/insulin/boluses/{id}": {
       "put": {
         "tags": [
@@ -1962,6 +2014,58 @@
         ]
       }
     },
+    "/api/v4/observations/notes/by-sync-id": {
+      "delete": {
+        "tags": [
+          "Note"
+        ],
+        "summary": "Delete a note by its external sync identifier (dataSource + syncIdentifier pair).",
+        "operationId": "Note_DeleteBySyncIdentifier",
+        "parameters": [
+          {
+            "name": "dataSource",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "syncIdentifier",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v4/observations/notes": {
       "post": {
         "tags": [
@@ -2559,6 +2663,58 @@
         "x-remote-invalidates": [
           "GetCarbIntakes"
         ]
+      }
+    },
+    "/api/v4/nutrition/carbs/by-sync-id": {
+      "delete": {
+        "tags": [
+          "Nutrition"
+        ],
+        "summary": "Delete a carb intake by its external sync identifier (dataSource + syncIdentifier pair).",
+        "operationId": "Nutrition_DeleteCarbIntakeBySyncIdentifier",
+        "parameters": [
+          {
+            "name": "dataSource",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "syncIdentifier",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v4/nutrition/carbs/{id}/foods": {
@@ -12276,13 +12432,13 @@
         "tags": [
           "Heart Rate"
         ],
-        "summary": "Get heart rate records with optional pagination",
+        "summary": "Get heart rate records with optional pagination and date filtering",
         "operationId": "HeartRate_GetHeartRates",
         "parameters": [
           {
             "name": "count",
             "in": "query",
-            "description": "Maximum number of records to return (default: 10)",
+            "description": "Maximum number of records to return (default: 10, ignored when from/to are specified)",
             "schema": {
               "type": "integer",
               "format": "int32",
@@ -12293,18 +12449,40 @@
           {
             "name": "skip",
             "in": "query",
-            "description": "Number of records to skip for pagination (default: 0)",
+            "description": "Number of records to skip for pagination (default: 0, ignored when from/to are specified)",
             "schema": {
               "type": "integer",
               "format": "int32",
               "default": 0
             },
             "x-position": 2
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Start of date range (inclusive). When specified with 'to', returns all records in range.",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "End of date range (exclusive). When specified with 'from', returns all records in range.",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 4
           }
         ],
         "responses": {
           "200": {
-            "description": "List of heart rate records ordered by most recent first",
+            "description": "List of heart rate records",
             "content": {
               "application/json": {
                 "schema": {
@@ -12847,13 +13025,13 @@
         "tags": [
           "Step Count"
         ],
-        "summary": "Get step count records with optional pagination",
+        "summary": "Get step count records with optional pagination and date filtering",
         "operationId": "StepCount_GetStepCounts",
         "parameters": [
           {
             "name": "count",
             "in": "query",
-            "description": "Maximum number of records to return (default: 10)",
+            "description": "Maximum number of records to return (default: 10, ignored when from/to are specified)",
             "schema": {
               "type": "integer",
               "format": "int32",
@@ -12864,18 +13042,40 @@
           {
             "name": "skip",
             "in": "query",
-            "description": "Number of records to skip for pagination (default: 0)",
+            "description": "Number of records to skip for pagination (default: 0, ignored when from/to are specified)",
             "schema": {
               "type": "integer",
               "format": "int32",
               "default": 0
             },
             "x-position": 2
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Start of date range (inclusive). When specified with 'to', returns all records in range.",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "End of date range (exclusive). When specified with 'from', returns all records in range.",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "x-position": 4
           }
         ],
         "responses": {
           "200": {
-            "description": "List of step count records ordered by most recent first",
+            "description": "List of step count records",
             "content": {
               "application/json": {
                 "schema": {
@@ -15233,6 +15433,58 @@
         "responses": {
           "200": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/api/v4/observations/device-events/by-sync-id": {
+      "delete": {
+        "tags": [
+          "Device Event"
+        ],
+        "summary": "Delete a device event by its external sync identifier (dataSource + syncIdentifier pair).",
+        "operationId": "DeviceEvent_DeleteBySyncIdentifier",
+        "parameters": [
+          {
+            "name": "dataSource",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "syncIdentifier",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
