@@ -8,6 +8,20 @@ import { z } from 'zod';
 import { PatientRecordSchema, PatientDeviceSchema, PatientInsulinSchema } from '$lib/api/generated/schemas';
 import { type PatientRecord, type PatientDevice, type PatientInsulin } from '$api';
 
+/** Coerce string values from FormData into proper types before Zod validation */
+function formCoerce(schema: z.ZodTypeAny) {
+  return z.preprocess((data: unknown) => {
+    if (typeof data !== 'object' || data === null) return data;
+    const out: Record<string, unknown> = { ...(data as Record<string, unknown>) };
+    for (const [key, value] of Object.entries(out)) {
+      if (value === 'true') out[key] = true;
+      else if (value === 'false') out[key] = false;
+      else if (value === '') delete out[key];
+    }
+    return out;
+  }, schema);
+}
+
 /** Get or create the patient record */
 export const getPatientRecord = query(async () => {
   const apiClient = getRequestEvent().locals.apiClient;
@@ -55,7 +69,7 @@ export const getDevices = query(async () => {
 });
 
 /** Create a new patient device */
-export const createDevice = form(PatientDeviceSchema as any, async (request) => {
+export const createDevice = form(formCoerce(PatientDeviceSchema) as any, async (request) => {
   const apiClient = getRequestEvent().locals.apiClient;
   try {
     const result = await apiClient.patientRecord.createDevice(request as PatientDevice);
@@ -73,7 +87,7 @@ export const createDevice = form(PatientDeviceSchema as any, async (request) => 
 });
 
 /** Update a patient device */
-export const updateDevice = form(z.object({ id: z.string(), request: PatientDeviceSchema }) as any, async ({ id, request }) => {
+export const updateDevice = form(formCoerce(z.object({ id: z.string(), request: PatientDeviceSchema })) as any, async ({ id, request }) => {
   const apiClient = getRequestEvent().locals.apiClient;
   try {
     const result = await apiClient.patientRecord.updateDevice(id, request as PatientDevice);
@@ -123,7 +137,7 @@ export const getInsulins = query(async () => {
 });
 
 /** Create a new patient insulin */
-export const createInsulin = form(PatientInsulinSchema as any, async (request) => {
+export const createInsulin = form(formCoerce(PatientInsulinSchema) as any, async (request) => {
   const apiClient = getRequestEvent().locals.apiClient;
   try {
     const result = await apiClient.patientRecord.createInsulin(request as PatientInsulin);
@@ -141,7 +155,7 @@ export const createInsulin = form(PatientInsulinSchema as any, async (request) =
 });
 
 /** Update a patient insulin */
-export const updateInsulin = form(z.object({ id: z.string(), request: PatientInsulinSchema }) as any, async ({ id, request }) => {
+export const updateInsulin = form(formCoerce(z.object({ id: z.string(), request: PatientInsulinSchema })) as any, async ({ id, request }) => {
   const apiClient = getRequestEvent().locals.apiClient;
   try {
     const result = await apiClient.patientRecord.updateInsulin(id, request as PatientInsulin);
