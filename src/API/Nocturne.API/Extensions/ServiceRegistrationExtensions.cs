@@ -168,6 +168,7 @@ public static class ServiceRegistrationExtensions
         services.AddScoped<IAuthAuditService, AuthAuditService>();
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+        services.AddScoped<IFirstPartyTokenRepository, EfFirstPartyTokenRepository>();
         services.AddScoped<ISubjectService, SubjectService>();
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IOidcProviderService, OidcProviderService>();
