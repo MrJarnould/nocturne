@@ -29,8 +29,7 @@ public class SetupControllerTests : IDisposable
     private readonly Mock<ITenantService> _tenantService;
     private readonly Mock<IPasskeyService> _passkeyService;
     private readonly Mock<IRecoveryCodeService> _recoveryCodeService;
-    private readonly Mock<IJwtService> _jwtService;
-    private readonly Mock<IRefreshTokenService> _refreshTokenService;
+    private readonly Mock<ISessionService> _sessionService;
     private readonly Mock<ISubjectService> _subjectService;
     private readonly Mock<IOidcAuthService> _oidcAuthService;
     private readonly SetupController _controller;
@@ -51,8 +50,7 @@ public class SetupControllerTests : IDisposable
         _tenantService = new Mock<ITenantService>();
         _passkeyService = new Mock<IPasskeyService>();
         _recoveryCodeService = new Mock<IRecoveryCodeService>();
-        _jwtService = new Mock<IJwtService>();
-        _refreshTokenService = new Mock<IRefreshTokenService>();
+        _sessionService = new Mock<ISessionService>();
         _subjectService = new Mock<ISubjectService>();
         _oidcAuthService = new Mock<IOidcAuthService>();
 
@@ -78,8 +76,7 @@ public class SetupControllerTests : IDisposable
             _tenantService.Object,
             _passkeyService.Object,
             _recoveryCodeService.Object,
-            _jwtService.Object,
-            _refreshTokenService.Object,
+            _sessionService.Object,
             _subjectService.Object,
             dbFactory.Object,
             oidcOptions,
@@ -125,53 +122,36 @@ public class SetupControllerTests : IDisposable
     [Fact]
     public async Task CreateTenant_WhenTenantAlreadyExists_Returns409()
     {
-        // Arrange — seed a tenant so count > 0
-        _dbContext.Set<TenantEntity>().Add(new TenantEntity
-        {
-            Id = Guid.CreateVersion7(),
-            Slug = "existing",
-            DisplayName = "Existing Tenant",
-        });
-        await _dbContext.SaveChangesAsync();
+        // Arrange — seed a configured tenant (member with passkey credential)
+        await SeedConfiguredTenantAsync("existing", "Existing Tenant");
 
         // Act
         var result = await _controller.CreateTenant(
             new SetupTenantRequest("new-slug", "New Instance"), CancellationToken.None);
 
-        // Assert — this is the 409 that causes the soft-lock
+        // Assert — 409 because a configured tenant exists
         result.Should().BeOfType<ConflictObjectResult>();
     }
 
     [Fact]
     public async Task CreateTenant_WhenTenantAlreadyExists_WithSameSlug_Returns409()
     {
-        // Arrange — the user tries to re-submit with the same slug
-        _dbContext.Set<TenantEntity>().Add(new TenantEntity
-        {
-            Id = Guid.CreateVersion7(),
-            Slug = "my-instance",
-            DisplayName = "My Instance",
-        });
-        await _dbContext.SaveChangesAsync();
+        // Arrange — configured tenant with a passkey credential
+        await SeedConfiguredTenantAsync("my-instance", "My Instance");
 
         // Act
         var result = await _controller.CreateTenant(
             new SetupTenantRequest("my-instance", "My Instance"), CancellationToken.None);
 
-        // Assert — still 409, not "slug taken" — the guard is tenant count, not slug uniqueness
+        // Assert — 409 because a configured tenant exists, not slug uniqueness
         result.Should().BeOfType<ConflictObjectResult>();
     }
 
     [Fact]
-    public async Task CreateTenant_WhenMultipleTenantsExist_Returns409()
+    public async Task CreateTenant_WhenConfiguredTenantExists_Returns409()
     {
-        // Arrange — edge case: somehow multiple tenants exist
-        _dbContext.Set<TenantEntity>().Add(new TenantEntity
-        {
-            Id = Guid.CreateVersion7(),
-            Slug = "tenant-a",
-            DisplayName = "Tenant A",
-        });
+        // Arrange — one configured tenant plus an unconfigured one
+        await SeedConfiguredTenantAsync("tenant-a", "Tenant A");
         _dbContext.Set<TenantEntity>().Add(new TenantEntity
         {
             Id = Guid.CreateVersion7(),
@@ -277,15 +257,14 @@ public class SetupControllerTests : IDisposable
     // ── Soft-lock scenario: the full sequence ─────────────────────────────
 
     [Fact]
-    public async Task SoftLock_TenantCreatedButOwnerNeverCompleted_CreateTenantRejects()
+    public async Task SoftLock_TenantCreatedButOwnerNeverCompleted_CreateTenantAllowsRetry()
     {
-        // This is the exact soft-lock scenario:
+        // Soft-lock scenario resolved: the guard now checks for credential-bearing
+        // members, not raw tenant count. An ownerless tenant does NOT block setup.
         // 1. User visits /setup, creates a tenant (succeeds)
         // 2. User's browser crashes / they close the tab
         // 3. Tenant exists but has no passkey credentials
-        // 4. TenantSetupMiddleware returns 503 → frontend redirects to /setup
-        // 5. Setup page shows tenant creation form again
-        // 6. User enters a new slug → CreateTenant returns 409
+        // 4. CreateTenant allows the setup to proceed because no configured tenant exists
 
         // Step 1: Create the tenant (simulating what happened before the crash)
         _dbContext.Set<TenantEntity>().Add(new TenantEntity
@@ -296,27 +275,29 @@ public class SetupControllerTests : IDisposable
         });
         await _dbContext.SaveChangesAsync();
 
-        // Step 6: User tries to create a tenant again after being redirected to /setup
+        // Step 4: User tries to create a tenant again — succeeds because no credentials exist
+        var newTenantId = Guid.CreateVersion7();
+        _tenantService.Setup(s => s.ValidateSlugAsync("different-slug", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new SlugValidationResult(true));
+        _tenantService.Setup(s => s.CreateWithoutOwnerAsync("different-slug", "Different Instance", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new TenantCreatedDto(newTenantId, "different-slug", "Different Instance", true, DateTime.UtcNow));
+
         var result = await _controller.CreateTenant(
             new SetupTenantRequest("different-slug", "Different Instance"),
             CancellationToken.None);
 
-        // Assert — this is the soft-lock: 409 Conflict because a tenant exists
-        var conflict = result.Should().BeOfType<ConflictObjectResult>().Subject;
-        var body = conflict.Value;
-        body.Should().NotBeNull();
-        body!.ToString().Should().Contain("setup_already_complete");
+        // Assert — no longer a soft-lock; setup proceeds
+        var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        var response = ok.Value.Should().BeOfType<SetupTenantResponse>().Subject;
+        response.TenantId.Should().Be(newTenantId);
     }
 
     [Fact]
-    public async Task SoftLock_TenantCreatedAndOwnerSubjectCreated_ButPasskeyFailed_CreateTenantRejects()
+    public async Task SoftLock_TenantCreatedAndOwnerSubjectCreated_ButPasskeyFailed_CreateTenantAllowsRetry()
     {
-        // More advanced soft-lock: tenant AND subject were created (OwnerOptions
-        // ran successfully) but the WebAuthn ceremony failed or was abandoned.
-        // The subject exists as a tenant member but has no passkey.
-        // CreateTenant is blocked by the tenant count > 0 guard.
-        // OwnerOptions is also blocked (tested separately in integration tests
-        // because it requires set_config, a PostgreSQL-only function).
+        // Soft-lock resolved: tenant AND subject exist (OwnerOptions ran) but the
+        // WebAuthn ceremony failed. The member has no passkey credential, so the
+        // guard does not consider it a configured tenant — setup can proceed.
 
         var tenantId = Guid.CreateVersion7();
         var subjectId = Guid.CreateVersion7();
@@ -338,10 +319,17 @@ public class SetupControllerTests : IDisposable
         });
         await _dbContext.SaveChangesAsync();
 
-        // CreateTenant is blocked — this is the soft-lock
+        // CreateTenant now succeeds — no longer a soft-lock
+        var newTenantId = Guid.CreateVersion7();
+        _tenantService.Setup(s => s.ValidateSlugAsync("any-slug", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new SlugValidationResult(true));
+        _tenantService.Setup(s => s.CreateWithoutOwnerAsync("any-slug", "Any Name", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new TenantCreatedDto(newTenantId, "any-slug", "Any Name", true, DateTime.UtcNow));
+
         var createResult = await _controller.CreateTenant(
             new SetupTenantRequest("any-slug", "Any Name"), CancellationToken.None);
-        createResult.Should().BeOfType<ConflictObjectResult>();
+        var ok = createResult.Should().BeOfType<OkObjectResult>().Subject;
+        ok.Value.Should().BeOfType<SetupTenantResponse>().Subject.TenantId.Should().Be(newTenantId);
     }
 
     // SoftLock_TenantWithOnlySystemMembers_OwnerOptionsSucceeds is an
@@ -445,4 +433,47 @@ public class SetupControllerTests : IDisposable
     // username/ProviderId) are skipped in unit tests because
     // GetSoleTenantWithoutOwnerAsync calls set_config(), a PostgreSQL-only
     // function. These scenarios are covered by integration tests.
+
+    // ── Helpers ──────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Seeds a tenant with a member that has a passkey credential, making
+    /// the CreateTenant guard consider setup already complete.
+    /// </summary>
+    private async Task SeedConfiguredTenantAsync(string slug, string displayName)
+    {
+        var tenantId = Guid.CreateVersion7();
+        var subjectId = Guid.CreateVersion7();
+
+        _dbContext.Set<TenantEntity>().Add(new TenantEntity
+        {
+            Id = tenantId,
+            Slug = slug,
+            DisplayName = displayName,
+        });
+        _dbContext.Subjects.Add(new SubjectEntity
+        {
+            Id = subjectId,
+            Name = "Owner",
+            Username = "owner",
+            IsActive = true,
+            IsSystemSubject = false,
+        });
+        _dbContext.TenantMembers.Add(new TenantMemberEntity
+        {
+            Id = Guid.CreateVersion7(),
+            TenantId = tenantId,
+            SubjectId = subjectId,
+        });
+        _dbContext.PasskeyCredentials.Add(new PasskeyCredentialEntity
+        {
+            Id = Guid.CreateVersion7(),
+            SubjectId = subjectId,
+            CredentialId = System.Text.Encoding.UTF8.GetBytes($"cred-{slug}"),
+            PublicKey = [],
+            SignCount = 0,
+        });
+
+        await _dbContext.SaveChangesAsync();
+    }
 }

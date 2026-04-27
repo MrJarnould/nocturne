@@ -9,7 +9,9 @@ using Nocturne.API.Authorization;
 using Nocturne.Core.Contracts;
 using Nocturne.Core.Contracts.Multitenancy;
 using Nocturne.Core.Models;
+using Nocturne.Core.Contracts.Auth;
 using Nocturne.Core.Models.Configuration;
+using Nocturne.API.Extensions;
 using Nocturne.API.Services.Auth;
 using Nocturne.Infrastructure.Data;
 using Nocturne.Infrastructure.Data.Entities;
@@ -34,8 +36,7 @@ public partial class SetupController : ControllerBase
     private readonly ITenantService _tenantService;
     private readonly IPasskeyService _passkeyService;
     private readonly IRecoveryCodeService _recoveryCodeService;
-    private readonly IJwtService _jwtService;
-    private readonly IRefreshTokenService _refreshTokenService;
+    private readonly ISessionService _sessionService;
     private readonly ISubjectService _subjectService;
     private readonly IDbContextFactory<NocturneDbContext> _dbFactory;
     private readonly OidcOptions _oidcOptions;
@@ -48,8 +49,7 @@ public partial class SetupController : ControllerBase
         ITenantService tenantService,
         IPasskeyService passkeyService,
         IRecoveryCodeService recoveryCodeService,
-        IJwtService jwtService,
-        IRefreshTokenService refreshTokenService,
+        ISessionService sessionService,
         ISubjectService subjectService,
         IDbContextFactory<NocturneDbContext> dbFactory,
         IOptions<OidcOptions> oidcOptions,
@@ -61,8 +61,7 @@ public partial class SetupController : ControllerBase
         _tenantService = tenantService;
         _passkeyService = passkeyService;
         _recoveryCodeService = recoveryCodeService;
-        _jwtService = jwtService;
-        _refreshTokenService = refreshTokenService;
+        _sessionService = sessionService;
         _subjectService = subjectService;
         _dbFactory = dbFactory;
         _oidcOptions = oidcOptions.Value;
@@ -243,31 +242,14 @@ public partial class SetupController : ControllerBase
             // Generate recovery codes
             var recoveryCodes = await _recoveryCodeService.GenerateCodesAsync(credResult.SubjectId);
 
-            // Get subject details for token generation
-            var subject = await _subjectService.GetSubjectByIdAsync(credResult.SubjectId);
-            if (subject == null)
-                return Problem(detail: "Created subject not found", statusCode: 500, title: "Server Error");
-
-            var roles = await _subjectService.GetSubjectRolesAsync(credResult.SubjectId);
-            var permissions = await _subjectService.GetSubjectPermissionsAsync(credResult.SubjectId);
-
-            // Issue session
-            var subjectInfo = new SubjectInfo
-            {
-                Id = subject.Id,
-                Name = subject.Name,
-                Email = subject.Email,
-            };
-
-            var accessToken = _jwtService.GenerateAccessToken(subjectInfo, permissions, roles);
-            var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(
+            var session = await _sessionService.IssueSessionAsync(
                 credResult.SubjectId,
-                oidcSessionId: null,
-                deviceDescription: "Setup Passkey",
-                ipAddress: HttpContext.Connection.RemoteIpAddress?.ToString(),
-                userAgent: Request.Headers.UserAgent.ToString());
+                new SessionContext(
+                    DeviceDescription: "Setup Passkey",
+                    IpAddress: HttpContext.Connection.RemoteIpAddress?.ToString(),
+                    UserAgent: Request.Headers.UserAgent.ToString()));
 
-            SetSessionCookies(accessToken, refreshToken);
+            Response.SetSessionCookies(session, _oidcOptions);
 
             _logger.LogInformation(
                 "Setup complete: first owner {SubjectId} registered with passkey for tenant {TenantId}",
@@ -277,9 +259,9 @@ public partial class SetupController : ControllerBase
             {
                 Success = true,
                 RecoveryCodes = recoveryCodes,
-                AccessToken = accessToken,
-                RefreshToken = refreshToken,
-                ExpiresIn = (int)_jwtService.GetAccessTokenLifetime().TotalSeconds,
+                AccessToken = session.AccessToken,
+                RefreshToken = session.RefreshToken,
+                ExpiresIn = session.ExpiresInSeconds,
             });
         }
         catch (Exception ex)
@@ -388,7 +370,13 @@ public partial class SetupController : ControllerBase
             return Redirect($"/setup?error={Uri.EscapeDataString(result.Error ?? "unknown")}");
         }
 
-        SetSessionCookies(result.Tokens!.AccessToken, result.Tokens.RefreshToken);
+        // Temporary bridge: construct SessionTokenPair from OidcTokenResponse until
+        // OidcAuthService is migrated to ISessionService.
+        var sessionPair = new SessionTokenPair(
+            result.Tokens!.AccessToken,
+            result.Tokens.RefreshToken,
+            result.Tokens.ExpiresIn);
+        Response.SetSessionCookies(sessionPair, _oidcOptions);
 
         return Redirect(result.ReturnUrl ?? "/setup");
     }
@@ -505,46 +493,6 @@ public partial class SetupController : ControllerBase
         await _subjectService.AssignRoleAsync(subjectId, "admin");
 
         return subjectId;
-    }
-
-    private void SetSessionCookies(string accessToken, string refreshToken)
-    {
-        var cookieSameSite = _oidcOptions.Cookie.SameSite switch
-        {
-            SameSiteMode.Strict => Microsoft.AspNetCore.Http.SameSiteMode.Strict,
-            SameSiteMode.Lax => Microsoft.AspNetCore.Http.SameSiteMode.Lax,
-            SameSiteMode.None => Microsoft.AspNetCore.Http.SameSiteMode.None,
-            _ => Microsoft.AspNetCore.Http.SameSiteMode.Lax,
-        };
-
-        Response.Cookies.Append(_oidcOptions.Cookie.AccessTokenName, accessToken, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = _oidcOptions.Cookie.Secure,
-            SameSite = cookieSameSite,
-            Path = "/",
-            IsEssential = true,
-            MaxAge = _jwtService.GetAccessTokenLifetime(),
-        });
-
-        Response.Cookies.Append(_oidcOptions.Cookie.RefreshTokenName, refreshToken, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = _oidcOptions.Cookie.Secure,
-            SameSite = cookieSameSite,
-            Path = "/",
-            IsEssential = true,
-            MaxAge = TimeSpan.FromDays(7),
-        });
-
-        Response.Cookies.Append("IsAuthenticated", "true", new CookieOptions
-        {
-            HttpOnly = false,
-            Secure = _oidcOptions.Cookie.Secure,
-            SameSite = cookieSameSite,
-            Path = "/",
-            MaxAge = TimeSpan.FromDays(7),
-        });
     }
 
     private void SetOidcStateCookie(string state, DateTimeOffset expiresAt)
