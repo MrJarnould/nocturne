@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using Nocturne.API.Extensions;
+using Nocturne.API.Services.Auth;
 using Nocturne.Core.Models.Authorization;
 using Nocturne.Core.Models.Configuration;
 
@@ -150,6 +151,15 @@ public class SessionCookieHandler : IAuthHandler
                     BuildAuthContextFromClaims(validationResult.Claims, newTokens.AccessToken)
                 );
             }
+        }
+        catch (TokenRotationRaceException)
+        {
+            // Concurrent request tried to use a refresh token that was just
+            // rotated by another request. Don't clear cookies — the other
+            // request's response will set the new tokens. Just skip auth
+            // for this request.
+            _logger.LogDebug("Skipping auth for concurrent request during token rotation grace period");
+            return AuthResult.Skip();
         }
         catch (Exception ex)
         {
