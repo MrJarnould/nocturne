@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { sliceIntoRows, type ActogramPoint } from './actogram';
+import { sliceIntoRows, sliceBgIntoRows, type ActogramPoint, type GlucosePoint } from './actogram';
 
 describe('sliceIntoRows', () => {
 	const days = [
@@ -48,5 +48,43 @@ describe('sliceIntoRows', () => {
 		const rows = sliceIntoRows(data, days);
 		const apr21Row = rows.find((r) => r.day.getTime() === days[1].getTime());
 		expect(apr21Row?.data.some((d) => d.hoursFromStart === 0 && !d.isExtended)).toBe(true);
+	});
+});
+
+describe('sliceBgIntoRows', () => {
+	const days = [
+		new Date('2026-04-20T00:00:00'),
+		new Date('2026-04-21T00:00:00'),
+		new Date('2026-04-22T00:00:00'),
+	];
+
+	it('places a glucose point in the primary window with correct shape', () => {
+		const bg: GlucosePoint[] = [
+			{ mills: new Date('2026-04-21T06:30:00').getTime(), sgv: 120, color: 'in-range' },
+		];
+		const rows = sliceBgIntoRows(bg, days);
+		const apr21Row = rows.find((r) => r.day.getTime() === days[1].getTime());
+		expect(apr21Row?.bgData).toHaveLength(1);
+		expect(apr21Row?.bgData[0].hoursFromStart).toBeCloseTo(6.5);
+		expect(apr21Row?.bgData[0].isExtended).toBe(false);
+		expect(apr21Row?.bgData[0].point.sgv).toBe(120);
+		expect(apr21Row?.bgData[0].point.color).toBe('in-range');
+	});
+
+	it('double-plots a glucose point in both primary and previous-row extended windows', () => {
+		const bg: GlucosePoint[] = [
+			{ mills: new Date('2026-04-21T14:00:00').getTime(), sgv: 95, color: 'in-range' },
+		];
+		const rows = sliceBgIntoRows(bg, days);
+
+		const apr21Row = rows.find((r) => r.day.getTime() === days[1].getTime());
+		expect(apr21Row?.bgData).toHaveLength(1);
+		expect(apr21Row?.bgData[0].hoursFromStart).toBeCloseTo(14);
+		expect(apr21Row?.bgData[0].isExtended).toBe(false);
+
+		const apr20Row = rows.find((r) => r.day.getTime() === days[0].getTime());
+		expect(apr20Row?.bgData).toHaveLength(1);
+		expect(apr20Row?.bgData[0].hoursFromStart).toBeCloseTo(38);
+		expect(apr20Row?.bgData[0].isExtended).toBe(true);
 	});
 });
