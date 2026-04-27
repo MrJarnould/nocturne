@@ -500,16 +500,31 @@ public partial class TenantService : ITenantService
                         await context.SaveChangesAsync(ct);
                     }
 
-                    context.SubjectOidcIdentities.Add(new SubjectOidcIdentityEntity
+                    // Re-use existing OIDC identity if one already exists for this
+                    // (oidc_subject_id, issuer) pair — the subject may have signed up
+                    // for a previous tenant with the same OAuth account.
+                    var existingIdentity = await context.SubjectOidcIdentities
+                        .FirstOrDefaultAsync(x =>
+                            x.OidcSubjectId == oidcIdentity.OidcSubjectId
+                            && x.Issuer == normalizedIssuer, ct);
+
+                    if (existingIdentity is null)
                     {
-                        Id = Guid.CreateVersion7(),
-                        SubjectId = subject.Id,
-                        ProviderId = provider.Id,
-                        OidcSubjectId = oidcIdentity.OidcSubjectId,
-                        Issuer = normalizedIssuer,
-                        Email = oidcIdentity.Email,
-                        LinkedAt = DateTime.UtcNow,
-                    });
+                        context.SubjectOidcIdentities.Add(new SubjectOidcIdentityEntity
+                        {
+                            Id = Guid.CreateVersion7(),
+                            SubjectId = subject.Id,
+                            ProviderId = provider.Id,
+                            OidcSubjectId = oidcIdentity.OidcSubjectId,
+                            Issuer = normalizedIssuer,
+                            Email = oidcIdentity.Email,
+                            LinkedAt = DateTime.UtcNow,
+                        });
+                    }
+                    else
+                    {
+                        existingIdentity.LastUsedAt = DateTime.UtcNow;
+                    }
                 }
                 await context.SaveChangesAsync(ct);
 
