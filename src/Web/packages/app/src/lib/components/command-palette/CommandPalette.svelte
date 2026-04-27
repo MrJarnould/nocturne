@@ -191,6 +191,70 @@
   });
 </script>
 
+{#snippet commandItem(item: CommandPaletteItem, pinAlwaysVisible: boolean)}
+  {@const pinned = isPinned(item.id)}
+  {#if item.href}
+    <Command.LinkItem
+      class="group/item"
+      href={item.href}
+      value={item.label}
+      keywords={item.keywords}
+      onSelect={() => handleSelect(item)}
+    >
+      {#if item.icon}
+        {@const Icon = item.icon}
+        <Icon class="mr-2 h-4 w-4" />
+      {/if}
+      <div class="flex flex-1 flex-col">
+        <span>{getItemLabel(item)}</span>
+        {#if item.description}
+          <span class="text-xs text-muted-foreground"
+            >{item.description}</span
+          >
+        {/if}
+      </div>
+      <button
+        class="ml-auto shrink-0 p-1 {pinAlwaysVisible || pinned ? 'opacity-100' : 'opacity-0 group-hover/item:opacity-100'} transition-opacity"
+        aria-label={pinned ? `Unpin ${item.label}` : `Pin ${item.label}`}
+        onclick={(e) => handlePinClick(e, item.id)}
+      >
+        <Star
+          class="h-3.5 w-3.5 {pinned ? 'fill-current text-yellow-500' : 'text-muted-foreground'}"
+        />
+      </button>
+    </Command.LinkItem>
+  {:else}
+    <Command.Item
+      class="group/item"
+      value={item.label}
+      keywords={item.keywords}
+      onSelect={() => handleSelect(item)}
+    >
+      {#if item.icon}
+        {@const Icon = item.icon}
+        <Icon class="mr-2 h-4 w-4" />
+      {/if}
+      <div class="flex flex-1 flex-col">
+        <span>{getItemLabel(item)}</span>
+        {#if item.description}
+          <span class="text-xs text-muted-foreground"
+            >{item.description}</span
+          >
+        {/if}
+      </div>
+      <button
+        class="ml-auto shrink-0 p-1 {pinAlwaysVisible || pinned ? 'opacity-100' : 'opacity-0 group-hover/item:opacity-100'} transition-opacity"
+        aria-label={pinned ? `Unpin ${item.label}` : `Pin ${item.label}`}
+        onclick={(e) => handlePinClick(e, item.id)}
+      >
+        <Star
+          class="h-3.5 w-3.5 {pinned ? 'fill-current text-yellow-500' : 'text-muted-foreground'}"
+        />
+      </button>
+    </Command.Item>
+  {/if}
+{/snippet}
+
 <Command.Dialog bind:open>
   <Command.Input placeholder="Search commands..." bind:value={searchValue} />
 
@@ -202,58 +266,7 @@
     {#if showPinnedRecent && pinnedItems.length > 0}
       <Command.Group heading="Pinned">
         {#each pinnedItems as item (item.id)}
-          {#if item.href}
-            <Command.LinkItem
-              href={item.href}
-              value={item.label}
-              keywords={item.keywords}
-              onSelect={() => handleSelect(item)}
-            >
-              {#if item.icon}
-                {@const Icon = item.icon}
-                <Icon class="mr-2 h-4 w-4" />
-              {/if}
-              <div class="flex flex-1 flex-col">
-                <span>{getItemLabel(item)}</span>
-                {#if item.description}
-                  <span class="text-xs text-muted-foreground"
-                    >{item.description}</span
-                  >
-                {/if}
-              </div>
-              <button
-                class="ml-auto shrink-0 p-1"
-                onclick={(e) => handlePinClick(e, item.id)}
-              >
-                <Star class="h-3.5 w-3.5 fill-current text-yellow-500" />
-              </button>
-            </Command.LinkItem>
-          {:else}
-            <Command.Item
-              value={item.label}
-              keywords={item.keywords}
-              onSelect={() => handleSelect(item)}
-            >
-              {#if item.icon}
-                {@const Icon = item.icon}
-                <Icon class="mr-2 h-4 w-4" />
-              {/if}
-              <div class="flex flex-1 flex-col">
-                <span>{getItemLabel(item)}</span>
-                {#if item.description}
-                  <span class="text-xs text-muted-foreground"
-                    >{item.description}</span
-                  >
-                {/if}
-              </div>
-              <button
-                class="ml-auto shrink-0 p-1"
-                onclick={(e) => handlePinClick(e, item.id)}
-              >
-                <Star class="h-3.5 w-3.5 fill-current text-yellow-500" />
-              </button>
-            </Command.Item>
-          {/if}
+          {@render commandItem(item, true)}
         {/each}
       </Command.Group>
     {/if}
@@ -261,64 +274,7 @@
     {#if showPinnedRecent && recentItems.length > 0}
       <Command.Group heading="Recent">
         {#each recentItems as item (item.id)}
-          {#if item.href}
-            <Command.LinkItem
-              class="group/item"
-              href={item.href}
-              value={item.label}
-              keywords={item.keywords}
-              onSelect={() => handleSelect(item)}
-            >
-              {#if item.icon}
-                {@const Icon = item.icon}
-                <Icon class="mr-2 h-4 w-4" />
-              {/if}
-              <div class="flex flex-1 flex-col">
-                <span>{getItemLabel(item)}</span>
-                {#if item.description}
-                  <span class="text-xs text-muted-foreground"
-                    >{item.description}</span
-                  >
-                {/if}
-              </div>
-              <button
-                class="ml-auto shrink-0 p-1 {isPinned(item.id) ? 'opacity-100' : 'opacity-0 group-hover/item:opacity-100'} transition-opacity"
-                onclick={(e) => handlePinClick(e, item.id)}
-              >
-                <Star
-                  class="h-3.5 w-3.5 {isPinned(item.id) ? 'fill-current text-yellow-500' : 'text-muted-foreground'}"
-                />
-              </button>
-            </Command.LinkItem>
-          {:else}
-            <Command.Item
-              class="group/item"
-              value={item.label}
-              keywords={item.keywords}
-              onSelect={() => handleSelect(item)}
-            >
-              {#if item.icon}
-                {@const Icon = item.icon}
-                <Icon class="mr-2 h-4 w-4" />
-              {/if}
-              <div class="flex flex-1 flex-col">
-                <span>{getItemLabel(item)}</span>
-                {#if item.description}
-                  <span class="text-xs text-muted-foreground"
-                    >{item.description}</span
-                  >
-                {/if}
-              </div>
-              <button
-                class="ml-auto shrink-0 p-1 {isPinned(item.id) ? 'opacity-100' : 'opacity-0 group-hover/item:opacity-100'} transition-opacity"
-                onclick={(e) => handlePinClick(e, item.id)}
-              >
-                <Star
-                  class="h-3.5 w-3.5 {isPinned(item.id) ? 'fill-current text-yellow-500' : 'text-muted-foreground'}"
-                />
-              </button>
-            </Command.Item>
-          {/if}
+          {@render commandItem(item, false)}
         {/each}
       </Command.Group>
     {/if}
@@ -326,64 +282,7 @@
     {#each groupedItems as [group, groupItems] (group)}
       <Command.Group heading={groupMeta[group].label}>
         {#each groupItems as item (item.id)}
-          {#if item.href}
-            <Command.LinkItem
-              class="group/item"
-              href={item.href}
-              value={item.label}
-              keywords={item.keywords}
-              onSelect={() => handleSelect(item)}
-            >
-              {#if item.icon}
-                {@const Icon = item.icon}
-                <Icon class="mr-2 h-4 w-4" />
-              {/if}
-              <div class="flex flex-1 flex-col">
-                <span>{getItemLabel(item)}</span>
-                {#if item.description}
-                  <span class="text-xs text-muted-foreground"
-                    >{item.description}</span
-                  >
-                {/if}
-              </div>
-              <button
-                class="ml-auto shrink-0 p-1 {isPinned(item.id) ? 'opacity-100' : 'opacity-0 group-hover/item:opacity-100'} transition-opacity"
-                onclick={(e) => handlePinClick(e, item.id)}
-              >
-                <Star
-                  class="h-3.5 w-3.5 {isPinned(item.id) ? 'fill-current text-yellow-500' : 'text-muted-foreground'}"
-                />
-              </button>
-            </Command.LinkItem>
-          {:else}
-            <Command.Item
-              class="group/item"
-              value={item.label}
-              keywords={item.keywords}
-              onSelect={() => handleSelect(item)}
-            >
-              {#if item.icon}
-                {@const Icon = item.icon}
-                <Icon class="mr-2 h-4 w-4" />
-              {/if}
-              <div class="flex flex-1 flex-col">
-                <span>{getItemLabel(item)}</span>
-                {#if item.description}
-                  <span class="text-xs text-muted-foreground"
-                    >{item.description}</span
-                  >
-                {/if}
-              </div>
-              <button
-                class="ml-auto shrink-0 p-1 {isPinned(item.id) ? 'opacity-100' : 'opacity-0 group-hover/item:opacity-100'} transition-opacity"
-                onclick={(e) => handlePinClick(e, item.id)}
-              >
-                <Star
-                  class="h-3.5 w-3.5 {isPinned(item.id) ? 'fill-current text-yellow-500' : 'text-muted-foreground'}"
-                />
-              </button>
-            </Command.Item>
-          {/if}
+          {@render commandItem(item, false)}
         {/each}
       </Command.Group>
     {/each}
