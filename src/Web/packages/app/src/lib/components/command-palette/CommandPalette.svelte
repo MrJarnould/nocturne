@@ -44,22 +44,6 @@
     )
   );
 
-  const groupedItems = $derived.by(() => {
-    const groups: Partial<Record<CommandPaletteGroup, CommandPaletteItem[]>> =
-      {};
-    for (const item of visibleItems) {
-      (groups[item.group] ??= []).push(item);
-    }
-
-    const sorted = Object.entries(groups).sort(
-      ([a], [b]) =>
-        groupMeta[a as CommandPaletteGroup].order -
-        groupMeta[b as CommandPaletteGroup].order
-    ) as [CommandPaletteGroup, CommandPaletteItem[]][];
-
-    return sorted;
-  });
-
   const pinnedItems = $derived(
     pinnedItemIds.current
       .map((id) => visibleItems.find((item) => item.id === id))
@@ -74,6 +58,32 @@
   );
 
   const showPinnedRecent = $derived(!searchValue);
+
+  // Filter out pinned and recent items from main groups when they're shown separately
+  const mainGroupItems = $derived.by(() => {
+    if (!showPinnedRecent) return visibleItems;
+    const excludeIds = new Set([
+      ...pinnedItemIds.current,
+      ...recentItemIds.current,
+    ]);
+    return visibleItems.filter((item) => !excludeIds.has(item.id));
+  });
+
+  const groupedItems = $derived.by(() => {
+    const groups: Partial<Record<CommandPaletteGroup, CommandPaletteItem[]>> =
+      {};
+    for (const item of mainGroupItems) {
+      (groups[item.group] ??= []).push(item);
+    }
+
+    const sorted = Object.entries(groups).sort(
+      ([a], [b]) =>
+        groupMeta[a as CommandPaletteGroup].order -
+        groupMeta[b as CommandPaletteGroup].order
+    ) as [CommandPaletteGroup, CommandPaletteItem[]][];
+
+    return sorted;
+  });
 
   function getStatValue(itemId: string): string | undefined {
     const pills = realtimeStore.pillsData;
@@ -253,6 +263,7 @@
         {#each recentItems as item (item.id)}
           {#if item.href}
             <Command.LinkItem
+              class="group/item"
               href={item.href}
               value={item.label}
               keywords={item.keywords}
@@ -271,7 +282,7 @@
                 {/if}
               </div>
               <button
-                class="ml-auto shrink-0 p-1"
+                class="ml-auto shrink-0 p-1 {isPinned(item.id) ? 'opacity-100' : 'opacity-0 group-hover/item:opacity-100'} transition-opacity"
                 onclick={(e) => handlePinClick(e, item.id)}
               >
                 <Star
@@ -281,6 +292,7 @@
             </Command.LinkItem>
           {:else}
             <Command.Item
+              class="group/item"
               value={item.label}
               keywords={item.keywords}
               onSelect={() => handleSelect(item)}
@@ -298,7 +310,7 @@
                 {/if}
               </div>
               <button
-                class="ml-auto shrink-0 p-1"
+                class="ml-auto shrink-0 p-1 {isPinned(item.id) ? 'opacity-100' : 'opacity-0 group-hover/item:opacity-100'} transition-opacity"
                 onclick={(e) => handlePinClick(e, item.id)}
               >
                 <Star
@@ -316,6 +328,7 @@
         {#each groupItems as item (item.id)}
           {#if item.href}
             <Command.LinkItem
+              class="group/item"
               href={item.href}
               value={item.label}
               keywords={item.keywords}
@@ -334,7 +347,7 @@
                 {/if}
               </div>
               <button
-                class="ml-auto shrink-0 p-1"
+                class="ml-auto shrink-0 p-1 {isPinned(item.id) ? 'opacity-100' : 'opacity-0 group-hover/item:opacity-100'} transition-opacity"
                 onclick={(e) => handlePinClick(e, item.id)}
               >
                 <Star
@@ -344,6 +357,7 @@
             </Command.LinkItem>
           {:else}
             <Command.Item
+              class="group/item"
               value={item.label}
               keywords={item.keywords}
               onSelect={() => handleSelect(item)}
@@ -361,7 +375,7 @@
                 {/if}
               </div>
               <button
-                class="ml-auto shrink-0 p-1"
+                class="ml-auto shrink-0 p-1 {isPinned(item.id) ? 'opacity-100' : 'opacity-0 group-hover/item:opacity-100'} transition-opacity"
                 onclick={(e) => handlePinClick(e, item.id)}
               >
                 <Star
