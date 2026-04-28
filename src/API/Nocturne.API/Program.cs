@@ -395,6 +395,8 @@ app.MapScalarApiReference(options =>
 {
     options.WithTheme(ScalarTheme.Mars);
     options.WithOpenApiRoutePattern("/openapi/{documentName}.json");
+    options.AddDocument("nocturne", "Nocturne API", isDefault: true);
+    options.AddDocument("nightscout", "Nightscout API");
 });
 
 // Add root endpoint to serve a basic info page
