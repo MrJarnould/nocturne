@@ -7,7 +7,8 @@
   import * as AlertDialog from "$lib/components/ui/alert-dialog";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
-  import PermissionPicker from "$lib/components/rbac/PermissionPicker.svelte";
+  import PermissionCategorySelector from "$lib/components/rbac/PermissionCategorySelector.svelte";
+  import PermissionSummary from "$lib/components/rbac/PermissionSummary.svelte";
   import {
     Shield,
     Plus,
@@ -53,6 +54,16 @@
   let editDescription = $state("");
   let editPermissions = $state<string[]>([]);
   let isEditing = $state(false);
+  let originalEditName = $state("");
+  let originalEditDescription = $state("");
+  let originalEditPermissions = $state<string[]>([]);
+  let isEditReadonly = $state(false);
+
+  const isEditDirty = $derived(
+    editName !== originalEditName ||
+    editDescription !== originalEditDescription ||
+    JSON.stringify([...editPermissions].sort()) !== JSON.stringify([...originalEditPermissions].sort())
+  );
 
   // Delete dialog state
   let isDeleteOpen = $state(false);
@@ -84,6 +95,10 @@
     editName = role.name ?? "";
     editDescription = role.description ?? "";
     editPermissions = [...(role.permissions ?? [])];
+    originalEditName = editName;
+    originalEditDescription = editDescription;
+    originalEditPermissions = [...editPermissions];
+    isEditReadonly = role.isSystem === true;
     isEditOpen = true;
   }
 
@@ -328,7 +343,13 @@
       </div>
       <div class="space-y-2">
         <Label>Permissions</Label>
-        <PermissionPicker bind:selected={createPermissions} />
+        <PermissionCategorySelector bind:selected={createPermissions} />
+      </div>
+      <div class="space-y-2">
+        <Label>Summary</Label>
+        <div class="rounded-lg border p-3 bg-muted/30">
+          <PermissionSummary permissions={createPermissions} />
+        </div>
       </div>
     </div>
     <Dialog.Footer>
@@ -360,22 +381,28 @@
     <div class="space-y-4 py-4">
       <div class="space-y-2">
         <Label for="edit-name">Name</Label>
-        <Input id="edit-name" bind:value={editName} />
+        <Input id="edit-name" bind:value={editName} disabled={isEditReadonly} />
       </div>
       <div class="space-y-2">
         <Label for="edit-description">Description (optional)</Label>
-        <Input id="edit-description" bind:value={editDescription} />
+        <Input id="edit-description" bind:value={editDescription} disabled={isEditReadonly} />
       </div>
       <div class="space-y-2">
         <Label>Permissions</Label>
-        <PermissionPicker bind:selected={editPermissions} />
+        <PermissionCategorySelector bind:selected={editPermissions} readonly={isEditReadonly} />
+      </div>
+      <div class="space-y-2">
+        <Label>Summary</Label>
+        <div class="rounded-lg border p-3 bg-muted/30">
+          <PermissionSummary permissions={editPermissions} />
+        </div>
       </div>
     </div>
     <Dialog.Footer>
       <Button variant="outline" onclick={() => (isEditOpen = false)}>
         Cancel
       </Button>
-      <Button onclick={handleEdit} disabled={isEditing || !editName.trim()}>
+      <Button onclick={handleEdit} disabled={isEditing || !editName.trim() || !isEditDirty || isEditReadonly}>
         {#if isEditing}
           <Loader2 class="mr-2 h-4 w-4 animate-spin" />
         {/if}
