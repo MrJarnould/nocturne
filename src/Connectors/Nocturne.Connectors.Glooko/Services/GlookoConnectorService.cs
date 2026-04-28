@@ -196,14 +196,17 @@ public class GlookoConnectorService : BaseConnectorService<GlookoConnectorConfig
             var allCarbs = new List<CarbIntake>();
             var allDeviceEvents = new List<DeviceEvent>();
 
+            var allBatches = new List<DecompositionBatch>();
+
             // Prefer V3 data for boluses/carbs when available (V2 and V3 return
             // the same records with different shapes, so using both causes duplicates).
             // V2 standalone Foods have no V3 equivalent, so always include those.
             if (_config.UseV3Api && v3Data != null)
             {
-                var (v3Boluses, v3BolusCarbIntakes) = _v4TreatmentMapper.MapV3Boluses(v3Data);
+                var (v3Boluses, v3BolusCarbIntakes, v3Batches) = _v4TreatmentMapper.MapV3Boluses(v3Data);
                 allBoluses.AddRange(v3Boluses);
                 allCarbs.AddRange(v3BolusCarbIntakes);
+                allBatches.AddRange(v3Batches);
 
                 // V2 standalone food records have no V3 equivalent
                 var v2Foods = _v4TreatmentMapper.MapFoods(batchData);
@@ -214,9 +217,16 @@ public class GlookoConnectorService : BaseConnectorService<GlookoConnectorConfig
             }
             else
             {
-                var (v2Boluses, v2Carbs) = _v4TreatmentMapper.MapBatchData(batchData);
+                var (v2Boluses, v2Carbs, v2Batches) = _v4TreatmentMapper.MapBatchData(batchData);
                 allBoluses.AddRange(v2Boluses);
                 allCarbs.AddRange(v2Carbs);
+                allBatches.AddRange(v2Batches);
+            }
+
+            // Persist decomposition batches before V4 records (FK constraint)
+            if (allBatches.Count > 0)
+            {
+                await PublishDecompositionBatchesAsync(allBatches, config, cancellationToken);
             }
 
             // Publish boluses

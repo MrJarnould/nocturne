@@ -17,10 +17,11 @@ public class GlookoV4TreatmentMapper(string connectorSource, GlookoTimeMapper ti
     /// <summary>
     /// Maps V2 batch data (NormalBoluses and Foods) to Bolus and CarbIntake records.
     /// </summary>
-    public (List<Bolus> boluses, List<CarbIntake> carbs) MapBatchData(GlookoBatchData batchData)
+    public (List<Bolus> boluses, List<CarbIntake> carbs, List<DecompositionBatch> batches) MapBatchData(GlookoBatchData batchData)
     {
         var boluses = new List<Bolus>();
         var carbs = new List<CarbIntake>();
+        var batches = new List<DecompositionBatch>();
 
         try
         {
@@ -37,7 +38,19 @@ public class GlookoV4TreatmentMapper(string connectorSource, GlookoTimeMapper ti
                         var hasInsulin = bolus.InsulinDelivered > 0;
                         var hasCarbs = bolus.CarbsInput > 0;
 
-                        Guid? correlationId = hasInsulin && hasCarbs ? Guid.CreateVersion7() : null;
+                        Guid? correlationId = null;
+                        if (hasInsulin && hasCarbs)
+                        {
+                            var batch = new DecompositionBatch
+                            {
+                                Id = Guid.CreateVersion7(),
+                                Source = "glooko",
+                                SourceRecordId = GenerateLegacyId("bolus", bolusDate, $"insulin:{bolus.InsulinDelivered}_carbs:{bolus.CarbsInput}"),
+                                CreatedAt = now,
+                            };
+                            batches.Add(batch);
+                            correlationId = batch.Id;
+                        }
 
                         if (hasInsulin)
                         {
@@ -117,7 +130,7 @@ public class GlookoV4TreatmentMapper(string connectorSource, GlookoTimeMapper ti
             _logger.LogError(ex, "[{ConnectorSource}] Error transforming Glooko V2 batch treatments", _connectorSource);
         }
 
-        return (boluses, carbs);
+        return (boluses, carbs, batches);
     }
 
     /// <summary>
@@ -164,13 +177,14 @@ public class GlookoV4TreatmentMapper(string connectorSource, GlookoTimeMapper ti
     /// <summary>
     /// Maps V3 bolus series (DeliveredBolus, AutomaticBolus, InjectionBolus) to Bolus and CarbIntake records.
     /// </summary>
-    public (List<Bolus> boluses, List<CarbIntake> carbs) MapV3Boluses(GlookoV3GraphResponse graphData)
+    public (List<Bolus> boluses, List<CarbIntake> carbs, List<DecompositionBatch> batches) MapV3Boluses(GlookoV3GraphResponse graphData)
     {
         var boluses = new List<Bolus>();
         var carbs = new List<CarbIntake>();
+        var batches = new List<DecompositionBatch>();
 
         if (graphData?.Series == null)
-            return (boluses, carbs);
+            return (boluses, carbs, batches);
 
         var series = graphData.Series;
 
@@ -194,7 +208,19 @@ public class GlookoV4TreatmentMapper(string connectorSource, GlookoTimeMapper ti
                 var hasInsulin = insulin > 0;
                 var hasCarbs = carbsInput > 0;
 
-                Guid? correlationId = hasInsulin && hasCarbs ? Guid.CreateVersion7() : null;
+                Guid? correlationId = null;
+                if (hasInsulin && hasCarbs)
+                {
+                    var batch = new DecompositionBatch
+                    {
+                        Id = Guid.CreateVersion7(),
+                        Source = "glooko",
+                        SourceRecordId = GenerateLegacyId("v3_bolus", rawTimestamp, $"carbs:{carbsInput}_insulin:{insulin}"),
+                        CreatedAt = now,
+                    };
+                    batches.Add(batch);
+                    correlationId = batch.Id;
+                }
 
                 if (hasInsulin)
                 {
@@ -240,7 +266,7 @@ public class GlookoV4TreatmentMapper(string connectorSource, GlookoTimeMapper ti
             "[{ConnectorSource}] Transformed {BolusCount} boluses and {CarbCount} carb intakes from v3 data",
             _connectorSource, boluses.Count, carbs.Count);
 
-        return (boluses, carbs);
+        return (boluses, carbs, batches);
     }
 
     /// <summary>
