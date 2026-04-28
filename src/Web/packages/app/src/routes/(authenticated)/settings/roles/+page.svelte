@@ -173,7 +173,7 @@
   <title>Roles - Settings - Nocturne</title>
 </svelte:head>
 
-<div class="w-full py-6 space-y-6">
+<div class="container mx-auto max-w-4xl p-6 space-y-6">
   {#if !canManageRoles}
     <Card.Root>
       <Card.Content
