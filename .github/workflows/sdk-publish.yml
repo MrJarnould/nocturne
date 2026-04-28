@@ -311,6 +311,9 @@ jobs:
       - name: Fix file permissions
         run: sudo chown -R $USER:$USER sdk/python/out
 
+      - name: Fix package name
+        run: sed -i 's/^name = "nocturne_sdk"/name = "nocturne-py"/' sdk/python/out/pyproject.toml
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
