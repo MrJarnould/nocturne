@@ -44,7 +44,6 @@ import {
   GlucoseProcessingSettingsClient,
   GuestLinkClient,
   HeartRateClient,
-  HomeAssistantWebhookClient,
   InsulinCatalogClient,
   LinkedPlatformsClient,
   MealMatchingClient,
@@ -141,7 +140,6 @@ export class ApiClient {
   public readonly glucoseProcessingSettings: GlucoseProcessingSettingsClient;
   public readonly guestLink: GuestLinkClient;
   public readonly heartRate: HeartRateClient;
-  public readonly homeAssistantWebhook: HomeAssistantWebhookClient;
   public readonly insulinCatalog: InsulinCatalogClient;
   public readonly linkedPlatforms: LinkedPlatformsClient;
   public readonly mealMatching: MealMatchingClient;
@@ -238,7 +236,6 @@ export class ApiClient {
     this.glucoseProcessingSettings = new GlucoseProcessingSettingsClient(apiBaseUrl, http);
     this.guestLink = new GuestLinkClient(apiBaseUrl, http);
     this.heartRate = new HeartRateClient(apiBaseUrl, http);
-    this.homeAssistantWebhook = new HomeAssistantWebhookClient(apiBaseUrl, http);
     this.insulinCatalog = new InsulinCatalogClient(apiBaseUrl, http);
     this.linkedPlatforms = new LinkedPlatformsClient(apiBaseUrl, http);
     this.mealMatching = new MealMatchingClient(apiBaseUrl, http);
