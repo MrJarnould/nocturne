@@ -59,6 +59,8 @@ public class TenantResolutionMiddleware
         "/api/v4/dev-only/",
         "/api/v4/platform/",
         "/api/v4/setup/",
+        "/scalar",
+        "/openapi",
     ];
 
     public async Task InvokeAsync(HttpContext context)
