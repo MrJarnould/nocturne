@@ -2,6 +2,7 @@
   import { createRealtimeStore } from "$lib/stores/realtime-store.svelte";
   import { createSettingsStore } from "$lib/stores/settings-store.svelte";
   import { createAuthStore } from "$lib/stores/auth-store.svelte";
+  import { authInterceptorState } from "$lib/api/auth-interceptor";
   import { onMount, onDestroy } from "svelte";
   import * as Sidebar from "$lib/components/ui/sidebar";
   import { AppSidebar, MobileHeader } from "$lib/components/layout";
@@ -39,6 +40,12 @@
 
   const realtimeStore = createRealtimeStore(config);
   createAuthStore(); // Initialize auth store in context
+
+  // Tell the client-side auth interceptor not to redirect guests to login —
+  // guests have limited scopes so some endpoints will return 401/403.
+  $effect(() => {
+    authInterceptorState.setGuestSession(data.isGuestSession);
+  });
 
   // Create settings store in context for the entire app
   // This makes feature settings available on all pages including the main dashboard
