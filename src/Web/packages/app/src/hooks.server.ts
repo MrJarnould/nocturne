@@ -363,6 +363,7 @@ const apiClientHandle: Handle = async ({ event, resolve }) => {
   // Get auth tokens from cookies to forward to the backend
   const accessToken = event.cookies.get(AUTH_COOKIE_NAMES.accessToken);
   const refreshToken = event.cookies.get(AUTH_COOKIE_NAMES.refreshToken);
+  const guestSessionToken = event.cookies.get("nocturne-guest-session");
 
   const extraHeaders: Record<string, string> = {};
 
@@ -379,6 +380,7 @@ const apiClientHandle: Handle = async ({ event, resolve }) => {
   event.locals.apiClient = createServerApiClient(apiBaseUrl, event.fetch, {
     accessToken,
     refreshToken,
+    guestSessionToken,
     hashedInstanceKey: getHashedInstanceKey(),
     extraHeaders,
     responseCookies: event.cookies,
