@@ -233,6 +233,7 @@ msgstr ""
 #: src/lib/components/settings/LinkedOidcIdentities.svelte
 #: src/lib/components/settings/LinkedOidcIdentities.svelte
 #: src/lib/components/settings/notifications/webhooks/WebhookSettingsModal.svelte
+#: src/lib/components/support/IssueCreatorDialog.svelte
 #: src/lib/components/trackers/TrackerCompletionDialog.svelte
 #: src/lib/components/trackers/TrackerEditorDialog.svelte
 #: src/lib/components/trackers/TrackerEditorDialog.svelte
@@ -476,6 +477,8 @@ msgid "Select"
 msgstr ""
 
 #: src/lib/components/TreatmentsTable.svelte
+#: src/lib/components/audit/AuditMutationsTable.svelte
+#: src/lib/components/audit/AuditReadsTable.svelte
 #: src/lib/components/meals/MealsTable.svelte
 #: src/lib/components/profile/ProfileEditDialog.svelte
 #: src/lib/components/profile/ProfileEditDialog.svelte
@@ -483,9 +486,6 @@ msgstr ""
 #: src/lib/components/treatments/TreatmentsDataTable.svelte
 #: src/routes/(authenticated)/compatibility/+page.svelte
 #: src/routes/(authenticated)/reports/day-in-review/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-#: src/routes/compatibility/+page.svelte
 #: src/routes/profile/+page.svelte
 #: src/routes/profile/+page.svelte
 #: src/routes/reports/day-in-review/+page.svelte
@@ -493,7 +493,9 @@ msgid "Time"
 msgstr ""
 
 #: src/lib/components/TreatmentsTable.svelte
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 msgid "Blood Glucose"
 msgstr ""
 
@@ -551,7 +553,9 @@ msgstr ""
 #: src/lib/components/dashboard/glucose-chart/ChartLegend.svelte
 #: src/lib/components/dashboard/glucose-chart/ChartTooltip.svelte
 #: src/lib/components/dashboard/glucose-chart/dialogs/GlucoseInspectionDialog.svelte
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 #: src/routes/(authenticated)/settings/profile/+page.svelte
 #: src/routes/calendar/+page.svelte
 #: src/routes/profile/+page.svelte
@@ -1811,7 +1815,6 @@ msgstr ""
 #: src/routes/(authenticated)/compatibility/+page.svelte
 #: src/routes/(authenticated)/reports/data-quality/compression-lows/+page.svelte
 #: src/routes/(authenticated)/reports/data-quality/compression-lows/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
 #: src/routes/(fullscreen)/setup/uploaders/+page.svelte
 #: src/routes/compatibility/+page.svelte
 #: src/routes/compatibility/+page.svelte
@@ -1885,6 +1888,7 @@ msgstr ""
 msgid "Path"
 msgstr ""
 
+#: src/lib/components/audit/AuditReadsTable.svelte
 #: src/lib/components/connectors/ConnectorDetailsDialog.svelte
 #: src/lib/components/connectors/DataSourceManageDialog.svelte
 #: src/lib/components/dashboard/glucose-chart/dialogs/DeliveryInspectionDialog.svelte
@@ -1892,7 +1896,6 @@ msgstr ""
 #: src/lib/components/status-pills/COBPill.svelte
 #: src/routes/(authenticated)/compatibility/+page.svelte
 #: src/routes/(authenticated)/settings/admin/tenants/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
 #: src/routes/compatibility/+page.svelte
 #: src/routes/meals/+page.svelte
 #: src/routes/settings/admin/tenants/+page.svelte
@@ -2632,7 +2635,9 @@ msgstr ""
 
 #: src/lib/components/layout/SidebarNotifications.svelte
 #: src/lib/components/layout/SidebarNotifications.svelte
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 #: src/lib/components/settings/BrowserCapabilities.svelte
 #: src/routes/(authenticated)/notifications/+page.svelte
 #: src/routes/notifications/+page.svelte
@@ -2932,7 +2937,9 @@ msgstr ""
 
 #: src/lib/components/layout/AppSidebar.svelte
 #: src/lib/components/layout/AppSidebar.svelte
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 #: src/routes/(authenticated)/reports/+layout.svelte
 #: src/routes/reports/+layout.svelte
 msgid "Reports"
@@ -3824,7 +3831,9 @@ msgstr ""
 
 #: src/lib/components/dashboard/OnboardingProgress.svelte
 #: src/lib/components/dashboard/SetupCard.svelte
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 #: src/routes/(authenticated)/settings/patient/+page.svelte
 #: src/routes/settings/+page.svelte
 #: src/routes/settings/devices/+page.svelte
@@ -3909,6 +3918,7 @@ msgstr ""
 msgid "Import data from Nightscout or MongoDB"
 msgstr ""
 
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/routes/(authenticated)/settings/admin/+page.svelte
 #: src/routes/settings/+page.svelte
@@ -3952,6 +3962,7 @@ msgstr ""
 
 #: src/lib/components/layout/AppSidebar.svelte
 #: src/lib/components/layout/UserMenu.svelte
+#: src/lib/components/support/IssueCreatorDialog.svelte
 #: src/routes/settings/+page.svelte
 msgid "Settings"
 msgstr ""
@@ -4504,18 +4515,20 @@ msgstr ""
 msgid "Add Food"
 msgstr ""
 
+#: src/lib/components/audit/AuditMutationsTable.svelte
+#: src/lib/components/audit/AuditMutationsTable.svelte
 #: src/lib/components/food/AddFoodDialog.svelte
 #: src/lib/components/patient/PatientDeviceManager.svelte
 #: src/lib/components/patient/PatientInsulinManager.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
 msgid "Update"
 msgstr ""
 
 #: src/lib/components/admin/RoleDialog.svelte
 #: src/lib/components/admin/SubjectEditDialog.svelte
+#: src/lib/components/audit/AuditMutationsTable.svelte
+#: src/lib/components/audit/AuditMutationsTable.svelte
 #: src/lib/components/entries/EntryEditDialog.svelte
 #: src/lib/components/food/AddFoodDialog.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
 #: src/routes/(authenticated)/settings/trackers/+page.svelte
 #: src/routes/settings/admin/+page.svelte
 #: src/routes/settings/admin/+page.svelte
@@ -4662,7 +4675,9 @@ msgid "Readings"
 msgstr ""
 
 #: src/lib/components/layout/AppSidebar.svelte
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 #: src/routes/(authenticated)/reports/executive-summary/+page.svelte
 #: src/routes/(fullscreen)/setup/permissions/+page.svelte
 #: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
@@ -7059,12 +7074,13 @@ msgstr ""
 
 #: src/lib/components/admin/IdentityProvidersTabContent.svelte
 #: src/lib/components/admin/OidcProvidersTabContent.svelte
+#: src/lib/components/audit/AuditMutationsTable.svelte
+#: src/lib/components/audit/AuditMutationsTable.svelte
 #: src/lib/components/patient/PatientDeviceManager.svelte
 #: src/lib/components/patient/PatientInsulinManager.svelte
 #: src/lib/components/settings/CustomSoundUpload.svelte
 #: src/lib/components/treatments/TreatmentsDataTable.svelte
 #: src/routes/(authenticated)/reports/treatments/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
 #: src/routes/(authenticated)/settings/trackers/+page.svelte
 #: src/routes/(authenticated)/settings/trackers/+page.svelte
 #: src/routes/(authenticated)/settings/trackers/+page.svelte
@@ -7498,8 +7514,9 @@ msgstr ""
 #~ msgid "Type <0/> <1/>"
 #~ msgstr ""
 
-#~ msgid "Search types..."
-#~ msgstr ""
+#: src/lib/components/audit/AuditReadsTable.svelte
+msgid "Search types..."
+msgstr ""
 
 #~ msgid "No types found."
 #~ msgstr ""
@@ -7536,13 +7553,7 @@ msgstr ""
 
 #. placeholder {0}: table.getState().pagination.pageIndex + 1
 #. placeholder {1}: table.getPageCount()
-#. placeholder {0}: mutationsPage
-#. placeholder {1}: mutationsTotalPages
-#. placeholder {0}: readsPage
-#. placeholder {1}: readsTotalPages
 #: src/lib/components/treatments/DataTablePagination.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
 msgid "Page {0} of {1}"
 msgstr ""
 
@@ -8719,6 +8730,8 @@ msgid "Selected Target"
 msgstr ""
 
 #: src/routes/(authenticated)/compatibility/[id]/+page.svelte
+#: src/routes/(authenticated)/settings/roles/+page.svelte
+#: src/routes/(authenticated)/settings/roles/+page.svelte
 #: src/routes/(legal)/privacy/+page.svelte
 #: src/routes/compatibility/[id]/+page.svelte
 #: src/routes/dashboard/analyses/[id]/+page.svelte
@@ -10958,6 +10971,8 @@ msgstr ""
 #: src/lib/components/dashboard/glucose-chart/dialogs/GlucoseInspectionDialog.svelte
 #: src/lib/components/dashboard/glucose-chart/dialogs/TreatmentInspectionDialog.svelte
 #: src/lib/components/members/MemberCard.svelte
+#: src/lib/components/support/IssueCreatorDialog.svelte
+#: src/lib/components/support/IssueCreatorDialog.svelte
 #: src/lib/components/ui/danger-zone-dialog/danger-zone-dialog.svelte
 #: src/lib/components/ui/dialog/dialog-content.svelte
 #: src/lib/components/ui/sheet/sheet-content.svelte
@@ -11787,12 +11802,10 @@ msgstr ""
 msgid "Have an idea? We'd love to hear it"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/support/+page.svelte
 #: src/routes/settings/support/+page.svelte
 msgid "Get Help"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/support/+page.svelte
 #: src/routes/settings/support/+page.svelte
 msgid "Need assistance? Check our FAQ or ask the community"
 msgstr ""
@@ -17468,6 +17481,7 @@ msgstr ""
 #~ msgid "Carb Intakes <0/>"
 #~ msgstr ""
 
+#: src/lib/components/audit/AuditReadsTable.svelte
 #: src/lib/components/treatments/TreatmentsDataTable.svelte
 #: src/routes/(authenticated)/reports/treatments/+page.svelte
 #: src/routes/reports/treatments/+page.svelte
@@ -25052,6 +25066,8 @@ msgstr ""
 msgid "Deny"
 msgstr ""
 
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
@@ -25060,42 +25076,60 @@ msgstr ""
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 msgid "Read"
 msgstr ""
 
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 msgid "Read & Write"
 msgstr ""
 
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 msgid "Health"
 msgstr ""
 
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 msgid "Identity"
 msgstr ""
 
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 msgid "Manage Roles"
 msgstr ""
 
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 msgid "Invite Members"
 msgstr ""
 
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 msgid "Manage Members"
 msgstr ""
 
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 msgid "Tenant Settings"
 msgstr ""
 
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 msgid "Manage Sharing"
 msgstr ""
 
@@ -25279,7 +25313,6 @@ msgid ""
 "They will lose access to all tenant data."
 msgstr ""
 
-#: src/lib/components/members/MemberCard.svelte
 #: src/routes/invite/[token]/+page.svelte
 #: src/routes/settings/members/+page.svelte
 msgid "Direct Permissions"
@@ -25381,6 +25414,12 @@ msgstr ""
 msgid "Manage sharing"
 msgstr ""
 
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 #: src/routes/invite/[token]/+page.svelte
 msgid "Full access"
 msgstr ""
@@ -27599,9 +27638,8 @@ msgstr ""
 msgid "Listener"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
+#: src/lib/components/audit/AuditMutationsTable.svelte
+#: src/lib/components/audit/AuditReadsTable.svelte
 #: src/routes/(unauthenticated)/setup/steps/FirstSync.svelte
 msgid "Endpoint"
 msgstr ""
@@ -28280,15 +28318,20 @@ msgstr ""
 msgid "Guest access — read only"
 msgstr ""
 
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
 msgid "Audit"
 msgstr ""
 
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 msgid "View Audit Logs"
 msgstr ""
 
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
+#: src/lib/components/rbac/PermissionSummary.svelte
 msgid "Manage Audit Settings"
 msgstr ""
 
@@ -28408,82 +28451,65 @@ msgstr ""
 msgid "Mutation Log Retention (days)"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-msgid "Data Changes"
-msgstr ""
+#~ msgid "Data Changes"
+#~ msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-msgid "Data Access"
-msgstr ""
+#~ msgid "Data Access"
+#~ msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
+#: src/lib/components/audit/AuditMutationsTable.svelte
+#: src/lib/components/audit/AuditReadsTable.svelte
 msgid "Entity Type"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
+#: src/lib/components/audit/AuditMutationsTable.svelte
 msgid "Action"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
+#: src/lib/components/audit/AuditMutationsTable.svelte
+#: src/lib/components/audit/AuditMutationsTable.svelte
 msgid "Restore"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
+#: src/lib/components/audit/AuditMutationsTable.svelte
+#: src/lib/components/audit/AuditReadsTable.svelte
 msgid "Subject"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
+#: src/lib/components/audit/AuditMutationsTable.svelte
 msgid "Entity ID"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
+#: src/lib/components/audit/AuditMutationsTable.svelte
+#: src/lib/components/audit/AuditReadsTable.svelte
 msgid "IP Address"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
+#: src/lib/components/audit/AuditMutationsTable.svelte
 msgid "Reason:"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-msgid "Auth:"
-msgstr ""
+#~ msgid "Auth:"
+#~ msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
+#: src/lib/components/audit/AuditMutationsTable.svelte
 msgid "Changes:"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-msgid "No mutation audit records found for the selected period."
-msgstr ""
+#~ msgid "No mutation audit records found for the selected period."
+#~ msgstr ""
 
-#. placeholder {0}: mutationsTotal
-#. placeholder {0}: readsTotal
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-msgid "{0} total records"
-msgstr ""
+#~ msgid "{0} total records"
+#~ msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-msgid "25 / page"
-msgstr ""
+#~ msgid "25 / page"
+#~ msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-msgid "50 / page"
-msgstr ""
+#~ msgid "50 / page"
+#~ msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-msgid "100 / page"
-msgstr ""
+#~ msgid "100 / page"
+#~ msgstr ""
 
 #: src/routes/(authenticated)/settings/audit/+page.svelte
 msgid "Read audit is not enabled"
@@ -28501,21 +28527,18 @@ msgstr ""
 msgid "Contact your admin to enable read audit logging."
 msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
+#: src/lib/components/audit/AuditReadsTable.svelte
 msgid "Records"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-msgid "API Secret:"
-msgstr ""
+#~ msgid "API Secret:"
+#~ msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-msgid "Query Parameters:"
-msgstr ""
+#~ msgid "Query Parameters:"
+#~ msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-msgid "No read access records found for the selected period."
-msgstr ""
+#~ msgid "No read access records found for the selected period."
+#~ msgstr ""
 
 #: src/routes/blog/+page.svelte
 msgid "Blog"
@@ -28829,4 +28852,334 @@ msgstr ""
 
 #: src/routes/(authenticated)/settings/integrations/discord/+page.svelte
 msgid "Failed to start Discord link flow."
+msgstr ""
+
+#: src/lib/components/members/MemberCard.svelte
+msgid "The owner role cannot be removed from yourself"
+msgstr ""
+
+#: src/lib/components/members/MemberCard.svelte
+msgid "Permissions from roles"
+msgstr ""
+
+#: src/lib/components/members/MemberCard.svelte
+msgid "<0/> Direct permissions (advanced)"
+msgstr ""
+
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
+msgid "No access"
+msgstr ""
+
+#: src/lib/components/rbac/PermissionCategorySelector.svelte
+msgid "Granted by role"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Bug Report"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Report something that isn't working correctly"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Feature Request"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Suggest a new feature or improvement"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+#: src/routes/(authenticated)/settings/support/+page.svelte
+msgid "Data Issue"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Report a problem with CGM data or readings"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+#: src/routes/(authenticated)/settings/support/+page.svelte
+msgid "Account / Billing"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Get help with your account or billing"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Issue Created!"
+msgstr ""
+
+#. placeholder {0}: issueNumber
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Your issue #{0} has been created successfully."
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "<0/> View on GitHub"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Couldn't Create Issue"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid ""
+"We've opened a pre-filled GitHub issue form in a new tab as a\n"
+"fallback. You can paste your screenshots there manually."
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Title *"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Brief summary of the issue"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Description *"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Describe the feature and why it would be useful..."
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Describe the issue in detail..."
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Steps to Reproduce"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Expected Behavior"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "What should happen..."
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Actual Behavior"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "What actually happens..."
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "CGM Source"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Time Range Affected"
+msgstr ""
+
+#. placeholder {0}: images.length
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Screenshots ({0}/4)"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Drop images here or click to browse"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "PNG, JPEG, WebP, GIF - max 10 MB each"
+msgstr ""
+
+#. placeholder {0}: i + 1
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Screenshot {0}"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Diagnostic Info (included automatically)"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid ""
+"Browser, screen size, route, and locale are always included. Toggle\n"
+"additional info below:"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Tenant slug"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Your instance identifier"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "CGM source"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Your connector type"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Recent logs"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "API calls and debug information"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Your configuration (no passwords/tokens)"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "<0/> Creating Issue..."
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Submit Issue"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/support/+page.svelte
+msgid "CGM data problems or missing readings"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/support/+page.svelte
+msgid "Help with your account or subscription"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/support/+page.svelte
+msgid "<0/> Get Help on Discord <1/>"
+msgstr ""
+
+#: src/lib/components/rbac/PermissionSummary.svelte
+msgid "All permissions"
+msgstr ""
+
+#: src/lib/components/rbac/PermissionSummary.svelte
+msgid "No permissions granted by roles"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/connectors/[connector]/+page.svelte
+msgid "Setup Guide"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/connectors/[connector]/+page.svelte
+msgid "Connect Home Assistant to Nocturne using the HACS custom integration"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/connectors/[connector]/+page.svelte
+msgid "Install HACS"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/connectors/[connector]/+page.svelte
+msgid "If you haven't already, install the Home Assistant Community Store (HACS) by following the instructions at hacs.xyz."
+msgstr ""
+
+#: src/routes/(authenticated)/settings/connectors/[connector]/+page.svelte
+msgid "Add the Nocturne repository"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/connectors/[connector]/+page.svelte
+msgid "In HACS, open the menu and select \"Custom repositories\". Add the Nocturne Home Assistant repository URL and select \"Integration\" as the category."
+msgstr ""
+
+#: src/routes/(authenticated)/settings/connectors/[connector]/+page.svelte
+msgid "Install the integration"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/connectors/[connector]/+page.svelte
+msgid "Search for \"Nocturne\" in HACS and install it. Once installed, restart Home Assistant to load the integration."
+msgstr ""
+
+#: src/routes/(authenticated)/settings/connectors/[connector]/+page.svelte
+msgid "Add the Nocturne integration"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/connectors/[connector]/+page.svelte
+msgid "Go to Settings, then Devices & Services, then Add Integration. Search for \"Nocturne\" and select it."
+msgstr ""
+
+#: src/routes/(authenticated)/settings/connectors/[connector]/+page.svelte
+msgid "Connect to your Nocturne instance"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/connectors/[connector]/+page.svelte
+msgid "Enter your Nocturne instance URL and complete the OAuth authorization flow. Sensors will be created automatically based on your available data."
+msgstr ""
+
+#: src/lib/components/audit/AuditReadsTable.svelte
+msgid "Auth Type"
+msgstr ""
+
+#: src/lib/components/audit/AuditReadsTable.svelte
+msgid "API Secret Prefix"
+msgstr ""
+
+#: src/lib/components/audit/AuditReadsTable.svelte
+msgid "Query Parameters"
+msgstr ""
+
+#: src/lib/components/audit/AuditMutationsTable.svelte
+#: src/lib/components/audit/AuditReadsTable.svelte
+msgid "No additional details available."
+msgstr ""
+
+#: src/lib/components/audit/AuditMutationsTable.svelte
+#: src/lib/components/audit/AuditReadsTable.svelte
+msgid "No audit records found."
+msgstr ""
+
+#: src/lib/components/audit/AuditMutationsTable.svelte
+msgid "Search entity types..."
+msgstr ""
+
+#: src/lib/components/audit/AuditMutationsTable.svelte
+msgid "Auth Type:"
+msgstr ""
+
+#: src/lib/components/audit/AuditMutationsTable.svelte
+msgid "Full Entity ID:"
+msgstr ""
+
+#: src/lib/components/audit/AuditMutationsTable.svelte
+msgid "Changes (raw):"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/audit/+page.svelte
+msgid "Audit Log - Settings - Nocturne"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/audit/+page.svelte
+msgid "Data Changes <0/>"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/audit/+page.svelte
+msgid "Data Access <0/>"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/audit/+page.svelte
+#: src/routes/(authenticated)/settings/audit/+page.svelte
+msgid "<0/> Reset dates"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/audit/+page.svelte
+#: src/routes/(authenticated)/settings/audit/+page.svelte
+msgid "Date range:"
+msgstr ""
+
+#. placeholder {0}: mFrom
+#. placeholder {1}: mTo
+#. placeholder {0}: rFrom
+#. placeholder {1}: rTo
+#: src/routes/(authenticated)/settings/audit/+page.svelte
+#: src/routes/(authenticated)/settings/audit/+page.svelte
+msgid "{0} to {1} <0/>"
 msgstr ""
