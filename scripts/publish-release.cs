@@ -62,6 +62,18 @@ try
     {
         composeContent = composeContent.Replace(oldName, newName);
     }
+
+    // Bind the gateway to loopback only so a reverse proxy (e.g. Caddy) can own ports 80/443.
+    composeContent = composeContent.Replace(
+        "      - \"80:5000\"",
+        "      - \"127.0.0.1:8080:5000\"");
+
+    // Inject Multitenancy__BaseDomain into the API container so the WebAuthn RP ID is derived
+    // from the public domain rather than defaulting to localhost:1612.
+    composeContent = composeContent.Replace(
+        "      INSTANCE_KEY: \"${INSTANCE_KEY}\"",
+        "      INSTANCE_KEY: \"${INSTANCE_KEY}\"\n      Multitenancy__BaseDomain: \"${PUBLIC_BASE_DOMAIN}\"");
+
     File.WriteAllText(Path.Combine(outputDir, "docker-compose.yaml"), composeContent);
     Console.WriteLine($"[publish-release] Wrote {Path.Combine(outputDir, "docker-compose.yaml")}");
 
@@ -97,12 +109,13 @@ static void GenerateEnvExample(
     // Known defaults for non-secret values
     var defaults = new Dictionary<string, string>
     {
-        ["NOCTURNE_API_IMAGE"] = "ghcr.io/nightscout/nocturne/api:latest",
-        ["NOCTURNE_WEB_IMAGE"] = "ghcr.io/nightscout/nocturne/web:latest",
+        ["NOCTURNE_API_IMAGE"] = "ghcr.io/nightscout/nocturne/nocturne-api:latest",
+        ["NOCTURNE_WEB_IMAGE"] = "ghcr.io/nightscout/nocturne/nocturne-web:latest",
         ["NOCTURNE_API_PORT"] = "8080",
         ["POSTGRES_USERNAME"] = "nocturne",
         ["POSTGRES_INIT_DIR"] = "./init",
         ["NOCTURNE_POSTGRES_SERVER_BINDMOUNT_0"] = "./init",
+        ["PUBLIC_BASE_DOMAIN"] = "",
     };
 
     // Secret vars -- leave blank
@@ -122,7 +135,6 @@ static void GenerateEnvExample(
         "TELEGRAM_BOT_TOKEN",
         "SLACK_BOT_TOKEN",
         "WHATSAPP_ACCESS_TOKEN",
-        "PUBLIC_BASE_DOMAIN",
     };
 
     using var writer = new StreamWriter(outputPath);
@@ -181,8 +193,8 @@ static void GenerateEnvExample(
     else
     {
         // Fallback if aspire didn't generate .env
-        writer.WriteLine("NOCTURNE_API_IMAGE=ghcr.io/nightscout/nocturne/api:latest");
-        writer.WriteLine("NOCTURNE_WEB_IMAGE=ghcr.io/nightscout/nocturne/web:latest");
+        writer.WriteLine("NOCTURNE_API_IMAGE=ghcr.io/nightscout/nocturne/nocturne-api:latest");
+        writer.WriteLine("NOCTURNE_WEB_IMAGE=ghcr.io/nightscout/nocturne/nocturne-web:latest");
         writer.WriteLine("NOCTURNE_API_PORT=8080");
         writer.WriteLine("POSTGRES_USERNAME=nocturne");
         writer.WriteLine("POSTGRES_INIT_DIR=./init");
@@ -193,7 +205,7 @@ static void GenerateEnvExample(
         writer.WriteLine("POSTGRES_WEB_PASSWORD=");
         writer.WriteLine("INSTANCE_KEY=");
         writer.WriteLine();
-        writer.WriteLine("# PUBLIC_BASE_DOMAIN=");
+        writer.WriteLine("PUBLIC_BASE_DOMAIN=");
     }
 }
 
