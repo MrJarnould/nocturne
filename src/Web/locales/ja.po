@@ -496,6 +496,7 @@ msgstr ""
 #: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionSummary.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
 msgid "Blood Glucose"
 msgstr ""
 
@@ -556,6 +557,7 @@ msgstr ""
 #: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionSummary.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
 #: src/routes/(authenticated)/settings/profile/+page.svelte
 #: src/routes/calendar/+page.svelte
 #: src/routes/profile/+page.svelte
@@ -2465,6 +2467,7 @@ msgstr ""
 #: src/lib/components/entries/FoodBreakdown.svelte
 #: src/lib/components/meals/MealsTable.svelte
 #: src/lib/components/meals/MealsTable.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
 #: src/lib/components/trackers/TrackerCompletionDialog.svelte
 #: src/lib/components/trackers/TrackerStartDialog.svelte
 #: src/lib/components/treatments/CarbBreakdownBar.svelte
@@ -2639,6 +2642,7 @@ msgstr ""
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionSummary.svelte
 #: src/lib/components/settings/BrowserCapabilities.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
 #: src/routes/(authenticated)/notifications/+page.svelte
 #: src/routes/notifications/+page.svelte
 msgid "Notifications"
@@ -2940,6 +2944,7 @@ msgstr ""
 #: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionSummary.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
 #: src/routes/(authenticated)/reports/+layout.svelte
 #: src/routes/reports/+layout.svelte
 msgid "Reports"
@@ -3834,6 +3839,7 @@ msgstr ""
 #: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionSummary.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
 #: src/routes/(authenticated)/settings/patient/+page.svelte
 #: src/routes/settings/+page.svelte
 #: src/routes/settings/devices/+page.svelte
@@ -4678,6 +4684,7 @@ msgstr ""
 #: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionSummary.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
 #: src/routes/(authenticated)/reports/executive-summary/+page.svelte
 #: src/routes/(fullscreen)/setup/permissions/+page.svelte
 #: src/routes/(unauthenticated)/setup/steps/ImportProgress.svelte
@@ -6361,6 +6368,7 @@ msgstr ""
 
 #: src/lib/components/docs/EnvVarReference.svelte
 #: src/lib/components/settings/alarm-profile/AlarmGeneralTab.svelte
+#: src/lib/components/support/IssueCreatorDialog.svelte
 #: src/lib/components/treatments/TreatmentPortionsForm.svelte
 msgid "Description"
 msgstr ""
@@ -7137,6 +7145,7 @@ msgid "Show glucose values in browser tab"
 msgstr ""
 
 #: src/lib/components/settings/TitleFaviconSettings.svelte
+#: src/lib/components/support/IssueCreatorDialog.svelte
 msgid "Title"
 msgstr ""
 
@@ -8559,6 +8568,7 @@ msgstr ""
 
 #: src/lib/components/clock-builder/ClockBuilderHeader.svelte
 #: src/lib/components/setup/WizardShell.svelte
+#: src/lib/components/support/IssueCreatorDialog.svelte
 #: src/routes/(fullscreen)/setup/migrate/nightscout/+page.svelte
 #: src/routes/(unauthenticated)/clock/[id]/+page.svelte
 #: src/routes/(unauthenticated)/setup/+page@.svelte
@@ -10905,6 +10915,7 @@ msgid "Description of this role's purpose"
 msgstr ""
 
 #: src/lib/components/admin/RoleDialog.svelte
+#: src/lib/components/settings/ApiTokens.svelte
 #: src/lib/components/settings/ConnectedApps.svelte
 #: src/routes/(authenticated)/settings/roles/+page.svelte
 #: src/routes/(authenticated)/settings/roles/+page.svelte
@@ -20745,12 +20756,10 @@ msgstr ""
 msgid "Automated insulin delivery system metrics"
 msgstr ""
 
-#: src/routes/(authenticated)/reports/idp/+page.svelte
 #: src/routes/reports/idp/+page.svelte
 msgid "CGM Use"
 msgstr ""
 
-#: src/routes/(authenticated)/reports/idp/+page.svelte
 #: src/routes/reports/idp/+page.svelte
 msgid "Pump Use"
 msgstr ""
@@ -23732,7 +23741,6 @@ msgid "Choose a label and select the scopes this token should have access to."
 msgstr ""
 
 #: src/lib/components/admin/OidcProviderDialog.svelte
-#: src/lib/components/settings/ApiTokens.svelte
 #: src/routes/settings/admin/+page.svelte
 #: src/routes/settings/api-access/+page.svelte
 msgid "Scopes"
@@ -24162,6 +24170,7 @@ msgid ""
 "is the only time they will be shown."
 msgstr ""
 
+#: src/lib/components/support/IssueCreatorDialog.svelte
 #: src/routes/(authenticated)/settings/account/+page.svelte
 #: src/routes/settings/account/+page.svelte
 #: src/routes/settings/security/+page.svelte
@@ -25559,6 +25568,9 @@ msgstr ""
 #: src/lib/components/rbac/PermissionSummary.svelte
 #: src/lib/components/rbac/PermissionSummary.svelte
 #: src/lib/components/rbac/PermissionSummary.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
 #: src/routes/invite/[token]/+page.svelte
 msgid "Full access"
 msgstr ""
@@ -25603,6 +25615,8 @@ msgstr ""
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionSummary.svelte
 #: src/lib/components/rbac/PermissionSummary.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
 msgid "Read"
 msgstr ""
 
@@ -25613,18 +25627,22 @@ msgstr ""
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionSummary.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
 msgid "Read & Write"
 msgstr ""
 
 #: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionSummary.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
 msgid "Health"
 msgstr ""
 
 #: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionPicker.svelte
 #: src/lib/components/rbac/PermissionSummary.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
 msgid "Identity"
 msgstr ""
 
@@ -25662,6 +25680,7 @@ msgstr ""
 msgid "Sharing - Setup - Nocturne"
 msgstr ""
 
+#: src/lib/components/settings/TokenScopeSelector.svelte
 #: src/routes/settings/setup/sharing/+page.svelte
 msgid "Sharing"
 msgstr ""
@@ -28178,7 +28197,6 @@ msgstr ""
 msgid "Set up a new Nocturne instance"
 msgstr ""
 
-#: src/lib/components/connectors/UploaderSetupDialog.svelte
 #: src/lib/components/connectors/UploaderSetupView.svelte
 msgid "Failed to generate API key. You can create one manually in Settings."
 msgstr ""
@@ -28193,12 +28211,10 @@ msgstr ""
 msgid "API Key"
 msgstr ""
 
-#: src/lib/components/connectors/UploaderSetupDialog.svelte
 #: src/lib/components/connectors/UploaderSetupView.svelte
 msgid "<0/> Generating API key..."
 msgstr ""
 
-#: src/lib/components/connectors/UploaderSetupDialog.svelte
 #: src/lib/components/connectors/UploaderSetupView.svelte
 msgid "Copy this now. It cannot be shown again."
 msgstr ""
@@ -28291,9 +28307,8 @@ msgstr ""
 msgid "Audit Log"
 msgstr ""
 
-#: src/routes/(authenticated)/settings/audit/+page.svelte
-msgid "View data changes and access history for compliance."
-msgstr ""
+#~ msgid "View data changes and access history for compliance."
+#~ msgstr ""
 
 #: src/routes/(authenticated)/settings/audit/+page.svelte
 msgid "<0/> Audit Configuration"
@@ -28705,6 +28720,7 @@ msgstr ""
 msgid "Recent"
 msgstr ""
 
+#: src/lib/components/settings/TokenScopeSelector.svelte
 #: src/routes/(authenticated)/reports/+page.svelte
 #: src/routes/(authenticated)/reports/steps/+page.svelte
 msgid "Step Count"
@@ -28714,6 +28730,7 @@ msgstr ""
 msgid "Daily step patterns and activity levels"
 msgstr ""
 
+#: src/lib/components/settings/TokenScopeSelector.svelte
 #: src/routes/(authenticated)/reports/+page.svelte
 #: src/routes/(authenticated)/reports/heart-rate/+page.svelte
 msgid "Heart Rate"
@@ -28846,9 +28863,8 @@ msgstr ""
 msgid "<0/> Step Count Actogram"
 msgstr ""
 
-#: src/lib/components/connectors/UploaderSetupDialog.svelte
-msgid "API key has already been generated. You can manage API keys in Settings."
-msgstr ""
+#~ msgid "API key has already been generated. You can manage API keys in Settings."
+#~ msgstr ""
 
 #: src/routes/(authenticated)/settings/integrations/discord/+page.svelte
 msgid "Failed to start Discord link flow."
@@ -28888,9 +28904,8 @@ msgstr ""
 msgid "Get help with your account or billing"
 msgstr ""
 
-#: src/lib/components/support/IssueCreatorDialog.svelte
-msgid "Issue Created!"
-msgstr ""
+#~ msgid "Issue Created!"
+#~ msgstr ""
 
 #. placeholder {0}: issueNumber
 #: src/lib/components/support/IssueCreatorDialog.svelte
@@ -28932,9 +28947,11 @@ msgid "Describe the issue in detail..."
 msgstr ""
 
 #: src/lib/components/support/IssueCreatorDialog.svelte
+#: src/lib/components/support/IssueCreatorDialog.svelte
 msgid "Steps to Reproduce"
 msgstr ""
 
+#: src/lib/components/support/IssueCreatorDialog.svelte
 #: src/lib/components/support/IssueCreatorDialog.svelte
 msgid "Expected Behavior"
 msgstr ""
@@ -28944,6 +28961,7 @@ msgid "What should happen..."
 msgstr ""
 
 #: src/lib/components/support/IssueCreatorDialog.svelte
+#: src/lib/components/support/IssueCreatorDialog.svelte
 msgid "Actual Behavior"
 msgstr ""
 
@@ -28951,6 +28969,7 @@ msgstr ""
 msgid "What actually happens..."
 msgstr ""
 
+#: src/lib/components/support/IssueCreatorDialog.svelte
 #: src/lib/components/support/IssueCreatorDialog.svelte
 msgid "CGM Source"
 msgstr ""
@@ -28973,6 +28992,8 @@ msgid "PNG, JPEG, WebP, GIF - max 10 MB each"
 msgstr ""
 
 #. placeholder {0}: i + 1
+#. placeholder {0}: i + 1
+#: src/lib/components/support/IssueCreatorDialog.svelte
 #: src/lib/components/support/IssueCreatorDialog.svelte
 msgid "Screenshot {0}"
 msgstr ""
@@ -29048,6 +29069,11 @@ msgstr ""
 #: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionCategorySelector.svelte
 #: src/lib/components/rbac/PermissionCategorySelector.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
+#: src/lib/components/settings/TokenScopeSelector.svelte
 msgid "No access"
 msgstr ""
 
@@ -29182,4 +29208,90 @@ msgstr ""
 #: src/routes/(authenticated)/settings/audit/+page.svelte
 #: src/routes/(authenticated)/settings/audit/+page.svelte
 msgid "{0} to {1} <0/>"
+msgstr ""
+
+#: src/lib/components/connectors/UploaderSetupDialog.svelte
+msgid "<0/> Generate API key"
+msgstr ""
+
+#. placeholder {0}: selectedUploader?.name ?? "this app"
+#: src/lib/components/connectors/UploaderSetupDialog.svelte
+msgid "Creates an API token pre-configured for {0}"
+msgstr ""
+
+#: src/routes/(authenticated)/reports/idp/+page.svelte
+msgid "CGM"
+msgstr ""
+
+#: src/routes/(authenticated)/reports/idp/+page.svelte
+msgid "Pump"
+msgstr ""
+
+#: src/lib/components/settings/TokenScopeSelector.svelte
+msgid "Covered by Health"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Issue Submitted!"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Your issue has been submitted to the support team."
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "<0/> Preview Issue"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Time Range"
+msgstr ""
+
+#. placeholder {0}: images.length
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Screenshots ({0})"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "Diagnostic Info"
+msgstr ""
+
+#: src/lib/components/support/IssueCreatorDialog.svelte
+msgid "<0/> Copy"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/audit/+page.svelte
+msgid "View data changes and access history for compliance"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/support/+page.svelte
+msgid "Tutorials reset — they'll appear as you navigate the app"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/support/+page.svelte
+msgid "Failed to reset tutorials"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/support/+page.svelte
+msgid "<0/> Tutorials"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/support/+page.svelte
+msgid "Guided walkthroughs to help you learn the app"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/support/+page.svelte
+msgid "Show all tutorials again"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/support/+page.svelte
+msgid "Reset all guided walkthroughs so they appear as you navigate"
+msgstr ""
+
+#: src/routes/(authenticated)/settings/support/+page.svelte
+msgid "Resetting..."
+msgstr ""
+
+#: src/routes/(authenticated)/settings/support/+page.svelte
+msgid "Reset Tutorials"
 msgstr ""

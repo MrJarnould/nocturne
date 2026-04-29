@@ -373,7 +373,7 @@
         "tags": [
           "Platform"
         ],
-        "summary": "Creates a new tenant with the authenticated subject as owner.\nRequires MultitenancyConfiguration.AllowSelfServiceCreation to be enabled.",
+        "summary": "Creates a new tenant with the authenticated subject as owner.\nRequires OperatorConfiguration.AllowSelfServiceCreation to be enabled.",
         "operationId": "Platform_CreateTenant",
         "requestBody": {
           "x-name": "request",
@@ -8161,6 +8161,28 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/FallbackUrlResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "query"
+      }
+    },
+    "/api/v4/support/config": {
+      "get": {
+        "tags": [
+          "Support"
+        ],
+        "summary": "Returns operator support configuration for the frontend.\nWhen no operator is configured, accountBilling is null and the default GitHub flow applies.",
+        "operationId": "Support_GetSupportConfig",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupportConfigResponse"
                 }
               }
             }
@@ -30443,6 +30465,36 @@
         "properties": {
           "url": {
             "type": "string"
+          }
+        }
+      },
+      "SupportConfigResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "accountBilling": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SupportChannelConfig"
+              }
+            ]
+          }
+        }
+      },
+      "SupportChannelConfig": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "mode": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
