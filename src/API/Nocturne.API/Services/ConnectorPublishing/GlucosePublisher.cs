@@ -96,7 +96,14 @@ internal sealed class GlucosePublisher : IGlucosePublisher
         string source,
         CancellationToken cancellationToken = default)
     {
-        // TODO: Filter by source to support multi-connector catch-up. Currently returns global latest.
+        // V4 connectors (Glooko, Dexcom, etc.) write SensorGlucose, not Entry.
+        // Check source-filtered SensorGlucose first so multi-connector tenants
+        // don't use another connector's latest timestamp for catch-up.
+        var sgTimestamp = await _sensorGlucoseRepository.GetLatestTimestampAsync(source, cancellationToken);
+        if (sgTimestamp.HasValue)
+            return sgTimestamp.Value;
+
+        // Fall back to global latest entry for legacy (v1) connectors like Nightscout.
         var entry = await _entryService.GetCurrentEntryAsync(cancellationToken);
         if (entry == null)
             return null;
