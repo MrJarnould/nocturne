@@ -339,16 +339,22 @@
     {#if formState === "success"}
       <div class="flex flex-col items-center gap-4 py-8">
         <CheckCircle class="h-12 w-12 text-green-500" />
-        <h3 class="text-lg font-semibold">Issue Created!</h3>
-        <p class="text-sm text-muted-foreground text-center">
-          Your issue #{issueNumber} has been created successfully.
-        </p>
-        <a href={issueUrl} target="_blank" rel="noopener noreferrer">
-          <Button variant="outline" class="gap-2">
-            <ExternalLink class="h-4 w-4" />
-            View on GitHub
-          </Button>
-        </a>
+        <h3 class="text-lg font-semibold">Issue Submitted!</h3>
+        {#if operatorApiUrl}
+          <p class="text-sm text-muted-foreground text-center">
+            Your issue has been submitted to the support team.
+          </p>
+        {:else}
+          <p class="text-sm text-muted-foreground text-center">
+            Your issue #{issueNumber} has been created successfully.
+          </p>
+          <a href={issueUrl} target="_blank" rel="noopener noreferrer">
+            <Button variant="outline" class="gap-2">
+              <ExternalLink class="h-4 w-4" />
+              View on GitHub
+            </Button>
+          </a>
+        {/if}
         <Button variant="ghost" onclick={handleClose}>Close</Button>
       </div>
     {:else if formState === "error"}
