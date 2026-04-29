@@ -92,6 +92,10 @@
   // Realtime sync progress from WebSocket
   const realtimeStore = getRealtimeStore();
   let syncProgressByConnector = $derived(realtimeStore.syncProgressByConnector);
+  let activeSyncProgress = $derived.by(() => {
+    const entries = Object.values(syncProgressByConnector);
+    return entries.find((p) => p.phase === "Syncing") ?? entries.at(-1) ?? null;
+  });
 
   $effect(() => {
     const progress = syncProgressByConnector;
@@ -668,7 +672,7 @@
   onDeleteComplete={loadServices}
 />
 
-<ManualSyncDialog bind:open={showManualSyncDialog} {isManualSyncing} {manualSyncResult} />
+<ManualSyncDialog bind:open={showManualSyncDialog} {isManualSyncing} {manualSyncResult} syncProgress={isManualSyncing ? activeSyncProgress : null} />
 
 <!-- Connector Details Dialog -->
 <ConnectorDetailsDialog bind:open={showConnectorDialog} {selectedConnector} {selectedConnectorCapabilities} onSyncComplete={loadConnectorStatuses} />
