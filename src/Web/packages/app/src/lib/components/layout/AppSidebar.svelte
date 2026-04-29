@@ -86,6 +86,7 @@
     displayName: string | null;
   }
   let tenantTargets = $state<TenantTarget[]>([]);
+  let totalTenantCount = $state(0);
   let selectedTenantSlug = $state<string | null>(null);
   let defaultTenantSlug = $state<string | null>(null);
   let baseDomain = $state<string | null>(null);
@@ -109,6 +110,7 @@
     if (!baseDomain) return;
     try {
       const tenants = await getMyTenants();
+      totalTenantCount = (tenants ?? []).length;
       defaultTenantSlug = (tenants ?? [])[0]?.slug ?? null;
 
       tenantTargets = (tenants ?? [])
@@ -434,7 +436,7 @@
   <Sidebar.Separator />
 
   <!-- Tenant switcher (only visible when multiple tenants are available, hidden for guests) -->
-  {#if tenantTargets.length > 0 && !isGuestSession}
+  {#if totalTenantCount > 1 && tenantTargets.length > 0 && !isGuestSession}
     <div class="border-b px-3 py-2 group-data-[collapsible=icon]:hidden">
       <p
         class="mb-1.5 text-xs font-medium text-muted-foreground flex items-center gap-1.5"
