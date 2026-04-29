@@ -103,6 +103,11 @@
     }
   });
 
+  // API token create dialog (triggered from uploader setup)
+  let apiTokenCreateOpen = $state(false);
+  let apiTokenPrefillLabel = $state("");
+  let apiTokenPrefillScopes = $state<string[]>([]);
+
   // Deduplication state
   let showDeduplicationDialog = $state(false);
   let isDeduplicating = $state(false);
@@ -628,13 +633,25 @@
 
     <!-- API Tokens Section -->
     <div id="api-tokens-section">
-      <ApiTokens />
+      <ApiTokens
+        bind:createOpen={apiTokenCreateOpen}
+        prefillLabel={apiTokenPrefillLabel}
+        prefillScopes={apiTokenPrefillScopes}
+      />
     </div>
   {/if}
 </div>
 
 <!-- Setup Instructions Dialog -->
-<UploaderSetupDialog bind:open={showSetupDialog} {selectedUploader} />
+<UploaderSetupDialog
+  bind:open={showSetupDialog}
+  {selectedUploader}
+  onRequestApiKey={(label, scopes) => {
+    apiTokenPrefillLabel = label;
+    apiTokenPrefillScopes = scopes;
+    apiTokenCreateOpen = true;
+  }}
+/>
 
 <!-- Demo Data Management Dialog -->
 <DemoDataSection bind:open={showDemoDataDialog} onDeleteComplete={loadServices} />
