@@ -183,12 +183,17 @@
 
 <div class="container mx-auto max-w-4xl p-6 space-y-6" {@attach coachmark({ key: "onboarding.alerts", title: "Don't miss highs or lows", description: "Set up at least one alert rule so Nocturne can notify you when glucose goes out of range. Use the Setup Wizard for the fastest start.", completedWhen: () => alertsConfigured })}>
   <!-- Header -->
-  <div class="flex items-center justify-between">
-    <div>
-      <h1 class="text-2xl font-bold tracking-tight">Alerts</h1>
-      <p class="text-muted-foreground">
-        Configure alert rules, schedules, and escalation chains
-      </p>
+  <div class="flex items-start justify-between">
+    <div class="flex items-center gap-3">
+      <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+        <Bell class="h-6 w-6 text-primary" />
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">Alerts</h1>
+        <p class="text-muted-foreground">
+          Configure alert rules, schedules, and escalation chains
+        </p>
+      </div>
     </div>
     <div class="flex items-center gap-2" {@attach coachmark({ key: "power-user.alert-rules", title: "Custom alert rules", description: "Build custom alert rules with threshold, rate-of-change, or signal-loss conditions." })}>
       <Button variant="outline" onclick={() => goto("/settings/alerts/setup")} {@attach coachmark({
