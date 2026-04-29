@@ -53,7 +53,7 @@
   const services = $derived(servicesOverviewQuery.current as ServicesOverview | undefined);
   const supportConfig = $derived(supportConfigQuery.current as SupportConfigResponse | undefined);
 
-  let operatorApiUrl = $state<string | undefined>(undefined);
+  let useOperatorSupport = $state(false);
 
   $effect(() => {
     if (services?.apiEndpoint) {
@@ -158,10 +158,8 @@
 
   function handleSupportAction(template: string) {
     selectedTemplate = template;
-    operatorApiUrl =
-      template === "account" && supportConfig?.accountBilling?.mode === "api"
-        ? supportConfig.accountBilling.url
-        : undefined;
+    useOperatorSupport =
+      template === "account" && supportConfig?.accountBilling?.mode === "api";
     dialogOpen = true;
   }
 </script>
@@ -439,4 +437,4 @@
   </Card>
 </div>
 
-<IssueCreatorDialog bind:open={dialogOpen} template={selectedTemplate} {operatorApiUrl} />
+<IssueCreatorDialog bind:open={dialogOpen} template={selectedTemplate} {useOperatorSupport} />

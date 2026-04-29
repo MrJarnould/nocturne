@@ -3,7 +3,7 @@ import { error, redirect } from '@sveltejs/kit';
 
 export { getFallbackUrl, getSupportConfig } from '$api/generated/supports.generated.remote';
 
-export const createIssue = command(async (params: {
+interface IssueParams {
   template: string;
   title: string;
   description: string;
@@ -14,23 +14,29 @@ export const createIssue = command(async (params: {
   timeRange?: string;
   diagnosticInfo: string;
   images: File[];
-}) => {
+}
+
+function buildIssueFormData(params: IssueParams): FormData {
+  const formData = new FormData();
+  formData.append('template', params.template);
+  formData.append('title', params.title);
+  formData.append('description', params.description);
+  if (params.stepsToReproduce) formData.append('stepsToReproduce', params.stepsToReproduce);
+  if (params.expectedBehavior) formData.append('expectedBehavior', params.expectedBehavior);
+  if (params.actualBehavior) formData.append('actualBehavior', params.actualBehavior);
+  if (params.cgmSource) formData.append('cgmSource', params.cgmSource);
+  if (params.timeRange) formData.append('timeRange', params.timeRange);
+  formData.append('diagnosticInfo', params.diagnosticInfo);
+  for (const image of params.images) {
+    formData.append('images', image);
+  }
+  return formData;
+}
+
+export const createIssue = command(async (params: IssueParams) => {
   const apiClient = getRequestEvent().locals.apiClient;
   try {
-    const formData = new FormData();
-    formData.append('template', params.template);
-    formData.append('title', params.title);
-    formData.append('description', params.description);
-    if (params.stepsToReproduce) formData.append('stepsToReproduce', params.stepsToReproduce);
-    if (params.expectedBehavior) formData.append('expectedBehavior', params.expectedBehavior);
-    if (params.actualBehavior) formData.append('actualBehavior', params.actualBehavior);
-    if (params.cgmSource) formData.append('cgmSource', params.cgmSource);
-    if (params.timeRange) formData.append('timeRange', params.timeRange);
-    formData.append('diagnosticInfo', params.diagnosticInfo);
-    for (const image of params.images) {
-      formData.append('images', image);
-    }
-
+    const formData = buildIssueFormData(params);
     const url = apiClient.baseUrl + '/api/v4/support/issues';
     const response = await (apiClient as any).http.fetch(url, {
       body: formData,
@@ -52,35 +58,16 @@ export const createIssue = command(async (params: {
   }
 });
 
-export const createOperatorIssue = command(async (params: {
-  url: string;
-  template: string;
-  title: string;
-  description: string;
-  stepsToReproduce?: string;
-  expectedBehavior?: string;
-  actualBehavior?: string;
-  cgmSource?: string;
-  timeRange?: string;
-  diagnosticInfo: string;
-  images: File[];
-}) => {
+export const createOperatorIssue = command(async (params: IssueParams) => {
+  const apiClient = getRequestEvent().locals.apiClient;
   try {
-    const formData = new FormData();
-    formData.append('template', params.template);
-    formData.append('title', params.title);
-    formData.append('description', params.description);
-    if (params.stepsToReproduce) formData.append('stepsToReproduce', params.stepsToReproduce);
-    if (params.expectedBehavior) formData.append('expectedBehavior', params.expectedBehavior);
-    if (params.actualBehavior) formData.append('actualBehavior', params.actualBehavior);
-    if (params.cgmSource) formData.append('cgmSource', params.cgmSource);
-    if (params.timeRange) formData.append('timeRange', params.timeRange);
-    formData.append('diagnosticInfo', params.diagnosticInfo);
-    for (const image of params.images) {
-      formData.append('images', image);
-    }
+    // Resolve operator URL server-side to prevent SSRF via client-supplied URLs
+    const config = await apiClient.support.getSupportConfig();
+    const url = config.accountBilling?.url;
+    if (!url) throw error(400, 'Operator support not configured');
 
-    const response = await fetch(params.url, {
+    const formData = buildIssueFormData(params);
+    const response = await fetch(url, {
       body: formData,
       method: 'POST',
       headers: { 'Accept': 'application/json' },

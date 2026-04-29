@@ -26,10 +26,10 @@
   interface Props {
     open: boolean;
     template: string;
-    operatorApiUrl?: string;
+    useOperatorSupport?: boolean;
   }
 
-  let { open = $bindable(false), template = "bug", operatorApiUrl }: Props = $props();
+  let { open = $bindable(false), template = "bug", useOperatorSupport = false }: Props = $props();
 
   const templateConfigs: Record<
     string,
@@ -290,8 +290,8 @@
         images,
       };
 
-      if (operatorApiUrl) {
-        await createOperatorIssue({ ...params, url: operatorApiUrl });
+      if (useOperatorSupport) {
+        await createOperatorIssue(params);
         formState = "success";
       } else {
         const result = await createIssue(params);
@@ -340,7 +340,7 @@
       <div class="flex flex-col items-center gap-4 py-8">
         <CheckCircle class="h-12 w-12 text-green-500" />
         <h3 class="text-lg font-semibold">Issue Submitted!</h3>
-        {#if operatorApiUrl}
+        {#if useOperatorSupport}
           <p class="text-sm text-muted-foreground text-center">
             Your issue has been submitted to the support team.
           </p>
