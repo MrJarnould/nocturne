@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using OpenApi.Remote.Attributes;
 using Nocturne.API.Authorization;
+using Nocturne.API.Configuration;
 using Nocturne.API.Models.OAuth;
 using Nocturne.API.Multitenancy;
 using Nocturne.Connectors.Core.Extensions;
@@ -188,6 +189,7 @@ public class MetadataController : ControllerBase
     [ProducesResponseType(typeof(MultitenancyInfo), 200)]
     public ActionResult<MultitenancyInfo> GetMultitenancyInfo(
         [FromServices] IOptions<MultitenancyConfiguration> config,
+        [FromServices] IOptions<OperatorConfiguration> operatorConfig,
         [FromServices] ITenantAccessor tenantAccessor)
     {
         var tenantContext = tenantAccessor.Context;
@@ -196,7 +198,7 @@ public class MetadataController : ControllerBase
         {
             BaseDomain = config.Value.BaseDomain,
             SubdomainResolution = true,
-            AllowSelfServiceCreation = config.Value.AllowSelfServiceCreation,
+            AllowSelfServiceCreation = operatorConfig.Value.AllowSelfServiceCreation,
             CurrentTenantSlug = tenantContext?.Slug,
             CurrentTenantId = tenantContext?.TenantId,
             CurrentTenantDisplayName = tenantContext?.DisplayName,
