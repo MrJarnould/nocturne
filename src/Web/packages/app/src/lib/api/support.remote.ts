@@ -51,3 +51,48 @@ export const createIssue = command(async (params: {
     throw error(500, 'Failed to create issue');
   }
 });
+
+export const createOperatorIssue = command(async (params: {
+  url: string;
+  template: string;
+  title: string;
+  description: string;
+  stepsToReproduce?: string;
+  expectedBehavior?: string;
+  actualBehavior?: string;
+  cgmSource?: string;
+  timeRange?: string;
+  diagnosticInfo: string;
+  images: File[];
+}) => {
+  try {
+    const formData = new FormData();
+    formData.append('template', params.template);
+    formData.append('title', params.title);
+    formData.append('description', params.description);
+    if (params.stepsToReproduce) formData.append('stepsToReproduce', params.stepsToReproduce);
+    if (params.expectedBehavior) formData.append('expectedBehavior', params.expectedBehavior);
+    if (params.actualBehavior) formData.append('actualBehavior', params.actualBehavior);
+    if (params.cgmSource) formData.append('cgmSource', params.cgmSource);
+    if (params.timeRange) formData.append('timeRange', params.timeRange);
+    formData.append('diagnosticInfo', params.diagnosticInfo);
+    for (const image of params.images) {
+      formData.append('images', image);
+    }
+
+    const response = await fetch(params.url, {
+      body: formData,
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Operator support endpoint returned ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error('Error in support.createOperatorIssue:', err);
+    throw err;
+  }
+});

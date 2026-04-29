@@ -21,14 +21,15 @@
     ArrowLeft,
     Copy,
   } from "lucide-svelte";
-  import { createIssue, getFallbackUrl } from "$lib/api/support.remote";
+  import { createIssue, createOperatorIssue, getFallbackUrl } from "$lib/api/support.remote";
 
   interface Props {
     open: boolean;
     template: string;
+    operatorApiUrl?: string;
   }
 
-  let { open = $bindable(false), template = "bug" }: Props = $props();
+  let { open = $bindable(false), template = "bug", operatorApiUrl }: Props = $props();
 
   const templateConfigs: Record<
     string,
@@ -276,7 +277,7 @@
     formState = "submitting";
 
     try {
-      const result = await createIssue({
+      const params = {
         template,
         title,
         description,
@@ -287,11 +288,17 @@
         timeRange: template === "data-issue" ? timeRange || undefined : undefined,
         diagnosticInfo,
         images,
-      });
+      };
 
-      issueUrl = result.issueUrl;
-      issueNumber = result.issueNumber;
-      formState = "success";
+      if (operatorApiUrl) {
+        await createOperatorIssue({ ...params, url: operatorApiUrl });
+        formState = "success";
+      } else {
+        const result = await createIssue(params);
+        issueUrl = result.issueUrl;
+        issueNumber = result.issueNumber;
+        formState = "success";
+      }
     } catch {
       formState = "error";
       // Open fallback URL
