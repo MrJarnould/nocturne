@@ -22,7 +22,7 @@ export const getTenants = query(async () => {
 });
 
 /** Creates a new tenant with the authenticated subject as owner.
-Requires MultitenancyConfiguration.AllowSelfServiceCreation to be enabled. */
+Requires OperatorConfiguration.AllowSelfServiceCreation to be enabled. */
 export const createTenant = command(CreatePlatformTenantRequestSchema, async (request) => {
   const apiClient = getRequestEvent().locals.apiClient;
   try {

@@ -555,7 +555,7 @@ export class PlatformClient {
 
     /**
      * Creates a new tenant with the authenticated subject as owner.
-    Requires MultitenancyConfiguration.AllowSelfServiceCreation to be enabled.
+    Requires OperatorConfiguration.AllowSelfServiceCreation to be enabled.
      */
     createTenant(request: CreatePlatformTenantRequest, signal?: AbortSignal): Promise<TenantCreatedDto> {
         let url_ = this.baseUrl + "/api/v4/platform/tenants";
@@ -8863,6 +8863,44 @@ export class SupportClient {
             });
         }
         return Promise.resolve<FallbackUrlResponse>(null as any);
+    }
+
+    /**
+     * Returns operator support configuration for the frontend.
+    When no operator is configured, accountBilling is null and the default GitHub flow applies.
+     */
+    getSupportConfig(signal?: AbortSignal): Promise<SupportConfigResponse> {
+        let url_ = this.baseUrl + "/api/v4/support/config";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetSupportConfig(_response);
+        });
+    }
+
+    protected processGetSupportConfig(response: Response): Promise<SupportConfigResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as SupportConfigResponse;
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<SupportConfigResponse>(null as any);
     }
 }
 
@@ -26470,6 +26508,16 @@ export interface CreateIssueResponse {
 
 export interface FallbackUrlResponse {
     url?: string;
+}
+
+export interface SupportConfigResponse {
+    accountBilling?: SupportChannelConfig | undefined;
+}
+
+export interface SupportChannelConfig {
+    mode?: string;
+    url?: string;
+    label?: string | undefined;
 }
 
 export interface HeartbeatRequest {

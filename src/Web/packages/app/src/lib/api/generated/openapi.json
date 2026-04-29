@@ -12,7 +12,6 @@
           "Metadata"
         ],
         "summary": "Get authentication error codes metadata\nThis endpoint ensures NSwag generates TypeScript types for AuthErrorCode",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Metadata_GetAuthErrorCodes",
         "responses": {
           "200": {
@@ -35,7 +34,6 @@
           "Well Known"
         ],
         "summary": "OpenID Connect Discovery Document",
-        "description": "[ConsumesProcessor] ",
         "operationId": "WellKnown_GetOpenIdConfiguration",
         "responses": {
           "200": {
@@ -58,7 +56,6 @@
           "Well Known"
         ],
         "summary": "JSON Web Key Set (JWKS) - for token signature verification\nNote: Since we use HMAC symmetric keys, we only expose the algorithm info\nActual key verification happens server-side",
-        "description": "[ConsumesProcessor] ",
         "operationId": "WellKnown_GetJwks",
         "responses": {
           "200": {
@@ -81,7 +78,6 @@
           "Well Known"
         ],
         "summary": "OAuth 2.0 Authorization Server Metadata (RFC 8414).\nIncludes Nocturne's OAuth scope taxonomy and supported grant types.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "WellKnown_GetOAuthMetadata",
         "responses": {
           "200": {
@@ -104,7 +100,6 @@
           "Coach Mark"
         ],
         "summary": "Get all coach mark states for the current user.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "CoachMark_GetAll",
         "responses": {
           "200": {
@@ -130,7 +125,6 @@
           "Coach Mark"
         ],
         "summary": "Update a coach mark's status.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "CoachMark_UpdateStatus",
         "parameters": [
           {
@@ -178,7 +172,6 @@
           "Connector Status"
         ],
         "summary": "Gets the current status and metrics for all registered connectors",
-        "description": "[ConsumesProcessor] ",
         "operationId": "ConnectorStatus_GetStatus",
         "responses": {
           "200": {
@@ -204,7 +197,6 @@
           "Device Catalog"
         ],
         "summary": "Get all known device models.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DeviceCatalog_GetCatalog",
         "responses": {
           "200": {
@@ -230,7 +222,6 @@
           "Device Catalog"
         ],
         "summary": "Get device models filtered by category.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DeviceCatalog_GetCatalogByCategory",
         "parameters": [
           {
@@ -266,7 +257,6 @@
           "Insulin Catalog"
         ],
         "summary": "Get all known insulin formulations.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "InsulinCatalog_GetCatalog",
         "responses": {
           "200": {
@@ -292,7 +282,6 @@
           "Insulin Catalog"
         ],
         "summary": "Get insulin formulations filtered by category.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "InsulinCatalog_GetCatalogByCategory",
         "parameters": [
           {
@@ -328,7 +317,6 @@
           "Platform"
         ],
         "summary": "Returns all tenants the authenticated subject is a member of.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Platform_GetTenants",
         "responses": {
           "200": {
@@ -361,8 +349,7 @@
         "tags": [
           "Platform"
         ],
-        "summary": "Creates a new tenant with the authenticated subject as owner.\nRequires MultitenancyConfiguration.AllowSelfServiceCreation to be enabled.",
-        "description": "[ConsumesProcessor] ",
+        "summary": "Creates a new tenant with the authenticated subject as owner.\nRequires OperatorConfiguration.AllowSelfServiceCreation to be enabled.",
         "operationId": "Platform_CreateTenant",
         "requestBody": {
           "x-name": "request",
@@ -420,7 +407,6 @@
           "Platform"
         ],
         "summary": "Returns the current multitenancy configuration status.\nUsed by the frontend to display subdomain URLs and transition notices.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Platform_GetTransitionStatus",
         "responses": {
           "200": {
@@ -443,7 +429,6 @@
           "Setup"
         ],
         "summary": "Create the first tenant on a fresh install. Only succeeds when zero tenants exist.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Setup_CreateTenant",
         "requestBody": {
           "x-name": "request",
@@ -488,7 +473,6 @@
           "Setup"
         ],
         "summary": "Check whether a username is available for the owner account.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Setup_ValidateUsername",
         "parameters": [
           {
@@ -521,7 +505,6 @@
           "Setup"
         ],
         "summary": "Generate passkey registration options for the first owner account.\nGuard: exactly one tenant must exist with zero non-system members.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Setup_OwnerOptions",
         "requestBody": {
           "x-name": "request",
@@ -576,7 +559,6 @@
           "Setup"
         ],
         "summary": "Complete passkey registration for the first owner account.\nVerifies attestation, generates recovery codes, issues a full JWT session.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Setup_OwnerComplete",
         "requestBody": {
           "x-name": "request",
@@ -631,7 +613,6 @@
           "Setup"
         ],
         "summary": "Initiate OIDC-based owner creation. Creates the subject and owner role,\nthen redirects to the OIDC provider to link an identity.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Setup_OwnerOidc",
         "requestBody": {
           "x-name": "request",
@@ -686,7 +667,6 @@
           "Setup"
         ],
         "summary": "OIDC callback for setup owner creation. Called by the OIDC provider after authentication.\nLinks the identity, issues session cookies, and redirects to /setup.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Setup_OidcCallback",
         "parameters": [
           {
@@ -739,7 +719,7 @@
           "Bolus Calculation"
         ],
         "summary": "Creates a new record and returns it with a `Location` header pointing to the created resource.",
-        "description": "[ConsumesProcessor] `Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.\n            \nOn success, responds with `201 Created` and a `Location` header containing the URL of the newly created record.",
+        "description": "`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.\n            \nOn success, responds with `201 Created` and a `Location` header containing the URL of the newly created record.",
         "operationId": "BolusCalculation_Create",
         "requestBody": {
           "x-name": "request",
@@ -783,7 +763,7 @@
           "Bolus Calculation"
         ],
         "summary": "Lists records with pagination, optional date range, device, and source filtering.",
-        "description": "[ConsumesProcessor] The `sort` parameter accepts exactly two values:\n- `timestamp_asc` — oldest records first\n- `timestamp_desc` — newest records first (default)\n            \nUse `limit` and `offset` together for paginated access to large result sets.",
+        "description": "The `sort` parameter accepts exactly two values:\n- `timestamp_asc` — oldest records first\n- `timestamp_desc` — newest records first (default)\n            \nUse `limit` and `offset` together for paginated access to large result sets.",
         "operationId": "BolusCalculation_GetAll",
         "parameters": [
           {
@@ -892,7 +872,7 @@
           "Bolus Calculation"
         ],
         "summary": "Updates an existing record by ID and returns the updated record.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.\n            \n`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.\n            \n`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.",
         "operationId": "BolusCalculation_Update",
         "parameters": [
           {
@@ -959,7 +939,7 @@
           "Bolus Calculation"
         ],
         "summary": "Deletes a record by ID.",
-        "description": "[ConsumesProcessor] Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
         "operationId": "BolusCalculation_Delete",
         "parameters": [
           {
@@ -996,7 +976,7 @@
           "Bolus Calculation"
         ],
         "summary": "Retrieves a single record by its unique identifier.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.",
         "operationId": "BolusCalculation_GetById",
         "parameters": [
           {
@@ -1041,7 +1021,7 @@
         "tags": [
           "Bolus"
         ],
-        "description": "[ConsumesProcessor] Response is cached for 90 seconds, varying by all query parameters.",
+        "description": "Response is cached for 90 seconds, varying by all query parameters.",
         "operationId": "Bolus_GetAll",
         "parameters": [
           {
@@ -1141,7 +1121,7 @@
           "Bolus"
         ],
         "summary": "Creates a new record and returns it with a `Location` header pointing to the created resource.",
-        "description": "[ConsumesProcessor] `Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.\n            \nOn success, responds with `201 Created` and a `Location` header containing the URL of the newly created record.",
+        "description": "`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.\n            \nOn success, responds with `201 Created` and a `Location` header containing the URL of the newly created record.",
         "operationId": "Bolus_Create",
         "requestBody": {
           "x-name": "request",
@@ -1187,7 +1167,6 @@
           "Bolus"
         ],
         "summary": "Delete a bolus by its external sync identifier (dataSource + syncIdentifier pair).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Bolus_DeleteBySyncIdentifier",
         "parameters": [
           {
@@ -1240,7 +1219,7 @@
           "Bolus"
         ],
         "summary": "Updates an existing record by ID and returns the updated record.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.\n            \n`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.\n            \n`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.",
         "operationId": "Bolus_Update",
         "parameters": [
           {
@@ -1307,7 +1286,7 @@
           "Bolus"
         ],
         "summary": "Deletes a record by ID.",
-        "description": "[ConsumesProcessor] Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
         "operationId": "Bolus_Delete",
         "parameters": [
           {
@@ -1344,7 +1323,7 @@
           "Bolus"
         ],
         "summary": "Retrieves a single record by its unique identifier.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.",
         "operationId": "Bolus_GetById",
         "parameters": [
           {
@@ -1390,7 +1369,6 @@
           "Connector Food Entries"
         ],
         "summary": "Import connector food entries.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "ConnectorFoodEntries_ImportEntries",
         "requestBody": {
           "x-name": "imports",
@@ -1430,7 +1408,6 @@
           "Foods"
         ],
         "summary": "List foods with optional filtering and pagination.\nThis is a V4 endpoint (not Nightscout-legacy) used by the meal attribution UI.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Foods_GetFoods",
         "parameters": [
           {
@@ -1486,7 +1463,6 @@
           "Foods"
         ],
         "summary": "Create a new food record.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Foods_CreateFood",
         "requestBody": {
           "x-name": "food",
@@ -1537,7 +1513,6 @@
           "Foods"
         ],
         "summary": "Get a single food by ID.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Foods_GetFood",
         "parameters": [
           {
@@ -1580,7 +1555,6 @@
           "Foods"
         ],
         "summary": "Update an existing food record by ID.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Foods_UpdateFood",
         "parameters": [
           {
@@ -1651,7 +1625,6 @@
           "Foods"
         ],
         "summary": "Delete a food from the database, handling any meal attributions that reference it.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Foods_DeleteFood",
         "parameters": [
           {
@@ -1704,7 +1677,6 @@
           "Foods"
         ],
         "summary": "Get current user's favorite foods.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Foods_GetFavorites",
         "responses": {
           "200": {
@@ -1731,7 +1703,6 @@
           "Foods"
         ],
         "summary": "Add a food to favorites.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Foods_AddFavorite",
         "parameters": [
           {
@@ -1768,7 +1739,6 @@
           "Foods"
         ],
         "summary": "Remove a food from favorites.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Foods_RemoveFavorite",
         "parameters": [
           {
@@ -1807,7 +1777,6 @@
           "Foods"
         ],
         "summary": "Get recently used foods (excluding favorites).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Foods_GetRecentFoods",
         "parameters": [
           {
@@ -1846,7 +1815,6 @@
           "Foods"
         ],
         "summary": "Get how many meal attributions reference a specific food.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Foods_GetFoodAttributionCount",
         "parameters": [
           {
@@ -1891,7 +1859,6 @@
           "Meal Matching"
         ],
         "summary": "Get a food entry for review",
-        "description": "[ConsumesProcessor] ",
         "operationId": "MealMatching_GetFoodEntry",
         "parameters": [
           {
@@ -1936,7 +1903,6 @@
           "Meal Matching"
         ],
         "summary": "Get suggested meal matches for a date range",
-        "description": "[ConsumesProcessor] ",
         "operationId": "MealMatching_GetSuggestions",
         "parameters": [
           {
@@ -1984,7 +1950,6 @@
           "Meal Matching"
         ],
         "summary": "Accept a meal match",
-        "description": "[ConsumesProcessor] ",
         "operationId": "MealMatching_AcceptMatch",
         "requestBody": {
           "x-name": "request",
@@ -2025,7 +1990,6 @@
           "Meal Matching"
         ],
         "summary": "Dismiss a meal match",
-        "description": "[ConsumesProcessor] ",
         "operationId": "MealMatching_DismissMatch",
         "requestBody": {
           "x-name": "request",
@@ -2056,7 +2020,6 @@
           "Note"
         ],
         "summary": "Delete a note by its external sync identifier (dataSource + syncIdentifier pair).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Note_DeleteBySyncIdentifier",
         "parameters": [
           {
@@ -2109,7 +2072,7 @@
           "Note"
         ],
         "summary": "Creates a new record and returns it with a `Location` header pointing to the created resource.",
-        "description": "[ConsumesProcessor] `Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.\n            \nOn success, responds with `201 Created` and a `Location` header containing the URL of the newly created record.",
+        "description": "`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.\n            \nOn success, responds with `201 Created` and a `Location` header containing the URL of the newly created record.",
         "operationId": "Note_Create",
         "requestBody": {
           "x-name": "request",
@@ -2153,7 +2116,7 @@
           "Note"
         ],
         "summary": "Lists records with pagination, optional date range, device, and source filtering.",
-        "description": "[ConsumesProcessor] The `sort` parameter accepts exactly two values:\n- `timestamp_asc` — oldest records first\n- `timestamp_desc` — newest records first (default)\n            \nUse `limit` and `offset` together for paginated access to large result sets.",
+        "description": "The `sort` parameter accepts exactly two values:\n- `timestamp_asc` — oldest records first\n- `timestamp_desc` — newest records first (default)\n            \nUse `limit` and `offset` together for paginated access to large result sets.",
         "operationId": "Note_GetAll",
         "parameters": [
           {
@@ -2262,7 +2225,7 @@
           "Note"
         ],
         "summary": "Updates an existing record by ID and returns the updated record.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.\n            \n`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.\n            \n`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.",
         "operationId": "Note_Update",
         "parameters": [
           {
@@ -2329,7 +2292,7 @@
           "Note"
         ],
         "summary": "Deletes a record by ID.",
-        "description": "[ConsumesProcessor] Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
         "operationId": "Note_Delete",
         "parameters": [
           {
@@ -2366,7 +2329,7 @@
           "Note"
         ],
         "summary": "Retrieves a single record by its unique identifier.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.",
         "operationId": "Note_GetById",
         "parameters": [
           {
@@ -2412,7 +2375,6 @@
           "Nutrition"
         ],
         "summary": "Get carb intakes with optional filtering",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Nutrition_GetCarbIntakes",
         "parameters": [
           {
@@ -2512,7 +2474,6 @@
           "Nutrition"
         ],
         "summary": "Create a new carb intake",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Nutrition_CreateCarbIntake",
         "requestBody": {
           "x-name": "request",
@@ -2560,7 +2521,6 @@
           "Nutrition"
         ],
         "summary": "Get a carb intake by ID",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Nutrition_GetCarbIntakeById",
         "parameters": [
           {
@@ -2603,7 +2563,6 @@
           "Nutrition"
         ],
         "summary": "Update an existing carb intake",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Nutrition_UpdateCarbIntake",
         "parameters": [
           {
@@ -2672,7 +2631,6 @@
           "Nutrition"
         ],
         "summary": "Delete a carb intake",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Nutrition_DeleteCarbIntake",
         "parameters": [
           {
@@ -2713,7 +2671,6 @@
           "Nutrition"
         ],
         "summary": "Delete a carb intake by its external sync identifier (dataSource + syncIdentifier pair).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Nutrition_DeleteCarbIntakeBySyncIdentifier",
         "parameters": [
           {
@@ -2766,7 +2723,6 @@
           "Nutrition"
         ],
         "summary": "Get food breakdown for a carb intake record.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Nutrition_GetCarbIntakeFoods",
         "parameters": [
           {
@@ -2809,7 +2765,6 @@
           "Nutrition"
         ],
         "summary": "Add a food breakdown entry to a carb intake record.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Nutrition_AddCarbIntakeFood",
         "parameters": [
           {
@@ -2879,7 +2834,6 @@
           "Nutrition"
         ],
         "summary": "Update a food breakdown entry.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Nutrition_UpdateCarbIntakeFood",
         "parameters": [
           {
@@ -2947,7 +2901,6 @@
           "Nutrition"
         ],
         "summary": "Remove a food breakdown entry.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Nutrition_DeleteCarbIntakeFood",
         "parameters": [
           {
@@ -3005,7 +2958,6 @@
           "Nutrition"
         ],
         "summary": "Atomically create a correlated Bolus + CarbIntake for a meal event.\nBoth records share a single CorrelationId and are persisted within a\nsingle transaction. When an existing row matches on\n(DataSource, SyncIdentifier), the idempotent upsert applies and the\nresponse returns 200 instead of 201.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Nutrition_CreateMeal",
         "requestBody": {
           "x-name": "request",
@@ -3062,7 +3014,6 @@
           "Nutrition"
         ],
         "summary": "Get meal events grouped by CorrelationId. Each event carries its\nown carb intakes, correlated boluses, food attribution rows, and\naggregated totals. Carb intakes with a null CorrelationId become\nsingle-member events on their own (they are NOT collapsed together).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Nutrition_GetMeals",
         "parameters": [
           {
@@ -3119,7 +3070,6 @@
           "Compression Low"
         ],
         "summary": "Get compression low suggestions with optional filtering",
-        "description": "[ConsumesProcessor] ",
         "operationId": "CompressionLow_GetSuggestions",
         "parameters": [
           {
@@ -3173,7 +3123,6 @@
           "Compression Low"
         ],
         "summary": "Get a single suggestion with glucose entries for charting",
-        "description": "[ConsumesProcessor] ",
         "operationId": "CompressionLow_GetSuggestion",
         "parameters": [
           {
@@ -3206,7 +3155,6 @@
           "Compression Low"
         ],
         "summary": "Delete a suggestion and its associated state span",
-        "description": "[ConsumesProcessor] ",
         "operationId": "CompressionLow_DeleteSuggestion",
         "parameters": [
           {
@@ -3247,7 +3195,6 @@
           "Compression Low"
         ],
         "summary": "Accept a suggestion with adjusted bounds",
-        "description": "[ConsumesProcessor] ",
         "operationId": "CompressionLow_AcceptSuggestion",
         "parameters": [
           {
@@ -3317,7 +3264,6 @@
           "Compression Low"
         ],
         "summary": "Dismiss a suggestion",
-        "description": "[ConsumesProcessor] ",
         "operationId": "CompressionLow_DismissSuggestion",
         "parameters": [
           {
@@ -3368,7 +3314,7 @@
           "Compression Low"
         ],
         "summary": "Manually trigger detection for a date range (for testing)",
-        "description": "[ConsumesProcessor] Provide either a single `nightOf` date or a range with `startDate` and `endDate`.\nWhen using a range, detection runs for each night in the range (inclusive).",
+        "description": "Provide either a single `nightOf` date or a range with `startDate` and `endDate`.\nWhen using a range, detection runs for each night in the range (inclusive).",
         "operationId": "CompressionLow_TriggerDetection",
         "requestBody": {
           "x-name": "request",
@@ -3405,7 +3351,6 @@
         "tags": [
           "Deduplication"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Deduplication_StartDeduplicationJob",
         "responses": {
           "202": {
@@ -3430,7 +3375,6 @@
         "tags": [
           "Deduplication"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Deduplication_GetJobStatus",
         "parameters": [
           {
@@ -3477,7 +3421,6 @@
         "tags": [
           "Deduplication"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Deduplication_CancelJob",
         "parameters": [
           {
@@ -3524,7 +3467,6 @@
         "tags": [
           "Deduplication"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Deduplication_GetEntryLinkedRecords",
         "parameters": [
           {
@@ -3570,7 +3512,6 @@
         "tags": [
           "Deduplication"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Deduplication_GetTreatmentLinkedRecords",
         "parameters": [
           {
@@ -3616,7 +3557,6 @@
         "tags": [
           "Deduplication"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Deduplication_GetStateSpanLinkedRecords",
         "parameters": [
           {
@@ -3662,7 +3602,6 @@
         "tags": [
           "Deduplication"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Deduplication_GetRecordLinkedRecords",
         "parameters": [
           {
@@ -3718,7 +3657,6 @@
           "Discrepancy"
         ],
         "summary": "Get overall compatibility metrics for dashboard overview",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Discrepancy_GetCompatibilityMetrics",
         "parameters": [
           {
@@ -3764,7 +3702,6 @@
           "Discrepancy"
         ],
         "summary": "Get per-endpoint compatibility metrics",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Discrepancy_GetEndpointMetrics",
         "parameters": [
           {
@@ -3813,7 +3750,6 @@
           "Discrepancy"
         ],
         "summary": "Get detailed discrepancy analyses with filtering and pagination",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Discrepancy_GetDiscrepancyAnalyses",
         "parameters": [
           {
@@ -3905,7 +3841,6 @@
           "Discrepancy"
         ],
         "summary": "Get a specific discrepancy analysis by ID",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Discrepancy_GetDiscrepancyAnalysis",
         "parameters": [
           {
@@ -3940,7 +3875,6 @@
           "Discrepancy"
         ],
         "summary": "Get real-time compatibility status summary",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Discrepancy_GetCompatibilityStatus",
         "responses": {
           "200": {
@@ -3962,7 +3896,6 @@
           "Discrepancy"
         ],
         "summary": "Receive forwarded discrepancies from remote Nocturne instances",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Discrepancy_IngestDiscrepancy",
         "requestBody": {
           "x-name": "request",
@@ -4010,7 +3943,6 @@
         "tags": [
           "Migration"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Migration_TestConnection",
         "requestBody": {
           "x-name": "request",
@@ -4054,7 +3986,6 @@
         "tags": [
           "Migration"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Migration_StartMigration",
         "requestBody": {
           "x-name": "request",
@@ -4099,7 +4030,6 @@
           "Migration"
         ],
         "summary": "Start a migration using saved connector credentials (e.g., after Nightscout connector setup).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Migration_StartFromConnector",
         "parameters": [
           {
@@ -4142,7 +4072,6 @@
         "tags": [
           "Migration"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Migration_GetStatus",
         "parameters": [
           {
@@ -4186,7 +4115,6 @@
         "tags": [
           "Migration"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Migration_CancelMigration",
         "parameters": [
           {
@@ -4223,7 +4151,6 @@
         "tags": [
           "Migration"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Migration_GetHistory",
         "responses": {
           "200": {
@@ -4248,7 +4175,6 @@
         "tags": [
           "Migration"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Migration_GetPendingConfig",
         "responses": {
           "200": {
@@ -4270,7 +4196,6 @@
         "tags": [
           "Migration"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Migration_GetSources",
         "responses": {
           "200": {
@@ -4296,7 +4221,6 @@
           "Nightscout Transition"
         ],
         "summary": "Get the current Nightscout transition status including migration progress,\nwrite-back health, and disconnect readiness recommendation.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "NightscoutTransition_GetTransitionStatus",
         "responses": {
           "200": {
@@ -4320,7 +4244,6 @@
         "tags": [
           "Oidc Provider Admin"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "OidcProviderAdmin_GetAll",
         "responses": {
           "200": {
@@ -4343,7 +4266,6 @@
         "tags": [
           "Oidc Provider Admin"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "OidcProviderAdmin_Create",
         "requestBody": {
           "x-name": "request",
@@ -4380,7 +4302,6 @@
         "tags": [
           "Oidc Provider Admin"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "OidcProviderAdmin_GetConfigManaged",
         "responses": {
           "200": {
@@ -4402,7 +4323,6 @@
         "tags": [
           "Oidc Provider Admin"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "OidcProviderAdmin_GetById",
         "parameters": [
           {
@@ -4444,7 +4364,6 @@
         "tags": [
           "Oidc Provider Admin"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "OidcProviderAdmin_Update",
         "parameters": [
           {
@@ -4502,7 +4421,6 @@
         "tags": [
           "Oidc Provider Admin"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "OidcProviderAdmin_Delete",
         "parameters": [
           {
@@ -4552,7 +4470,6 @@
         "tags": [
           "Oidc Provider Admin"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "OidcProviderAdmin_Enable",
         "parameters": [
           {
@@ -4593,7 +4510,6 @@
         "tags": [
           "Oidc Provider Admin"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "OidcProviderAdmin_Disable",
         "parameters": [
           {
@@ -4644,7 +4560,6 @@
         "tags": [
           "Oidc Provider Admin"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "OidcProviderAdmin_TestExisting",
         "parameters": [
           {
@@ -4688,7 +4603,6 @@
         "tags": [
           "Oidc Provider Admin"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "OidcProviderAdmin_TestUnsaved",
         "requestBody": {
           "x-name": "request",
@@ -4722,7 +4636,6 @@
         "tags": [
           "Processing"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Processing_GetProcessingStatus",
         "parameters": [
           {
@@ -4770,7 +4683,6 @@
         "tags": [
           "Processing"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Processing_WaitForCompletion",
         "parameters": [
           {
@@ -4837,7 +4749,6 @@
           "Subject Admin"
         ],
         "summary": "Grant or revoke platform admin for a subject.\nBlocks self-demotion if the caller is the last platform admin.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "SubjectAdmin_SetPlatformAdmin",
         "parameters": [
           {
@@ -4884,7 +4795,6 @@
           "Clock Faces"
         ],
         "summary": "Get a clock face configuration by ID (public, no authentication required)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "ClockFaces_GetById",
         "parameters": [
           {
@@ -4928,7 +4838,6 @@
           "Clock Faces"
         ],
         "summary": "Update an existing clock face (owner only)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "ClockFaces_Update",
         "parameters": [
           {
@@ -4989,7 +4898,6 @@
           "Clock Faces"
         ],
         "summary": "Delete a clock face (owner only)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "ClockFaces_Delete",
         "parameters": [
           {
@@ -5031,7 +4939,6 @@
           "Clock Faces"
         ],
         "summary": "List all clock faces for the current user",
-        "description": "[ConsumesProcessor] ",
         "operationId": "ClockFaces_List",
         "responses": {
           "200": {
@@ -5055,7 +4962,6 @@
           "Clock Faces"
         ],
         "summary": "Create a new clock face",
-        "description": "[ConsumesProcessor] ",
         "operationId": "ClockFaces_Create",
         "requestBody": {
           "x-name": "request",
@@ -5103,7 +5009,6 @@
         "tags": [
           "Glucose Processing Settings"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "GlucoseProcessingSettings_GetPreference",
         "responses": {
           "200": {
@@ -5123,7 +5028,6 @@
         "tags": [
           "Glucose Processing Settings"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "GlucoseProcessingSettings_SetPreference",
         "requestBody": {
           "x-name": "request",
@@ -5153,7 +5057,6 @@
         "tags": [
           "Glucose Processing Settings"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "GlucoseProcessingSettings_GetSourceDefaults",
         "responses": {
           "200": {
@@ -5173,7 +5076,6 @@
         "tags": [
           "Glucose Processing Settings"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "GlucoseProcessingSettings_SetSourceDefaults",
         "requestBody": {
           "x-name": "request",
@@ -5204,7 +5106,6 @@
           "My Fitness Pal Settings"
         ],
         "summary": "Get global MyFitnessPal matching settings.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "MyFitnessPalSettings_GetSettings",
         "responses": {
           "200": {
@@ -5224,7 +5125,6 @@
           "My Fitness Pal Settings"
         ],
         "summary": "Update global MyFitnessPal matching settings.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "MyFitnessPalSettings_SaveSettings",
         "requestBody": {
           "x-name": "settings",
@@ -5258,7 +5158,6 @@
           "Profile"
         ],
         "summary": "Get a consolidated summary of all profile data across all profile names.\nOptionally provide a date range to include schedule change detection info.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_GetProfileSummary",
         "parameters": [
           {
@@ -5303,7 +5202,6 @@
           "Profile"
         ],
         "summary": "Get legacy Nightscout-shaped profile records projected from V4 schedule data.\nIntended for connector consumption where the caller needs the monolithic\nProfile shape (store with basal/carbratio/sens/target arrays).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_GetProfileRecords",
         "parameters": [
           {
@@ -5347,7 +5245,6 @@
           "Profile"
         ],
         "summary": "Get all therapy settings with optional filtering",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_GetTherapySettings",
         "parameters": [
           {
@@ -5447,7 +5344,6 @@
           "Profile"
         ],
         "summary": "Create a new therapy settings record",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_CreateTherapySettings",
         "requestBody": {
           "x-name": "model",
@@ -5496,7 +5392,6 @@
           "Profile"
         ],
         "summary": "Get therapy settings by profile name",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_GetTherapySettingsByName",
         "parameters": [
           {
@@ -5533,7 +5428,6 @@
           "Profile"
         ],
         "summary": "Get a therapy settings record by ID",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_GetTherapySettingsById",
         "parameters": [
           {
@@ -5576,7 +5470,6 @@
           "Profile"
         ],
         "summary": "Update an existing therapy settings record",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_UpdateTherapySettings",
         "parameters": [
           {
@@ -5646,7 +5539,6 @@
           "Profile"
         ],
         "summary": "Delete a therapy settings record",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_DeleteTherapySettings",
         "parameters": [
           {
@@ -5688,7 +5580,6 @@
           "Profile"
         ],
         "summary": "Get basal schedules by profile name",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_GetBasalSchedulesByName",
         "parameters": [
           {
@@ -5725,7 +5616,6 @@
           "Profile"
         ],
         "summary": "Get a basal schedule by ID",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_GetBasalScheduleById",
         "parameters": [
           {
@@ -5770,7 +5660,6 @@
           "Profile"
         ],
         "summary": "Create a new basal schedule",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_CreateBasalSchedule",
         "requestBody": {
           "x-name": "model",
@@ -5819,7 +5708,6 @@
           "Profile"
         ],
         "summary": "Update an existing basal schedule",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_UpdateBasalSchedule",
         "parameters": [
           {
@@ -5889,7 +5777,6 @@
           "Profile"
         ],
         "summary": "Delete a basal schedule",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_DeleteBasalSchedule",
         "parameters": [
           {
@@ -5931,7 +5818,6 @@
           "Profile"
         ],
         "summary": "Get carb ratio schedules by profile name",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_GetCarbRatioSchedulesByName",
         "parameters": [
           {
@@ -5968,7 +5854,6 @@
           "Profile"
         ],
         "summary": "Get a carb ratio schedule by ID",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_GetCarbRatioScheduleById",
         "parameters": [
           {
@@ -6013,7 +5898,6 @@
           "Profile"
         ],
         "summary": "Create a new carb ratio schedule",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_CreateCarbRatioSchedule",
         "requestBody": {
           "x-name": "model",
@@ -6062,7 +5946,6 @@
           "Profile"
         ],
         "summary": "Update an existing carb ratio schedule",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_UpdateCarbRatioSchedule",
         "parameters": [
           {
@@ -6132,7 +6015,6 @@
           "Profile"
         ],
         "summary": "Delete a carb ratio schedule",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_DeleteCarbRatioSchedule",
         "parameters": [
           {
@@ -6174,7 +6056,6 @@
           "Profile"
         ],
         "summary": "Get sensitivity schedules by profile name",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_GetSensitivitySchedulesByName",
         "parameters": [
           {
@@ -6211,7 +6092,6 @@
           "Profile"
         ],
         "summary": "Get a sensitivity schedule by ID",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_GetSensitivityScheduleById",
         "parameters": [
           {
@@ -6256,7 +6136,6 @@
           "Profile"
         ],
         "summary": "Create a new sensitivity schedule",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_CreateSensitivitySchedule",
         "requestBody": {
           "x-name": "model",
@@ -6305,7 +6184,6 @@
           "Profile"
         ],
         "summary": "Update an existing sensitivity schedule",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_UpdateSensitivitySchedule",
         "parameters": [
           {
@@ -6375,7 +6253,6 @@
           "Profile"
         ],
         "summary": "Delete a sensitivity schedule",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_DeleteSensitivitySchedule",
         "parameters": [
           {
@@ -6417,7 +6294,6 @@
           "Profile"
         ],
         "summary": "Get target range schedules by profile name",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_GetTargetRangeSchedulesByName",
         "parameters": [
           {
@@ -6454,7 +6330,6 @@
           "Profile"
         ],
         "summary": "Get a target range schedule by ID",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_GetTargetRangeScheduleById",
         "parameters": [
           {
@@ -6499,7 +6374,6 @@
           "Profile"
         ],
         "summary": "Create a new target range schedule",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_CreateTargetRangeSchedule",
         "requestBody": {
           "x-name": "model",
@@ -6548,7 +6422,6 @@
           "Profile"
         ],
         "summary": "Update an existing target range schedule",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_UpdateTargetRangeSchedule",
         "parameters": [
           {
@@ -6618,7 +6491,6 @@
           "Profile"
         ],
         "summary": "Delete a target range schedule",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Profile_DeleteTargetRangeSchedule",
         "parameters": [
           {
@@ -6660,7 +6532,6 @@
           "UI Settings"
         ],
         "summary": "Get all UI settings configuration for frontend settings pages.\nIn demo mode, this fetches from the demo service.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "UISettings_GetUISettings",
         "responses": {
           "200": {
@@ -6684,7 +6555,6 @@
           "UI Settings"
         ],
         "summary": "Save complete UI settings configuration.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "UISettings_SaveUISettings",
         "requestBody": {
           "x-name": "settings",
@@ -6733,7 +6603,6 @@
           "UI Settings"
         ],
         "summary": "Get settings for a specific section.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "UISettings_GetSectionSettings",
         "parameters": [
           {
@@ -6774,7 +6643,6 @@
           "UI Settings"
         ],
         "summary": "Save notification settings including alarm configuration.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "UISettings_SaveNotificationSettings",
         "requestBody": {
           "x-name": "settings",
@@ -6823,7 +6691,6 @@
           "UI Settings"
         ],
         "summary": "Get alarm profiles configuration (xDrip+-style).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "UISettings_GetAlarmConfiguration",
         "responses": {
           "200": {
@@ -6847,7 +6714,6 @@
           "UI Settings"
         ],
         "summary": "Save alarm profiles configuration (xDrip+-style).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "UISettings_SaveAlarmConfiguration",
         "requestBody": {
           "x-name": "config",
@@ -6896,7 +6762,6 @@
           "UI Settings"
         ],
         "summary": "Save a specific alarm profile.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "UISettings_AddOrUpdateAlarmProfile",
         "requestBody": {
           "x-name": "profile",
@@ -6945,7 +6810,6 @@
           "UI Settings"
         ],
         "summary": "Delete an alarm profile by ID.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "UISettings_DeleteAlarmProfile",
         "parameters": [
           {
@@ -6993,7 +6857,6 @@
           "User Preferences"
         ],
         "summary": "Get the current user's preferences",
-        "description": "[ConsumesProcessor] ",
         "operationId": "UserPreferences_GetPreferences",
         "responses": {
           "200": {
@@ -7024,7 +6887,6 @@
           "User Preferences"
         ],
         "summary": "Update the current user's preferences",
-        "description": "[ConsumesProcessor] ",
         "operationId": "UserPreferences_UpdatePreferences",
         "requestBody": {
           "x-name": "request",
@@ -7080,7 +6942,6 @@
           "Compatibility"
         ],
         "summary": "Get current proxy configuration",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Compatibility_GetConfiguration",
         "responses": {
           "200": {
@@ -7102,7 +6963,6 @@
           "Compatibility"
         ],
         "summary": "Get overall compatibility metrics",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Compatibility_GetMetrics",
         "parameters": [
           {
@@ -7146,7 +7006,6 @@
           "Compatibility"
         ],
         "summary": "Get per-endpoint compatibility metrics",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Compatibility_GetEndpointMetrics",
         "parameters": [
           {
@@ -7193,7 +7052,6 @@
           "Compatibility"
         ],
         "summary": "Get list of analyses with filtering and pagination",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Compatibility_GetAnalyses",
         "parameters": [
           {
@@ -7292,7 +7150,6 @@
           "Compatibility"
         ],
         "summary": "Get detailed analysis by ID",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Compatibility_GetAnalysisDetail",
         "parameters": [
           {
@@ -7336,7 +7193,6 @@
           "Compatibility"
         ],
         "summary": "Test API compatibility by comparing responses from Nightscout and Nocturne",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Compatibility_TestApiComparison",
         "requestBody": {
           "x-name": "request",
@@ -7380,7 +7236,6 @@
           "Debug"
         ],
         "summary": "Echo endpoint for debugging MongoDB queries\nReturns information about how REST API parameters translate into MongoDB queries",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Debug_EchoQuery",
         "parameters": [
           {
@@ -7425,7 +7280,6 @@
           "Debug"
         ],
         "summary": "Echo endpoint for debugging MongoDB queries with model\nReturns information about how REST API parameters translate into MongoDB queries",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Debug_EchoQueryWithModel",
         "parameters": [
           {
@@ -7480,7 +7334,6 @@
           "Debug"
         ],
         "summary": "Echo endpoint for debugging MongoDB queries with model and spec\nReturns information about how REST API parameters translate into MongoDB queries",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Debug_EchoQueryWithModelAndSpec",
         "parameters": [
           {
@@ -7545,7 +7398,6 @@
           "Debug"
         ],
         "summary": "Preview endpoint for entry creation without persistence\nAllows previewing entry data without actually storing it in the database",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Debug_PreviewEntries",
         "requestBody": {
           "x-name": "entries",
@@ -7589,7 +7441,6 @@
           "Services"
         ],
         "summary": "Get a complete overview of services, data sources, and available integrations.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Services_GetServicesOverview",
         "responses": {
           "200": {
@@ -7615,7 +7466,6 @@
           "Services"
         ],
         "summary": "Get all active data sources that have been sending data to this Nocturne instance.\nThis includes CGM apps, AID systems, and any other uploaders.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Services_GetActiveDataSources",
         "responses": {
           "200": {
@@ -7644,7 +7494,6 @@
           "Services"
         ],
         "summary": "Get detailed information about a specific data source.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Services_GetDataSource",
         "parameters": [
           {
@@ -7690,7 +7539,6 @@
           "Services"
         ],
         "summary": "Delete all data from a specific data source.\nWARNING: This is a destructive operation that cannot be undone.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Services_DeleteDataSourceData",
         "parameters": [
           {
@@ -7743,7 +7591,6 @@
           "Services"
         ],
         "summary": "Get available connectors that can be configured to pull data into Nocturne.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Services_GetAvailableConnectors",
         "responses": {
           "200": {
@@ -7769,7 +7616,6 @@
           "Services"
         ],
         "summary": "Get capabilities for a specific connector.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Services_GetConnectorCapabilities",
         "parameters": [
           {
@@ -7814,7 +7660,6 @@
           "Services"
         ],
         "summary": "Get uploader apps that can push data to Nocturne with setup instructions.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Services_GetUploaderApps",
         "responses": {
           "200": {
@@ -7840,7 +7685,6 @@
           "Services"
         ],
         "summary": "Get API endpoint information for configuring external apps.\nThis provides all the information needed to configure xDrip+, Loop, AAPS, etc.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Services_GetApiInfo",
         "responses": {
           "200": {
@@ -7863,7 +7707,6 @@
           "Services"
         ],
         "summary": "Get setup instructions for a specific uploader app.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Services_GetUploaderSetup",
         "parameters": [
           {
@@ -7908,7 +7751,6 @@
           "Services"
         ],
         "summary": "Delete all demo data. This operation is safe as demo data can be easily regenerated.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Services_DeleteDemoData",
         "responses": {
           "200": {
@@ -7939,7 +7781,6 @@
           "Services"
         ],
         "summary": "Get a summary of data counts for a specific connector.\nReturns the number of entries, treatments, and device statuses synced by this connector.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Services_GetConnectorDataSummary",
         "parameters": [
           {
@@ -7977,7 +7818,6 @@
           "Services"
         ],
         "summary": "Delete all data from a specific connector.\nWARNING: This is a destructive operation that cannot be undone.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Services_DeleteConnectorData",
         "parameters": [
           {
@@ -8031,7 +7871,6 @@
           "Services"
         ],
         "summary": "Trigger a manual sync for a specific connector.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Services_TriggerConnectorSync",
         "parameters": [
           {
@@ -8089,7 +7928,6 @@
           "Services"
         ],
         "summary": "Get sync status for a specific connector, including latest timestamps and connector state.\nUsed by connectors on startup to determine where to resume syncing from.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Services_GetConnectorSyncStatus",
         "parameters": [
           {
@@ -8137,7 +7975,6 @@
           "Status"
         ],
         "summary": "Get detailed system status information",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Status_GetStatus",
         "responses": {
           "200": {
@@ -8159,7 +7996,6 @@
           "Status"
         ],
         "summary": "Get a simple health check status",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Status_GetHealthStatus",
         "responses": {
           "200": {
@@ -8178,7 +8014,6 @@
         "tags": [
           "Support"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Support_CreateIssue",
         "requestBody": {
           "content": {
@@ -8268,7 +8103,6 @@
           "Support"
         ],
         "summary": "Returns a pre-filled GitHub new-issue URL for fallback when the API is unavailable.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Support_GetFallbackUrl",
         "parameters": [
           {
@@ -8311,12 +8145,33 @@
         "x-remote-type": "query"
       }
     },
+    "/api/v4/support/config": {
+      "get": {
+        "tags": [
+          "Support"
+        ],
+        "summary": "Returns operator support configuration for the frontend.\nWhen no operator is configured, accountBilling is null and the default GitHub flow applies.",
+        "operationId": "Support_GetSupportConfig",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupportConfigResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "query"
+      }
+    },
     "/api/v4/system/heartbeat": {
       "post": {
         "tags": [
           "System"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "System_Heartbeat",
         "requestBody": {
           "x-name": "request",
@@ -8342,7 +8197,6 @@
         "tags": [
           "System"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "System_GetChannelStatuses",
         "responses": {
           "200": {
@@ -8365,7 +8219,6 @@
           "System Events"
         ],
         "summary": "Query system events with optional filtering.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "SystemEvents_GetSystemEvents",
         "parameters": [
           {
@@ -8473,7 +8326,6 @@
           "System Events"
         ],
         "summary": "Create a new system event (manual entry or import).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "SystemEvents_CreateSystemEvent",
         "requestBody": {
           "x-name": "request",
@@ -8507,7 +8359,6 @@
           "System Events"
         ],
         "summary": "Get a specific system event by ID.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "SystemEvents_GetSystemEvent",
         "parameters": [
           {
@@ -8538,7 +8389,6 @@
           "System Events"
         ],
         "summary": "Delete a system event.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "SystemEvents_DeleteSystemEvent",
         "parameters": [
           {
@@ -8571,7 +8421,6 @@
         "tags": [
           "Access Request"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "AccessRequest_GetPendingRequests",
         "responses": {
           "200": {
@@ -8596,7 +8445,6 @@
         "tags": [
           "Access Request"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "AccessRequest_Approve",
         "parameters": [
           {
@@ -8645,7 +8493,6 @@
         "tags": [
           "Access Request"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "AccessRequest_Deny",
         "parameters": [
           {
@@ -8682,7 +8529,6 @@
         "tags": [
           "Tenant"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Tenant_GetAll",
         "responses": {
           "200": {
@@ -8705,7 +8551,6 @@
         "tags": [
           "Tenant"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Tenant_Create",
         "requestBody": {
           "x-name": "request",
@@ -8742,7 +8587,6 @@
         "tags": [
           "Tenant"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Tenant_GetById",
         "parameters": [
           {
@@ -8784,7 +8628,6 @@
         "tags": [
           "Tenant"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Tenant_Update",
         "parameters": [
           {
@@ -8842,7 +8685,6 @@
         "tags": [
           "Tenant"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Tenant_Delete",
         "parameters": [
           {
@@ -8882,7 +8724,6 @@
         "tags": [
           "Tenant"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Tenant_AddMember",
         "parameters": [
           {
@@ -8934,7 +8775,6 @@
         "tags": [
           "Tenant"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Tenant_RemoveMember",
         "parameters": [
           {
@@ -8984,7 +8824,6 @@
         "tags": [
           "Tenant"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Tenant_CreateInvite",
         "parameters": [
           {
@@ -9041,7 +8880,6 @@
         "tags": [
           "Tenant"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Tenant_ListInvites",
         "parameters": [
           {
@@ -9088,7 +8926,6 @@
         "tags": [
           "Tenant"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Tenant_RevokeInvite",
         "parameters": [
           {
@@ -9149,7 +8986,6 @@
         "tags": [
           "Tenant"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Tenant_Provision",
         "requestBody": {
           "x-name": "request",
@@ -9197,7 +9033,6 @@
           "Alert Custom Sounds"
         ],
         "summary": "Upload a custom alert sound file.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "AlertCustomSounds_UploadSound",
         "requestBody": {
           "content": {
@@ -9263,7 +9098,6 @@
           "Alert Custom Sounds"
         ],
         "summary": "List all custom sounds for the current tenant (metadata only, no audio data).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "AlertCustomSounds_GetSounds",
         "responses": {
           "200": {
@@ -9289,7 +9123,6 @@
           "Alert Custom Sounds"
         ],
         "summary": "Stream the raw audio bytes for a custom sound.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "AlertCustomSounds_StreamSound",
         "parameters": [
           {
@@ -9326,7 +9159,6 @@
           "Alert Custom Sounds"
         ],
         "summary": "Delete a custom sound.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "AlertCustomSounds_DeleteSound",
         "parameters": [
           {
@@ -9367,7 +9199,6 @@
           "Alert Invites"
         ],
         "summary": "Generate an invite link for a follower to join an escalation step.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "AlertInvites_CreateInvite",
         "requestBody": {
           "x-name": "request",
@@ -9412,7 +9243,6 @@
           "Alert Invites"
         ],
         "summary": "Validate an invite token (public endpoint for redemption flow).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "AlertInvites_ValidateInvite",
         "parameters": [
           {
@@ -9466,7 +9296,6 @@
           "Alert Invites"
         ],
         "summary": "Redeem an invite token.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "AlertInvites_RedeemInvite",
         "parameters": [
           {
@@ -9513,7 +9342,6 @@
           "Alert Invites"
         ],
         "summary": "Revoke an unredeemed invite.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "AlertInvites_RevokeInvite",
         "parameters": [
           {
@@ -9561,7 +9389,6 @@
           "Alert Rules"
         ],
         "summary": "List all alert rules for the current tenant with schedules and escalation steps.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "AlertRules_GetRules",
         "responses": {
           "200": {
@@ -9585,7 +9412,6 @@
           "Alert Rules"
         ],
         "summary": "Create an alert rule with nested schedules, escalation steps, and channels.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "AlertRules_CreateRule",
         "requestBody": {
           "x-name": "request",
@@ -9633,7 +9459,6 @@
           "Alert Rules"
         ],
         "summary": "Get a single alert rule with full schedule/escalation tree.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "AlertRules_GetRule",
         "parameters": [
           {
@@ -9676,7 +9501,6 @@
           "Alert Rules"
         ],
         "summary": "Update an alert rule.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "AlertRules_UpdateRule",
         "parameters": [
           {
@@ -9745,7 +9569,6 @@
           "Alert Rules"
         ],
         "summary": "Delete an alert rule (cascades to schedules, steps, channels).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "AlertRules_DeleteRule",
         "parameters": [
           {
@@ -9786,7 +9609,6 @@
           "Alert Rules"
         ],
         "summary": "Toggle an alert rule enabled/disabled.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "AlertRules_ToggleRule",
         "parameters": [
           {
@@ -9835,7 +9657,6 @@
           "Alerts"
         ],
         "summary": "List active (unresolved) excursions for the current tenant.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Alerts_GetActiveAlerts",
         "responses": {
           "200": {
@@ -9861,7 +9682,6 @@
           "Alerts"
         ],
         "summary": "Get paginated history of resolved excursions.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Alerts_GetAlertHistory",
         "parameters": [
           {
@@ -9905,7 +9725,6 @@
         "tags": [
           "Alerts"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Alerts_Acknowledge",
         "requestBody": {
           "x-name": "request",
@@ -9936,7 +9755,6 @@
           "Alerts"
         ],
         "summary": "Snooze an alert instance for the specified duration.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Alerts_SnoozeInstance",
         "parameters": [
           {
@@ -10008,7 +9826,6 @@
         "tags": [
           "Alerts"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Alerts_MarkDelivered",
         "parameters": [
           {
@@ -10046,7 +9863,6 @@
         "tags": [
           "Alerts"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Alerts_MarkFailed",
         "parameters": [
           {
@@ -10085,7 +9901,6 @@
           "Alerts"
         ],
         "summary": "Get pending deliveries for the specified channel types.\nUsed by bot/adapter services to poll for work.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Alerts_GetPendingDeliveries",
         "parameters": [
           {
@@ -10126,7 +9941,6 @@
           "Notifications"
         ],
         "summary": "Create a notification programmatically (for integrations and services)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Notifications_CreateNotification",
         "requestBody": {
           "x-name": "request",
@@ -10187,7 +10001,6 @@
         "tags": [
           "Notifications"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Notifications_GetNotifications",
         "responses": {
           "200": {
@@ -10222,7 +10035,6 @@
         "tags": [
           "Notifications"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Notifications_ExecuteAction",
         "parameters": [
           {
@@ -10281,7 +10093,6 @@
         "tags": [
           "Notifications"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "Notifications_DismissNotification",
         "parameters": [
           {
@@ -10331,7 +10142,6 @@
         "tags": [
           "Tracker Alerts"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "TrackerAlerts_GetPendingAlerts",
         "responses": {
           "200": {
@@ -10356,7 +10166,6 @@
           "Tracker Alerts"
         ],
         "summary": "Get available alert sounds",
-        "description": "[ConsumesProcessor] ",
         "operationId": "TrackerAlerts_GetAvailableSounds",
         "responses": {
           "200": {
@@ -10381,7 +10190,6 @@
           "Trackers"
         ],
         "summary": "Get all tracker definitions. Returns public trackers for unauthenticated users,\nor all visible trackers for authenticated users.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Trackers_GetDefinitions",
         "parameters": [
           {
@@ -10424,7 +10232,6 @@
           "Trackers"
         ],
         "summary": "Create a new tracker definition",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Trackers_CreateDefinition",
         "requestBody": {
           "x-name": "request",
@@ -10462,7 +10269,6 @@
           "Trackers"
         ],
         "summary": "Get a specific tracker definition",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Trackers_GetDefinition",
         "parameters": [
           {
@@ -10495,7 +10301,6 @@
           "Trackers"
         ],
         "summary": "Update a tracker definition",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Trackers_UpdateDefinition",
         "parameters": [
           {
@@ -10544,7 +10349,6 @@
           "Trackers"
         ],
         "summary": "Delete a tracker definition",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Trackers_DeleteDefinition",
         "parameters": [
           {
@@ -10575,7 +10379,6 @@
           "Trackers"
         ],
         "summary": "Get active tracker instances",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Trackers_GetActiveInstances",
         "responses": {
           "200": {
@@ -10599,7 +10402,6 @@
           "Trackers"
         ],
         "summary": "Start a new tracker instance",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Trackers_StartInstance",
         "requestBody": {
           "x-name": "request",
@@ -10637,7 +10439,6 @@
           "Trackers"
         ],
         "summary": "Get completed tracker instances (history)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Trackers_GetInstanceHistory",
         "parameters": [
           {
@@ -10675,7 +10476,6 @@
           "Trackers"
         ],
         "summary": "Get upcoming tracker expirations for calendar",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Trackers_GetUpcomingInstances",
         "parameters": [
           {
@@ -10723,7 +10523,6 @@
           "Trackers"
         ],
         "summary": "Complete a tracker instance",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Trackers_CompleteInstance",
         "parameters": [
           {
@@ -10774,7 +10573,6 @@
           "Trackers"
         ],
         "summary": "Acknowledge/snooze a tracker notification",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Trackers_AckInstance",
         "parameters": [
           {
@@ -10817,7 +10615,6 @@
           "Trackers"
         ],
         "summary": "Delete a tracker instance",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Trackers_DeleteInstance",
         "parameters": [
           {
@@ -10848,7 +10645,6 @@
           "Trackers"
         ],
         "summary": "Get all presets for the current user",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Trackers_GetPresets",
         "responses": {
           "200": {
@@ -10872,7 +10668,6 @@
           "Trackers"
         ],
         "summary": "Create a new preset",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Trackers_CreatePreset",
         "requestBody": {
           "x-name": "request",
@@ -10910,7 +10705,6 @@
           "Trackers"
         ],
         "summary": "Apply a preset (starts a new instance)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Trackers_ApplyPreset",
         "parameters": [
           {
@@ -10959,7 +10753,6 @@
           "Trackers"
         ],
         "summary": "Delete a preset",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Trackers_DeletePreset",
         "parameters": [
           {
@@ -10990,7 +10783,6 @@
           "Chat Identity"
         ],
         "summary": "List active chat identity links for the current tenant.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "ChatIdentity_GetLinks",
         "responses": {
           "200": {
@@ -11016,7 +10808,6 @@
           "Chat Identity"
         ],
         "summary": "Claim a pending link token after /connect slash command auth.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "ChatIdentity_ClaimLink",
         "requestBody": {
           "x-name": "body",
@@ -11054,7 +10845,6 @@
           "Chat Identity"
         ],
         "summary": "Directly create a link for the current tenant (used by OAuth2 finalize hop).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "ChatIdentity_CreateDirectLink",
         "requestBody": {
           "x-name": "body",
@@ -11091,7 +10881,6 @@
         "tags": [
           "Chat Identity"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "ChatIdentity_SetDefault",
         "parameters": [
           {
@@ -11121,7 +10910,6 @@
         "tags": [
           "Chat Identity"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "ChatIdentity_UpdateLink",
         "parameters": [
           {
@@ -11161,7 +10949,6 @@
         "tags": [
           "Chat Identity"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "ChatIdentity_RevokeLink",
         "parameters": [
           {
@@ -11192,7 +10979,6 @@
           "Chat Identity"
         ],
         "summary": "Read-only lookup of a pending link token, used by the authorize page to\nvalidate and render the confirmation step.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "ChatIdentity_GetPending",
         "parameters": [
           {
@@ -11236,7 +11022,6 @@
           "Chat Identity Directory"
         ],
         "summary": "Returns ALL directory candidates for a (platform, platformUserId).\nCaller is responsible for label disambiguation.\nEach candidate includes the tenantSlug (joined from tenants table).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "ChatIdentityDirectory_Resolve",
         "parameters": [
           {
@@ -11277,7 +11062,6 @@
         "tags": [
           "Chat Identity Directory"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "ChatIdentityDirectory_CreatePending",
         "requestBody": {
           "x-name": "request",
@@ -11311,7 +11095,6 @@
           "Chat Identity Directory"
         ],
         "summary": "Revoke a link by id, verifying the (platform, platformUserId) on the row matches\nthe body. Used by /disconnect from the bot.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "ChatIdentityDirectory_RevokeByPlatformUser",
         "parameters": [
           {
@@ -11358,7 +11141,6 @@
           "Connected Apps"
         ],
         "summary": "List all connected apps (OAuth app grants) for the authenticated user\non the current tenant.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "ConnectedApps_List",
         "responses": {
           "200": {
@@ -11384,7 +11166,6 @@
           "Connected Apps"
         ],
         "summary": "Revoke a connected app. Soft-deletes the grant and invalidates all\nassociated refresh tokens; previously-issued access tokens become\nunusable on next request via the revocation cache.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "ConnectedApps_Revoke",
         "parameters": [
           {
@@ -11425,7 +11206,6 @@
           "Guest Link"
         ],
         "summary": "Create a new guest link for temporary read-only data sharing.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "GuestLink_CreateGuestLink",
         "requestBody": {
           "x-name": "request",
@@ -11478,7 +11258,6 @@
           "Guest Link"
         ],
         "summary": "List guest links for the current user's effective subject.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "GuestLink_GetGuestLinks",
         "responses": {
           "200": {
@@ -11504,7 +11283,6 @@
           "Guest Link"
         ],
         "summary": "Revoke an active guest link.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "GuestLink_RevokeGuestLink",
         "parameters": [
           {
@@ -11545,7 +11323,6 @@
           "Guest Link"
         ],
         "summary": "Activate a guest link by code and receive a session cookie.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "GuestLink_ActivateGuestLink",
         "requestBody": {
           "x-name": "request",
@@ -11588,7 +11365,6 @@
         "tags": [
           "Linked Platforms"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "LinkedPlatforms_GetLinkedPlatforms",
         "responses": {
           "200": {
@@ -11611,7 +11387,6 @@
           "Member Invite"
         ],
         "summary": "Get invite info for the accept page (anonymous).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "MemberInvite_GetInviteInfo",
         "parameters": [
           {
@@ -11655,7 +11430,6 @@
           "Member Invite"
         ],
         "summary": "Accept an invite and join the tenant.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "MemberInvite_AcceptInvite",
         "parameters": [
           {
@@ -11699,7 +11473,6 @@
           "Member Invite"
         ],
         "summary": "List all members of the current tenant.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "MemberInvite_GetMembers",
         "responses": {
           "200": {
@@ -11725,7 +11498,6 @@
           "Member Invite"
         ],
         "summary": "List followers of the current tenant (members with the follower role).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "MemberInvite_GetFollowers",
         "responses": {
           "200": {
@@ -11751,7 +11523,6 @@
           "Member Invite"
         ],
         "summary": "Set roles for a member (replaces all role assignments).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "MemberInvite_SetMemberRoles",
         "parameters": [
           {
@@ -11814,7 +11585,6 @@
           "Member Invite"
         ],
         "summary": "Set direct permissions for a member.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "MemberInvite_SetMemberPermissions",
         "parameters": [
           {
@@ -11877,7 +11647,6 @@
           "Member Invite"
         ],
         "summary": "Get effective permissions for a member (union of role permissions + direct permissions).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "MemberInvite_GetEffectivePermissions",
         "parameters": [
           {
@@ -11935,7 +11704,6 @@
           "Member Invite"
         ],
         "summary": "Update the 24-hour data limit for a member.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "MemberInvite_SetMemberLimitTo24Hours",
         "parameters": [
           {
@@ -11998,7 +11766,6 @@
           "My Permissions"
         ],
         "summary": "Get the current user's effective granted scopes for the current tenant.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "MyPermissions_GetMyPermissions",
         "responses": {
           "200": {
@@ -12023,7 +11790,6 @@
         "tags": [
           "My Tenants"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "MyTenants_GetMyTenants",
         "responses": {
           "200": {
@@ -12046,7 +11812,6 @@
         "tags": [
           "My Tenants"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "MyTenants_CreateTenant",
         "requestBody": {
           "x-name": "request",
@@ -12093,7 +11858,6 @@
         "tags": [
           "My Tenants"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "MyTenants_ValidateSlug",
         "parameters": [
           {
@@ -12126,7 +11890,6 @@
           "Role"
         ],
         "summary": "List roles for the current tenant.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Role_GetRoles",
         "responses": {
           "200": {
@@ -12160,7 +11923,6 @@
           "Role"
         ],
         "summary": "Create a custom role.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Role_CreateRole",
         "requestBody": {
           "x-name": "request",
@@ -12208,7 +11970,6 @@
           "Role"
         ],
         "summary": "Update a role.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Role_UpdateRole",
         "parameters": [
           {
@@ -12266,7 +12027,6 @@
           "Role"
         ],
         "summary": "Delete a role.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Role_DeleteRole",
         "parameters": [
           {
@@ -12317,7 +12077,6 @@
           "Activity"
         ],
         "summary": "Get activity records with pagination",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Activity_GetActivities",
         "parameters": [
           {
@@ -12360,7 +12119,6 @@
           "Activity"
         ],
         "summary": "Create one or more activity records",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Activity_CreateActivities",
         "requestBody": {
           "x-name": "requests",
@@ -12410,7 +12168,6 @@
           "Activity"
         ],
         "summary": "Get a specific activity record by ID",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Activity_GetActivity",
         "parameters": [
           {
@@ -12452,7 +12209,6 @@
           "Activity"
         ],
         "summary": "Update an existing activity record",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Activity_UpdateActivity",
         "parameters": [
           {
@@ -12505,7 +12261,6 @@
           "Activity"
         ],
         "summary": "Delete an activity record by ID",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Activity_DeleteActivity",
         "parameters": [
           {
@@ -12541,7 +12296,6 @@
           "Body Weight"
         ],
         "summary": "Get body weight records with optional pagination",
-        "description": "[ConsumesProcessor] ",
         "operationId": "BodyWeight_GetBodyWeights",
         "parameters": [
           {
@@ -12592,7 +12346,6 @@
           "Body Weight"
         ],
         "summary": "Create a single body weight record",
-        "description": "[ConsumesProcessor] ",
         "operationId": "BodyWeight_Create",
         "requestBody": {
           "x-name": "bodyWeight",
@@ -12643,7 +12396,6 @@
           "Body Weight"
         ],
         "summary": "Get a specific body weight record by ID",
-        "description": "[ConsumesProcessor] ",
         "operationId": "BodyWeight_GetBodyWeight",
         "parameters": [
           {
@@ -12689,7 +12441,6 @@
           "Body Weight"
         ],
         "summary": "Update an existing body weight record",
-        "description": "[ConsumesProcessor] ",
         "operationId": "BodyWeight_UpdateBodyWeight",
         "parameters": [
           {
@@ -12750,7 +12501,6 @@
           "Body Weight"
         ],
         "summary": "Delete a body weight record by ID",
-        "description": "[ConsumesProcessor] ",
         "operationId": "BodyWeight_DeleteBodyWeight",
         "parameters": [
           {
@@ -12794,7 +12544,6 @@
           "Body Weight"
         ],
         "summary": "Create one or more body weight records (single object or array)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "BodyWeight_CreateBodyWeights",
         "requestBody": {
           "x-name": "bodyWeights",
@@ -12842,7 +12591,6 @@
           "Heart Rate"
         ],
         "summary": "Get heart rate records with optional pagination and date filtering",
-        "description": "[ConsumesProcessor] ",
         "operationId": "HeartRate_GetHeartRates",
         "parameters": [
           {
@@ -12915,7 +12663,6 @@
           "Heart Rate"
         ],
         "summary": "Create one or more heart rate records",
-        "description": "[ConsumesProcessor] ",
         "operationId": "HeartRate_CreateHeartRates",
         "requestBody": {
           "x-name": "requests",
@@ -12968,7 +12715,6 @@
           "Heart Rate"
         ],
         "summary": "Get a specific heart rate record by ID",
-        "description": "[ConsumesProcessor] ",
         "operationId": "HeartRate_GetHeartRate",
         "parameters": [
           {
@@ -13014,7 +12760,6 @@
           "Heart Rate"
         ],
         "summary": "Update an existing heart rate record",
-        "description": "[ConsumesProcessor] ",
         "operationId": "HeartRate_UpdateHeartRate",
         "parameters": [
           {
@@ -13070,7 +12815,6 @@
           "Heart Rate"
         ],
         "summary": "Delete a heart rate record by ID",
-        "description": "[ConsumesProcessor] ",
         "operationId": "HeartRate_DeleteHeartRate",
         "parameters": [
           {
@@ -13109,7 +12853,6 @@
           "Patient Record"
         ],
         "summary": "Get or create the patient record",
-        "description": "[ConsumesProcessor] ",
         "operationId": "PatientRecord_GetPatientRecord",
         "responses": {
           "200": {
@@ -13130,7 +12873,6 @@
           "Patient Record"
         ],
         "summary": "Update the patient record",
-        "description": "[ConsumesProcessor] ",
         "operationId": "PatientRecord_UpdatePatientRecord",
         "requestBody": {
           "x-name": "model",
@@ -13168,7 +12910,6 @@
           "Patient Record"
         ],
         "summary": "Get all patient devices",
-        "description": "[ConsumesProcessor] ",
         "operationId": "PatientRecord_GetDevices",
         "responses": {
           "200": {
@@ -13192,7 +12933,6 @@
           "Patient Record"
         ],
         "summary": "Create a new patient device",
-        "description": "[ConsumesProcessor] ",
         "operationId": "PatientRecord_CreateDevice",
         "requestBody": {
           "x-name": "model",
@@ -13230,7 +12970,6 @@
           "Patient Record"
         ],
         "summary": "Update a patient device",
-        "description": "[ConsumesProcessor] ",
         "operationId": "PatientRecord_UpdateDevice",
         "parameters": [
           {
@@ -13278,7 +13017,6 @@
           "Patient Record"
         ],
         "summary": "Delete a patient device",
-        "description": "[ConsumesProcessor] ",
         "operationId": "PatientRecord_DeleteDevice",
         "parameters": [
           {
@@ -13309,7 +13047,6 @@
           "Patient Record"
         ],
         "summary": "Get all patient insulins",
-        "description": "[ConsumesProcessor] ",
         "operationId": "PatientRecord_GetInsulins",
         "responses": {
           "200": {
@@ -13333,7 +13070,6 @@
           "Patient Record"
         ],
         "summary": "Create a new patient insulin",
-        "description": "[ConsumesProcessor] ",
         "operationId": "PatientRecord_CreateInsulin",
         "requestBody": {
           "x-name": "model",
@@ -13371,7 +13107,6 @@
           "Patient Record"
         ],
         "summary": "Update a patient insulin",
-        "description": "[ConsumesProcessor] ",
         "operationId": "PatientRecord_UpdateInsulin",
         "parameters": [
           {
@@ -13419,7 +13154,6 @@
           "Patient Record"
         ],
         "summary": "Delete a patient insulin",
-        "description": "[ConsumesProcessor] ",
         "operationId": "PatientRecord_DeleteInsulin",
         "parameters": [
           {
@@ -13450,7 +13184,6 @@
           "Step Count"
         ],
         "summary": "Get step count records with optional pagination and date filtering",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StepCount_GetStepCounts",
         "parameters": [
           {
@@ -13523,7 +13256,6 @@
           "Step Count"
         ],
         "summary": "Create one or more step count records",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StepCount_CreateStepCounts",
         "requestBody": {
           "x-name": "requests",
@@ -13576,7 +13308,6 @@
           "Step Count"
         ],
         "summary": "Get a specific step count record by ID",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StepCount_GetStepCount",
         "parameters": [
           {
@@ -13622,7 +13353,6 @@
           "Step Count"
         ],
         "summary": "Update an existing step count record",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StepCount_UpdateStepCount",
         "parameters": [
           {
@@ -13678,7 +13408,6 @@
           "Step Count"
         ],
         "summary": "Delete a step count record by ID",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StepCount_DeleteStepCount",
         "parameters": [
           {
@@ -13717,7 +13446,7 @@
           "BG Check"
         ],
         "summary": "Creates a new record and returns it with a `Location` header pointing to the created resource.",
-        "description": "[ConsumesProcessor] `Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.\n            \nOn success, responds with `201 Created` and a `Location` header containing the URL of the newly created record.",
+        "description": "`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.\n            \nOn success, responds with `201 Created` and a `Location` header containing the URL of the newly created record.",
         "operationId": "BGCheck_Create",
         "requestBody": {
           "x-name": "request",
@@ -13761,7 +13490,7 @@
           "BG Check"
         ],
         "summary": "Lists records with pagination, optional date range, device, and source filtering.",
-        "description": "[ConsumesProcessor] The `sort` parameter accepts exactly two values:\n- `timestamp_asc` — oldest records first\n- `timestamp_desc` — newest records first (default)\n            \nUse `limit` and `offset` together for paginated access to large result sets.",
+        "description": "The `sort` parameter accepts exactly two values:\n- `timestamp_asc` — oldest records first\n- `timestamp_desc` — newest records first (default)\n            \nUse `limit` and `offset` together for paginated access to large result sets.",
         "operationId": "BGCheck_GetAll",
         "parameters": [
           {
@@ -13870,7 +13599,7 @@
           "BG Check"
         ],
         "summary": "Updates an existing record by ID and returns the updated record.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.\n            \n`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.\n            \n`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.",
         "operationId": "BGCheck_Update",
         "parameters": [
           {
@@ -13937,7 +13666,7 @@
           "BG Check"
         ],
         "summary": "Deletes a record by ID.",
-        "description": "[ConsumesProcessor] Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
         "operationId": "BGCheck_Delete",
         "parameters": [
           {
@@ -13974,7 +13703,7 @@
           "BG Check"
         ],
         "summary": "Retrieves a single record by its unique identifier.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.",
         "operationId": "BGCheck_GetById",
         "parameters": [
           {
@@ -14019,7 +13748,7 @@
         "tags": [
           "Calibration"
         ],
-        "description": "[ConsumesProcessor] Response is cached for 120 seconds, varied by all query parameters.",
+        "description": "Response is cached for 120 seconds, varied by all query parameters.",
         "operationId": "Calibration_GetAll",
         "parameters": [
           {
@@ -14119,7 +13848,7 @@
           "Calibration"
         ],
         "summary": "Creates a new record and returns it with a `Location` header pointing to the created resource.",
-        "description": "[ConsumesProcessor] `Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.\n            \nOn success, responds with `201 Created` and a `Location` header containing the URL of the newly created record.",
+        "description": "`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.\n            \nOn success, responds with `201 Created` and a `Location` header containing the URL of the newly created record.",
         "operationId": "Calibration_Create",
         "requestBody": {
           "x-name": "request",
@@ -14165,7 +13894,7 @@
           "Calibration"
         ],
         "summary": "Updates an existing record by ID and returns the updated record.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.\n            \n`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.\n            \n`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.",
         "operationId": "Calibration_Update",
         "parameters": [
           {
@@ -14232,7 +13961,7 @@
           "Calibration"
         ],
         "summary": "Deletes a record by ID.",
-        "description": "[ConsumesProcessor] Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
         "operationId": "Calibration_Delete",
         "parameters": [
           {
@@ -14269,7 +13998,7 @@
           "Calibration"
         ],
         "summary": "Retrieves a single record by its unique identifier.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.",
         "operationId": "Calibration_GetById",
         "parameters": [
           {
@@ -14314,7 +14043,7 @@
         "tags": [
           "Meter Glucose"
         ],
-        "description": "[ConsumesProcessor] Response is cached for 120 seconds, varied by all query parameters.",
+        "description": "Response is cached for 120 seconds, varied by all query parameters.",
         "operationId": "MeterGlucose_GetAll",
         "parameters": [
           {
@@ -14414,7 +14143,7 @@
           "Meter Glucose"
         ],
         "summary": "Creates a new record and returns it with a `Location` header pointing to the created resource.",
-        "description": "[ConsumesProcessor] `Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.\n            \nOn success, responds with `201 Created` and a `Location` header containing the URL of the newly created record.",
+        "description": "`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.\n            \nOn success, responds with `201 Created` and a `Location` header containing the URL of the newly created record.",
         "operationId": "MeterGlucose_Create",
         "requestBody": {
           "x-name": "request",
@@ -14460,7 +14189,7 @@
           "Meter Glucose"
         ],
         "summary": "Updates an existing record by ID and returns the updated record.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.\n            \n`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.\n            \n`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.",
         "operationId": "MeterGlucose_Update",
         "parameters": [
           {
@@ -14527,7 +14256,7 @@
           "Meter Glucose"
         ],
         "summary": "Deletes a record by ID.",
-        "description": "[ConsumesProcessor] Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
         "operationId": "MeterGlucose_Delete",
         "parameters": [
           {
@@ -14564,7 +14293,7 @@
           "Meter Glucose"
         ],
         "summary": "Retrieves a single record by its unique identifier.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.",
         "operationId": "MeterGlucose_GetById",
         "parameters": [
           {
@@ -14609,7 +14338,6 @@
         "tags": [
           "Sensor Glucose"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "SensorGlucose_GetAll",
         "parameters": [
           {
@@ -14708,7 +14436,6 @@
         "tags": [
           "Sensor Glucose"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "SensorGlucose_Create",
         "requestBody": {
           "x-name": "request",
@@ -14752,7 +14479,6 @@
         "tags": [
           "Sensor Glucose"
         ],
-        "description": "[ConsumesProcessor] ",
         "operationId": "SensorGlucose_Update",
         "parameters": [
           {
@@ -14817,7 +14543,7 @@
           "Sensor Glucose"
         ],
         "summary": "Deletes a record by ID.",
-        "description": "[ConsumesProcessor] Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
         "operationId": "SensorGlucose_Delete",
         "parameters": [
           {
@@ -14854,7 +14580,7 @@
           "Sensor Glucose"
         ],
         "summary": "Retrieves a single record by its unique identifier.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.",
         "operationId": "SensorGlucose_GetById",
         "parameters": [
           {
@@ -14900,7 +14626,6 @@
           "Sensor Glucose"
         ],
         "summary": "Create multiple sensor glucose readings in bulk (max 1000).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "SensorGlucose_CreateSensorGlucoseBulk",
         "requestBody": {
           "x-name": "requests",
@@ -14950,7 +14675,6 @@
           "Dev Admin"
         ],
         "summary": "Export a full snapshot of all tenants and their identity/config data.\nSecrets are decrypted to plaintext for portability.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DevAdmin_ExportSnapshot",
         "responses": {
           "200": {
@@ -14970,7 +14694,6 @@
           "Dev Admin"
         ],
         "summary": "Import a snapshot, replacing all identity/config data.\nWraps the entire operation in a transaction.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DevAdmin_ImportSnapshot",
         "requestBody": {
           "x-name": "snapshot",
@@ -15005,7 +14728,6 @@
           "Dev Admin"
         ],
         "summary": "Trigger a sync for every configured connector across all tenants.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DevAdmin_SyncAll",
         "responses": {
           "200": {
@@ -15028,7 +14750,6 @@
           "Dev Admin"
         ],
         "summary": "List all tenants with record counts and connector health (dev-only).\nUsed by the Aspire dashboard \"List Tenants\" command.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DevAdmin_ListTenants",
         "responses": {
           "200": {
@@ -15051,7 +14772,6 @@
           "Dev Admin"
         ],
         "summary": "Create a new tenant without authentication (dev-only).\nUsed by the Aspire dashboard \"Create Tenant\" command.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DevAdmin_CreateTenant",
         "requestBody": {
           "x-name": "request",
@@ -15085,7 +14805,6 @@
           "Dev Admin"
         ],
         "summary": "Delete a tenant and all associated data without authentication (dev-only).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DevAdmin_DeleteTenant",
         "parameters": [
           {
@@ -15120,7 +14839,6 @@
           "Dev Admin"
         ],
         "summary": "Import snapshot data for a single tenant, matched by slug in the\nprovided snapshot. Upserts referenced subjects and passkeys without\naffecting other tenants.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DevAdmin_ImportScopedSnapshot",
         "parameters": [
           {
@@ -15167,7 +14885,7 @@
           "Aps Snapshot"
         ],
         "summary": "Lists records with pagination, optional date range, device, and source filtering.",
-        "description": "[ConsumesProcessor] The `sort` parameter accepts exactly two values:\n- `timestamp_asc` — oldest records first\n- `timestamp_desc` — newest records first (default)\n            \nUse `limit` and `offset` together for paginated access to large result sets.",
+        "description": "The `sort` parameter accepts exactly two values:\n- `timestamp_asc` — oldest records first\n- `timestamp_desc` — newest records first (default)\n            \nUse `limit` and `offset` together for paginated access to large result sets.",
         "operationId": "ApsSnapshot_GetAll",
         "parameters": [
           {
@@ -15276,7 +14994,7 @@
           "Aps Snapshot"
         ],
         "summary": "Retrieves a single record by its unique identifier.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.",
         "operationId": "ApsSnapshot_GetById",
         "parameters": [
           {
@@ -15322,7 +15040,6 @@
           "Battery"
         ],
         "summary": "Get the current battery status for all tracked devices",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Battery_GetCurrentBatteryStatus",
         "parameters": [
           {
@@ -15361,7 +15078,6 @@
           "Battery"
         ],
         "summary": "Get battery readings for a device over a time period",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Battery_GetBatteryReadings",
         "parameters": [
           {
@@ -15424,7 +15140,6 @@
           "Battery"
         ],
         "summary": "Get battery statistics for a device or all devices",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Battery_GetBatteryStatistics",
         "parameters": [
           {
@@ -15487,7 +15202,6 @@
           "Battery"
         ],
         "summary": "Get charge cycle history for a device",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Battery_GetChargeCycles",
         "parameters": [
           {
@@ -15561,7 +15275,6 @@
           "Battery"
         ],
         "summary": "Get list of all known devices with battery data",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Battery_GetKnownDevices",
         "responses": {
           "200": {
@@ -15590,7 +15303,6 @@
           "Device Age"
         ],
         "summary": "Get cannula/site age (CAGE)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DeviceAge_GetCannulaAge",
         "parameters": [
           {
@@ -15662,7 +15374,6 @@
           "Device Age"
         ],
         "summary": "Get sensor age (SAGE)\nReturns both Sensor Start and Sensor Change events",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DeviceAge_GetSensorAge",
         "parameters": [
           {
@@ -15734,7 +15445,6 @@
           "Device Age"
         ],
         "summary": "Get insulin reservoir age (IAGE)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DeviceAge_GetInsulinAge",
         "parameters": [
           {
@@ -15806,7 +15516,6 @@
           "Device Age"
         ],
         "summary": "Get pump battery age (BAGE)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DeviceAge_GetBatteryAge",
         "parameters": [
           {
@@ -15878,7 +15587,6 @@
           "Device Age"
         ],
         "summary": "Get all device ages in a single call",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DeviceAge_GetAllDeviceAges",
         "responses": {
           "200": {
@@ -15893,7 +15601,6 @@
           "Device Event"
         ],
         "summary": "Delete a device event by its external sync identifier (dataSource + syncIdentifier pair).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DeviceEvent_DeleteBySyncIdentifier",
         "parameters": [
           {
@@ -15946,7 +15653,7 @@
           "Device Event"
         ],
         "summary": "Creates a new record and returns it with a `Location` header pointing to the created resource.",
-        "description": "[ConsumesProcessor] `Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.\n            \nOn success, responds with `201 Created` and a `Location` header containing the URL of the newly created record.",
+        "description": "`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.\n            \nOn success, responds with `201 Created` and a `Location` header containing the URL of the newly created record.",
         "operationId": "DeviceEvent_Create",
         "requestBody": {
           "x-name": "request",
@@ -15990,7 +15697,7 @@
           "Device Event"
         ],
         "summary": "Lists records with pagination, optional date range, device, and source filtering.",
-        "description": "[ConsumesProcessor] The `sort` parameter accepts exactly two values:\n- `timestamp_asc` — oldest records first\n- `timestamp_desc` — newest records first (default)\n            \nUse `limit` and `offset` together for paginated access to large result sets.",
+        "description": "The `sort` parameter accepts exactly two values:\n- `timestamp_asc` — oldest records first\n- `timestamp_desc` — newest records first (default)\n            \nUse `limit` and `offset` together for paginated access to large result sets.",
         "operationId": "DeviceEvent_GetAll",
         "parameters": [
           {
@@ -16099,7 +15806,7 @@
           "Device Event"
         ],
         "summary": "Updates an existing record by ID and returns the updated record.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.\n            \n`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.\n            \n`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.",
         "operationId": "DeviceEvent_Update",
         "parameters": [
           {
@@ -16166,7 +15873,7 @@
           "Device Event"
         ],
         "summary": "Deletes a record by ID.",
-        "description": "[ConsumesProcessor] Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
         "operationId": "DeviceEvent_Delete",
         "parameters": [
           {
@@ -16203,7 +15910,7 @@
           "Device Event"
         ],
         "summary": "Retrieves a single record by its unique identifier.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.",
         "operationId": "DeviceEvent_GetById",
         "parameters": [
           {
@@ -16249,7 +15956,7 @@
           "Pump Snapshot"
         ],
         "summary": "Lists records with pagination, optional date range, device, and source filtering.",
-        "description": "[ConsumesProcessor] The `sort` parameter accepts exactly two values:\n- `timestamp_asc` — oldest records first\n- `timestamp_desc` — newest records first (default)\n            \nUse `limit` and `offset` together for paginated access to large result sets.",
+        "description": "The `sort` parameter accepts exactly two values:\n- `timestamp_asc` — oldest records first\n- `timestamp_desc` — newest records first (default)\n            \nUse `limit` and `offset` together for paginated access to large result sets.",
         "operationId": "PumpSnapshot_GetAll",
         "parameters": [
           {
@@ -16358,7 +16065,7 @@
           "Pump Snapshot"
         ],
         "summary": "Retrieves a single record by its unique identifier.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.",
         "operationId": "PumpSnapshot_GetById",
         "parameters": [
           {
@@ -16404,7 +16111,7 @@
           "Uploader Snapshot"
         ],
         "summary": "Lists records with pagination, optional date range, device, and source filtering.",
-        "description": "[ConsumesProcessor] The `sort` parameter accepts exactly two values:\n- `timestamp_asc` — oldest records first\n- `timestamp_desc` — newest records first (default)\n            \nUse `limit` and `offset` together for paginated access to large result sets.",
+        "description": "The `sort` parameter accepts exactly two values:\n- `timestamp_asc` — oldest records first\n- `timestamp_desc` — newest records first (default)\n            \nUse `limit` and `offset` together for paginated access to large result sets.",
         "operationId": "UploaderSnapshot_GetAll",
         "parameters": [
           {
@@ -16513,7 +16220,7 @@
           "Uploader Snapshot"
         ],
         "summary": "Retrieves a single record by its unique identifier.",
-        "description": "[ConsumesProcessor] Returns `404 Not Found` if no record with the given id exists.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.",
         "operationId": "UploaderSnapshot_GetById",
         "parameters": [
           {
@@ -16559,7 +16266,6 @@
           "Configuration"
         ],
         "summary": "Gets the configuration for a specific connector.\nReturns runtime configuration only (secrets are not included).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Configuration_GetConfiguration",
         "parameters": [
           {
@@ -16602,7 +16308,6 @@
           "Configuration"
         ],
         "summary": "Saves or updates runtime configuration for a connector.\nOnly properties marked with [RuntimeConfigurable] are accepted.\nValidates the configuration against the connector's schema before saving.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Configuration_SaveConfiguration",
         "parameters": [
           {
@@ -16662,7 +16367,6 @@
           "Configuration"
         ],
         "summary": "Deletes all configuration and secrets for a connector.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Configuration_DeleteConfiguration",
         "parameters": [
           {
@@ -16704,7 +16408,6 @@
           "Configuration"
         ],
         "summary": "Gets the JSON Schema for a connector's configuration.\nSchema is generated from the connector's configuration class attributes.\nThis endpoint is public since schema is just metadata, not sensitive data.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Configuration_GetSchema",
         "parameters": [
           {
@@ -16739,7 +16442,6 @@
           "Configuration"
         ],
         "summary": "Gets the effective configuration from a running connector.\nThis returns the actual runtime values including those resolved from environment variables.\nThis endpoint is public since it only exposes non-secret configuration values.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Configuration_GetEffectiveConfiguration",
         "parameters": [
           {
@@ -16778,7 +16480,6 @@
           "Configuration"
         ],
         "summary": "Saves encrypted secrets for a connector.\nSecrets are encrypted using AES-256-GCM before storage.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Configuration_SaveSecrets",
         "parameters": [
           {
@@ -16835,7 +16536,6 @@
           "Configuration"
         ],
         "summary": "Gets status information for all registered connectors.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Configuration_GetAllConnectorStatus",
         "responses": {
           "200": {
@@ -16861,7 +16561,6 @@
           "Configuration"
         ],
         "summary": "Enables or disables a connector.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Configuration_SetActive",
         "parameters": [
           {
@@ -16905,7 +16604,6 @@
           "Webhook Settings"
         ],
         "summary": "Gets the webhook notification settings for the current tenant.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "WebhookSettings_GetWebhookSettings",
         "responses": {
           "200": {
@@ -16928,7 +16626,6 @@
           "Webhook Settings"
         ],
         "summary": "Saves webhook notification settings.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "WebhookSettings_SaveWebhookSettings",
         "requestBody": {
           "x-name": "settings",
@@ -16975,7 +16672,6 @@
           "Webhook Settings"
         ],
         "summary": "Tests webhook settings by sending test payloads to configured URLs.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "WebhookSettings_TestWebhookSettings",
         "requestBody": {
           "x-name": "request",
@@ -17022,7 +16718,6 @@
           "Audit"
         ],
         "summary": "Query mutation audit log entries for the current tenant.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Audit_GetMutationAuditLog",
         "parameters": [
           {
@@ -17142,7 +16837,6 @@
           "Audit"
         ],
         "summary": "Query read access audit log entries for the current tenant.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Audit_GetReadAccessAuditLog",
         "parameters": [
           {
@@ -17262,7 +16956,6 @@
           "Audit"
         ],
         "summary": "Get the audit configuration for the current tenant.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Audit_GetAuditConfig",
         "responses": {
           "200": {
@@ -17293,7 +16986,6 @@
           "Audit"
         ],
         "summary": "Create or update the audit configuration for the current tenant.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Audit_UpdateAuditConfig",
         "requestBody": {
           "x-name": "request",
@@ -17341,7 +17033,6 @@
           "Analytics"
         ],
         "summary": "Gets the current analytics configuration and collection status.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Analytics_GetAnalyticsStatus",
         "responses": {
           "200": {
@@ -17359,7 +17050,6 @@
           "Analytics"
         ],
         "summary": "Gets current system performance metrics such as request latencies and memory usage.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Analytics_GetPerformanceMetrics",
         "responses": {
           "200": {
@@ -17384,7 +17074,6 @@
           "Analytics"
         ],
         "summary": "Gets current usage statistics such as endpoint hit counts and feature usage.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Analytics_GetUsageStatistics",
         "responses": {
           "200": {
@@ -17409,7 +17098,6 @@
           "Analytics"
         ],
         "summary": "Gets any pending analytics data queued for collection, returned for transparency.\nSince data is stored locally only, this is informational.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Analytics_GetPendingAnalyticsData",
         "responses": {
           "200": {
@@ -17434,7 +17122,6 @@
           "Analytics"
         ],
         "summary": "Updates analytics collection configuration.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Analytics_UpdateAnalyticsConfig",
         "requestBody": {
           "x-name": "config",
@@ -17472,7 +17159,6 @@
           "Analytics"
         ],
         "summary": "Clears all locally stored analytics data. This action cannot be undone.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Analytics_ClearAnalyticsData",
         "responses": {
           "200": {
@@ -17490,7 +17176,6 @@
           "Analytics"
         ],
         "summary": "Get information about what data is collected and privacy policy",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Analytics_GetPrivacyInformation",
         "responses": {
           "200": {
@@ -17513,7 +17198,6 @@
           "Analytics"
         ],
         "summary": "Tracks a custom AnalyticsEvent. Useful for integration testing or manually\nrecording discrete events. Returns 400 Bad Request if analytics collection is disabled.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Analytics_TrackCustomEvent",
         "requestBody": {
           "x-name": "eventData",
@@ -17554,7 +17238,6 @@
           "Chart Data"
         ],
         "summary": "Gets complete dashboard chart data in a single call.\nReturns pre-calculated IOB, COB, basal series, categorized treatment markers,\nstate spans, system events, tracker markers, and glucose readings.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "ChartData_GetDashboardChartData",
         "parameters": [
           {
@@ -17623,7 +17306,6 @@
           "Correlation"
         ],
         "summary": "Retrieves all records that share the given correlation ID across every V4 data type.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Correlation_GetCorrelated",
         "parameters": [
           {
@@ -17651,7 +17333,6 @@
           "Data Overview"
         ],
         "summary": "Gets the list of calendar years that contain glucose data and the available data sources.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DataOverview_GetAvailableYears",
         "responses": {
           "200": {
@@ -17678,7 +17359,6 @@
           "Data Overview"
         ],
         "summary": "Get day-level aggregated counts and average glucose for a given year",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DataOverview_GetDailySummary",
         "parameters": [
           {
@@ -17742,7 +17422,6 @@
           "Data Overview"
         ],
         "summary": "Get monthly GRI (Glycemic Risk Index) scores for a given year",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DataOverview_GetGriTimeline",
         "parameters": [
           {
@@ -17806,7 +17485,6 @@
           "Prediction"
         ],
         "summary": "Get glucose predictions based on current data.\nReturns predicted glucose values for the next 4 hours in 5-minute intervals.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Prediction_GetPredictions",
         "parameters": [
           {
@@ -17872,7 +17550,6 @@
           "Prediction"
         ],
         "summary": "Check the status of the prediction service.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Prediction_GetStatus",
         "responses": {
           "200": {
@@ -17896,7 +17573,6 @@
           "Retrospective"
         ],
         "summary": "Get retrospective data at a specific point in time\nReturns IOB, COB, glucose, basal rate, and recent treatments",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Retrospective_GetRetrospectiveData",
         "parameters": [
           {
@@ -17944,7 +17620,6 @@
           "Retrospective"
         ],
         "summary": "Get retrospective data for an entire day at specified interval\nReturns IOB, COB, glucose, and basal data for every interval throughout the day",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Retrospective_GetRetrospectiveTimeline",
         "parameters": [
           {
@@ -18002,7 +17677,6 @@
           "Retrospective"
         ],
         "summary": "Get basal rate timeline for a day\nReturns basal rate data points showing scheduled and temp basal changes",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Retrospective_GetBasalTimeline",
         "parameters": [
           {
@@ -18060,7 +17734,6 @@
           "State Spans"
         ],
         "summary": "Query all state spans with optional filtering",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StateSpans_GetStateSpans",
         "parameters": [
           {
@@ -18186,7 +17859,6 @@
           "State Spans"
         ],
         "summary": "Create a new state span (manual entry)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StateSpans_CreateStateSpan",
         "requestBody": {
           "x-name": "request",
@@ -18224,7 +17896,6 @@
           "State Spans"
         ],
         "summary": "Get pump mode state spans",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StateSpans_GetPumpModes",
         "parameters": [
           {
@@ -18307,7 +17978,6 @@
           "State Spans"
         ],
         "summary": "Get connectivity state spans",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StateSpans_GetConnectivity",
         "parameters": [
           {
@@ -18390,7 +18060,6 @@
           "State Spans"
         ],
         "summary": "Get override state spans",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StateSpans_GetOverrides",
         "parameters": [
           {
@@ -18473,7 +18142,6 @@
           "State Spans"
         ],
         "summary": "Get temporary target state spans (AAPS temporary glucose targets)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StateSpans_GetTemporaryTargets",
         "parameters": [
           {
@@ -18556,7 +18224,6 @@
           "State Spans"
         ],
         "summary": "Get profile state spans",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StateSpans_GetProfiles",
         "parameters": [
           {
@@ -18639,7 +18306,6 @@
           "State Spans"
         ],
         "summary": "Get sleep state spans (user-annotated sleep periods)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StateSpans_GetSleep",
         "parameters": [
           {
@@ -18722,7 +18388,6 @@
           "State Spans"
         ],
         "summary": "Get exercise state spans (user-annotated activity periods)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StateSpans_GetExercise",
         "parameters": [
           {
@@ -18805,7 +18470,6 @@
           "State Spans"
         ],
         "summary": "Get illness state spans (user-annotated illness periods)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StateSpans_GetIllness",
         "parameters": [
           {
@@ -18888,7 +18552,6 @@
           "State Spans"
         ],
         "summary": "Get travel state spans (user-annotated travel/timezone change periods)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StateSpans_GetTravel",
         "parameters": [
           {
@@ -18971,7 +18634,6 @@
           "State Spans"
         ],
         "summary": "Get all activity state spans (sleep, exercise, illness, travel)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StateSpans_GetActivities",
         "parameters": [
           {
@@ -19054,7 +18716,6 @@
           "State Spans"
         ],
         "summary": "Get a specific state span by ID",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StateSpans_GetStateSpan",
         "parameters": [
           {
@@ -19086,7 +18747,6 @@
           "State Spans"
         ],
         "summary": "Update an existing state span",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StateSpans_UpdateStateSpan",
         "parameters": [
           {
@@ -19134,7 +18794,6 @@
           "State Spans"
         ],
         "summary": "Delete a state span",
-        "description": "[ConsumesProcessor] ",
         "operationId": "StateSpans_DeleteStateSpan",
         "parameters": [
           {
@@ -19164,7 +18823,6 @@
           "Statistics"
         ],
         "summary": "Calculate basic glucose statistics from provided glucose values",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_CalculateBasicStats",
         "requestBody": {
           "x-name": "values",
@@ -19203,7 +18861,6 @@
           "Statistics"
         ],
         "summary": "Calculate comprehensive glycemic variability metrics",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_CalculateGlycemicVariability",
         "requestBody": {
           "x-name": "request",
@@ -19238,7 +18895,6 @@
           "Statistics"
         ],
         "summary": "Calculate time in range metrics",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_CalculateTimeInRange",
         "requestBody": {
           "x-name": "request",
@@ -19274,7 +18930,6 @@
           "Statistics"
         ],
         "summary": "Calculate glucose distribution across configurable bins",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_CalculateGlucoseDistribution",
         "requestBody": {
           "x-name": "request",
@@ -19312,7 +18967,6 @@
           "Statistics"
         ],
         "summary": "Calculate averaged statistics for each hour of the day (0-23)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_CalculateAveragedStats",
         "requestBody": {
           "x-name": "entries",
@@ -19354,7 +19008,6 @@
           "Statistics"
         ],
         "summary": "Calculate treatment summary for a collection of boluses and carb intakes",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_CalculateTreatmentSummary",
         "requestBody": {
           "x-name": "request",
@@ -19389,7 +19042,6 @@
           "Statistics"
         ],
         "summary": "Calculate overall averages across multiple days",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_CalculateOverallAverages",
         "requestBody": {
           "x-name": "dailyDataPoints",
@@ -19427,7 +19079,6 @@
           "Statistics"
         ],
         "summary": "Master glucose analytics function that calculates comprehensive metrics",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_AnalyzeGlucoseData",
         "requestBody": {
           "x-name": "request",
@@ -19462,7 +19113,6 @@
           "Statistics"
         ],
         "summary": "Extended glucose analytics including GMI, GRI, and clinical target assessment",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_AnalyzeGlucoseDataExtended",
         "requestBody": {
           "x-name": "request",
@@ -19497,7 +19147,6 @@
           "Statistics"
         ],
         "summary": "Calculate Glucose Management Indicator (GMI)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_CalculateGMI",
         "parameters": [
           {
@@ -19532,7 +19181,6 @@
           "Statistics"
         ],
         "summary": "Calculate Glycemic Risk Index (GRI) from time in range metrics",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_CalculateGRI",
         "requestBody": {
           "x-name": "timeInRange",
@@ -19567,7 +19215,6 @@
           "Statistics"
         ],
         "summary": "Assess glucose data against clinical targets for a specific population",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_AssessAgainstTargets",
         "requestBody": {
           "x-name": "request",
@@ -19602,7 +19249,6 @@
           "Statistics"
         ],
         "summary": "Assess data sufficiency for a valid clinical report",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_AssessDataSufficiency",
         "requestBody": {
           "x-name": "request",
@@ -19637,7 +19283,6 @@
           "Statistics"
         ],
         "summary": "Get clinical targets for a specific diabetes population",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_GetClinicalTargets",
         "parameters": [
           {
@@ -19671,7 +19316,6 @@
           "Statistics"
         ],
         "summary": "Calculate estimated A1C from average glucose",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_CalculateEstimatedA1C",
         "parameters": [
           {
@@ -19707,7 +19351,6 @@
           "Statistics"
         ],
         "summary": "Convert mg/dL to mmol/L",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_MgdlToMMOL",
         "parameters": [
           {
@@ -19743,7 +19386,6 @@
           "Statistics"
         ],
         "summary": "Convert mmol/L to mg/dL",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_MmolToMGDL",
         "parameters": [
           {
@@ -19779,7 +19421,6 @@
           "Statistics"
         ],
         "summary": "Format insulin value for display",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_FormatInsulinDisplay",
         "parameters": [
           {
@@ -19814,7 +19455,6 @@
           "Statistics"
         ],
         "summary": "Format carb value for display",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_FormatCarbDisplay",
         "parameters": [
           {
@@ -19849,7 +19489,6 @@
           "Statistics"
         ],
         "summary": "Validate treatment data for completeness and consistency",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_ValidateTreatmentData",
         "requestBody": {
           "x-name": "treatment",
@@ -19884,7 +19523,6 @@
           "Statistics"
         ],
         "summary": "Clean and filter treatment data",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_CleanTreatmentData",
         "requestBody": {
           "x-name": "treatments",
@@ -19925,7 +19563,7 @@
           "Statistics"
         ],
         "summary": "Gets comprehensive statistics for multiple time periods (1, 3, 7, 30, and 90 days).\nFetches sensor glucose, bolus, carb, and temp-basal data from the database for each period,\ncomputes GlucoseAnalytics, TreatmentSummary, and\nInsulinDeliveryStatistics, and caches the result for 5 minutes.",
-        "description": "[ConsumesProcessor] When no TempBasal or algorithm bolus records are found but a profile is loaded, the method\nfalls back to computing scheduled basal from the active profile schedule via IBasalRateResolver.\nGMI reliability is assessed per-period using context-appropriate recommended-day minimums\n(e.g., 1-day periods cannot require 14 days of data).",
+        "description": "When no TempBasal or algorithm bolus records are found but a profile is loaded, the method\nfalls back to computing scheduled basal from the active profile schedule via IBasalRateResolver.\nGMI reliability is assessed per-period using context-appropriate recommended-day minimums\n(e.g., 1-day periods cannot require 14 days of data).",
         "operationId": "Statistics_GetMultiPeriodStatistics",
         "responses": {
           "200": {
@@ -19948,7 +19586,6 @@
           "Statistics"
         ],
         "summary": "Analyze glucose patterns around site changes to identify impact of site age on control",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_CalculateSiteChangeImpact",
         "requestBody": {
           "x-name": "request",
@@ -19983,7 +19620,6 @@
           "Statistics"
         ],
         "summary": "Calculate daily basal/bolus ratio statistics for a date range",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_GetDailyBasalBolusRatios",
         "parameters": [
           {
@@ -20028,7 +19664,6 @@
           "Statistics"
         ],
         "summary": "Calculate comprehensive insulin delivery statistics for a date range",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_GetInsulinDeliveryStatistics",
         "parameters": [
           {
@@ -20073,7 +19708,6 @@
           "Statistics"
         ],
         "summary": "Calculate comprehensive basal analysis statistics for a date range",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Statistics_GetBasalAnalysis",
         "parameters": [
           {
@@ -20120,7 +19754,7 @@
           "Statistics"
         ],
         "summary": "Calculates AID (Automated Insulin Delivery) system metrics for a date range.\nUses patient device records to segment the period by algorithm and compute time-weighted metrics\nvia IAidMetricsService.",
-        "description": "[ConsumesProcessor] Fetches APS snapshots, temp basals, device events, glucose readings, and target-range schedules\nfrom their respective repositories. CGM metrics are derived from AnalyzeGlucoseData.\nTarget range is optional; the method continues without it if the repository throws.",
+        "description": "Fetches APS snapshots, temp basals, device events, glucose readings, and target-range schedules\nfrom their respective repositories. CGM metrics are derived from AnalyzeGlucoseData.\nTarget range is optional; the method continues without it if the repository throws.",
         "operationId": "Statistics_GetAidSystemMetrics",
         "parameters": [
           {
@@ -20165,7 +19799,6 @@
           "Summary"
         ],
         "summary": "Get widget-friendly summary data including current glucose, IOB, COB, trackers, and alarm state.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Summary_GetSummary",
         "parameters": [
           {
@@ -20220,7 +19853,6 @@
           "Avatar"
         ],
         "summary": "Upload or replace the current subject's avatar. Image is resized to 256x256 WebP.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Avatar_Upload",
         "requestBody": {
           "content": {
@@ -20286,7 +19918,6 @@
           "Avatar"
         ],
         "summary": "Serve the current subject's avatar image.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Avatar_Get",
         "parameters": [
           {
@@ -20321,7 +19952,6 @@
           "Avatar"
         ],
         "summary": "Delete the current subject's avatar.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Avatar_Delete",
         "responses": {
           "204": {
@@ -20337,7 +19967,6 @@
           "Direct Grant"
         ],
         "summary": "Create a new direct grant token. The plaintext token is returned once and cannot be retrieved again.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DirectGrant_Create",
         "requestBody": {
           "x-name": "request",
@@ -20394,7 +20023,6 @@
           "Direct Grant"
         ],
         "summary": "List all active direct grants for the authenticated user.\nNever returns the token itself.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DirectGrant_List",
         "responses": {
           "200": {
@@ -20430,7 +20058,6 @@
           "Direct Grant"
         ],
         "summary": "Revoke a direct grant by setting its RevokedAt timestamp. This operation is idempotent.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "DirectGrant_Revoke",
         "parameters": [
           {
@@ -20482,7 +20109,6 @@
           "O Auth"
         ],
         "summary": "Authorization endpoint (Authorization Code + PKCE flow).\nRedirects to login if not authenticated, then shows consent screen.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "OAuth_Authorize",
         "parameters": [
           {
@@ -20573,7 +20199,6 @@
           "O Auth"
         ],
         "summary": "Consent approval endpoint. Called by the consent page when the user approves.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "OAuth_ApproveConsent",
         "requestBody": {
           "content": {
@@ -20634,7 +20259,6 @@
           "O Auth"
         ],
         "summary": "Token endpoint. Handles authorization code exchange, refresh token rotation,\nand device code polling.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "OAuth_Token",
         "requestBody": {
           "content": {
@@ -20707,7 +20331,6 @@
           "O Auth"
         ],
         "summary": "Device Authorization endpoint (RFC 8628).\nUsed by headless clients (CLI tools, scripts, IoT devices, pump rigs).",
-        "description": "[ConsumesProcessor] ",
         "operationId": "OAuth_DeviceAuthorization",
         "requestBody": {
           "content": {
@@ -20757,7 +20380,6 @@
           "O Auth"
         ],
         "summary": "Get device code info for the approval page.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "OAuth_GetDeviceInfo",
         "parameters": [
           {
@@ -20800,7 +20422,6 @@
           "O Auth"
         ],
         "summary": "Approve or deny a device authorization request.\nCalled by the device approval page.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "OAuth_DeviceApprove",
         "requestBody": {
           "content": {
@@ -20843,7 +20464,6 @@
           "O Auth"
         ],
         "summary": "Token revocation endpoint (RFC 7009). Per the specification, always returns 200 OK\nregardless of whether the token was found or already revoked.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "OAuth_Revoke",
         "requestBody": {
           "content": {
@@ -20876,7 +20496,6 @@
           "O Auth"
         ],
         "summary": "Get client info for the consent page.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "OAuth_GetClientInfo",
         "parameters": [
           {
@@ -20909,7 +20528,6 @@
           "O Auth"
         ],
         "summary": "List all active grants for the authenticated user.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "OAuth_GetGrants",
         "responses": {
           "200": {
@@ -20931,7 +20549,6 @@
           "O Auth"
         ],
         "summary": "Revoke (delete) a specific grant owned by the authenticated user.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "OAuth_DeleteGrant",
         "parameters": [
           {
@@ -20967,7 +20584,6 @@
           "O Auth"
         ],
         "summary": "Update a grant's label and/or scopes.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "OAuth_UpdateGrant",
         "parameters": [
           {
@@ -21025,7 +20641,6 @@
           "O Auth"
         ],
         "summary": "Token introspection endpoint (RFC 7662).\nReturns metadata about a token including its active status, scopes, and subject.\nPer RFC 7662, always returns 200 OK; invalid tokens get active=false.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "OAuth_Introspect",
         "requestBody": {
           "content": {
@@ -21065,7 +20680,6 @@
           "O Auth"
         ],
         "summary": "RFC 7591 Dynamic Client Registration. Allows third-party native apps\n(Trio, xDrip+, Loop, AAPS) to obtain a tenant-scoped client_id without\nany out-of-band registration step. Idempotent on (tenant, software_id):\nre-registering with the same software_id returns the existing client_id.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "OAuth_Register",
         "requestBody": {
           "x-name": "request",
@@ -21110,7 +20724,6 @@
           "Oidc"
         ],
         "summary": "Get available OIDC providers for login.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Oidc_GetProviders",
         "responses": {
           "200": {
@@ -21135,7 +20748,6 @@
           "Oidc"
         ],
         "summary": "Initiate OIDC login flow\nRedirects to the OIDC provider's authorization endpoint",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Oidc_Login",
         "parameters": [
           {
@@ -21183,7 +20795,7 @@
           "Oidc"
         ],
         "summary": "Handle OIDC callback from provider.\nExchanges authorization code for tokens and creates session.",
-        "description": "[ConsumesProcessor] Flow: verifies state cookie against the state parameter, exchanges code for tokens\nvia HandleCallbackAsync, sets session cookies, and\nlogs an Login audit event.\nOn failure, logs FailedAuth and redirects to the error page.",
+        "description": "Flow: verifies state cookie against the state parameter, exchanges code for tokens\nvia HandleCallbackAsync, sets session cookies, and\nlogs an Login audit event.\nOn failure, logs FailedAuth and redirects to the error page.",
         "operationId": "Oidc_Callback",
         "parameters": [
           {
@@ -21250,7 +20862,6 @@
           "Oidc"
         ],
         "summary": "Initiate the OIDC link flow.\nRedirects an already-authenticated caller to the OIDC provider's authorization\nendpoint so they can attach the external identity to their current account.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Oidc_Link",
         "parameters": [
           {
@@ -21305,7 +20916,6 @@
           "Oidc"
         ],
         "summary": "Handle the OIDC link callback. Verifies the authorization code against the IdP,\nthen attaches the external identity to the currently-authenticated subject.\nDoes NOT issue new session cookies.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Oidc_LinkCallback",
         "parameters": [
           {
@@ -21368,7 +20978,6 @@
           "Oidc"
         ],
         "summary": "List OIDC identities linked to the currently-authenticated subject.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Oidc_GetLinkedIdentities",
         "responses": {
           "200": {
@@ -21401,7 +21010,7 @@
           "Oidc"
         ],
         "summary": "Unlink an OIDC identity from the currently-authenticated subject.\nBlocked if this would leave the subject with zero primary auth factors.",
-        "description": "[ConsumesProcessor] Factor-count enforcement is handled atomically inside TryRemoveOidcIdentityAsync\nusing a serializable transaction to prevent TOCTOU races between concurrent removals.\nReturns FactorRemovalResult to distinguish between not-found, last-factor, and success.",
+        "description": "Factor-count enforcement is handled atomically inside TryRemoveOidcIdentityAsync\nusing a serializable transaction to prevent TOCTOU races between concurrent removals.\nReturns FactorRemovalResult to distinguish between not-found, last-factor, and success.",
         "operationId": "Oidc_UnlinkIdentity",
         "parameters": [
           {
@@ -21460,7 +21069,7 @@
           "Oidc"
         ],
         "summary": "Refresh the session tokens.\nUses the refresh token to get a new access token.",
-        "description": "[ConsumesProcessor] The refresh token is read from the cookie or the Refresh Authorization header (for API clients).\nOn failure, all session cookies are cleared to force re-authentication.\nLogs TokenRefreshed on success.",
+        "description": "The refresh token is read from the cookie or the Refresh Authorization header (for API clients).\nOn failure, all session cookies are cleared to force re-authentication.\nLogs TokenRefreshed on success.",
         "operationId": "Oidc_Refresh",
         "responses": {
           "200": {
@@ -21492,7 +21101,7 @@
           "Oidc"
         ],
         "summary": "Logout and revoke the session.",
-        "description": "[ConsumesProcessor] Clears all session cookies (access token, refresh token, IsAuthenticated).\nIf a refresh token is present, revokes it via LogoutAsync.\nWhen providerId is supplied and the provider supports RP-initiated logout,\nthe response includes a ProviderLogoutUrl for the frontend to redirect to.",
+        "description": "Clears all session cookies (access token, refresh token, IsAuthenticated).\nIf a refresh token is present, revokes it via LogoutAsync.\nWhen providerId is supplied and the provider supports RP-initiated logout,\nthe response includes a ProviderLogoutUrl for the frontend to redirect to.",
         "operationId": "Oidc_Logout",
         "parameters": [
           {
@@ -21528,7 +21137,6 @@
           "Oidc"
         ],
         "summary": "Get current user information.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Oidc_GetUserInfo",
         "responses": {
           "200": {
@@ -21560,7 +21168,7 @@
           "Oidc"
         ],
         "summary": "Get current session information including authentication status, roles, and permissions.",
-        "description": "[ConsumesProcessor] Returns IsAuthenticated = false for unauthenticated requests (does not return 401).\nThis allows the frontend to check auth status without triggering redirect logic.",
+        "description": "Returns IsAuthenticated = false for unauthenticated requests (does not return 401).\nThis allows the frontend to check auth status without triggering redirect logic.",
         "operationId": "Oidc_GetSession",
         "responses": {
           "200": {
@@ -21582,7 +21190,6 @@
           "Passkey"
         ],
         "summary": "Generate registration options for a new passkey credential",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_RegisterOptions",
         "requestBody": {
           "x-name": "request",
@@ -21627,7 +21234,6 @@
           "Passkey"
         ],
         "summary": "Complete passkey registration with attestation response",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_RegisterComplete",
         "requestBody": {
           "x-name": "request",
@@ -21675,7 +21281,6 @@
           "Passkey"
         ],
         "summary": "Generate discoverable assertion options (no username required)",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_DiscoverableLoginOptions",
         "responses": {
           "200": {
@@ -21698,7 +21303,6 @@
           "Passkey"
         ],
         "summary": "Generate assertion options for a specific user",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_LoginOptions",
         "requestBody": {
           "x-name": "request",
@@ -21743,7 +21347,6 @@
           "Passkey"
         ],
         "summary": "Complete passkey login with assertion response",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_LoginComplete",
         "requestBody": {
           "x-name": "request",
@@ -21788,7 +21391,6 @@
           "Passkey"
         ],
         "summary": "Verify a recovery code and issue a restricted recovery session",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_RecoveryVerify",
         "requestBody": {
           "x-name": "request",
@@ -21833,7 +21435,6 @@
           "Passkey"
         ],
         "summary": "List all passkey credentials for the authenticated user",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_ListCredentials",
         "responses": {
           "200": {
@@ -21866,7 +21467,6 @@
           "Passkey"
         ],
         "summary": "Remove a passkey credential. Cannot remove the last credential if user has no OIDC link.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_RemoveCredential",
         "parameters": [
           {
@@ -21937,7 +21537,6 @@
           "Passkey"
         ],
         "summary": "Regenerate recovery codes for the authenticated user. Invalidates all existing codes.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_RegenerateRecoveryCodes",
         "responses": {
           "200": {
@@ -21973,7 +21572,6 @@
           "Passkey"
         ],
         "summary": "Get the count of remaining recovery codes for the authenticated user",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_GetRecoveryStatus",
         "responses": {
           "200": {
@@ -22006,7 +21604,6 @@
           "Passkey"
         ],
         "summary": "Returns tenant auth status: whether setup is required or recovery mode is active.\nQueries the database for passkey credentials and orphaned subjects.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_GetAuthStatus",
         "responses": {
           "200": {
@@ -22029,7 +21626,6 @@
           "Passkey"
         ],
         "summary": "Mark the current tenant's onboarding as complete.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_CompleteOnboarding",
         "responses": {
           "204": {
@@ -22048,7 +21644,6 @@
           "Passkey"
         ],
         "summary": "Generate registration options for the first user during initial setup.\nOnly available when no non-system subjects exist (setup mode).\nCreates the subject, assigns admin role, and returns passkey registration options.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_SetupOptions",
         "requestBody": {
           "x-name": "request",
@@ -22103,7 +21698,6 @@
           "Passkey"
         ],
         "summary": "Complete passkey registration during initial setup.\nVerifies attestation, generates recovery codes, issues a full JWT session,\nand exits setup mode.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_SetupComplete",
         "requestBody": {
           "x-name": "request",
@@ -22158,7 +21752,6 @@
           "Passkey"
         ],
         "summary": "Begin passkey registration for an anonymous access request.\nCreates a pending subject and returns WebAuthn registration options.\nOnly available when AllowAccessRequests is enabled on the default tenant.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_AccessRequestOptions",
         "requestBody": {
           "x-name": "request",
@@ -22224,7 +21817,6 @@
           "Passkey"
         ],
         "summary": "Complete passkey registration for an anonymous access request.\nVerifies the attestation, stores the credential, and notifies tenant owners via\nIInAppNotificationService. The subject remains inactive until an owner approves.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_AccessRequestComplete",
         "requestBody": {
           "x-name": "request",
@@ -22273,7 +21865,6 @@
           "Passkey"
         ],
         "summary": "Generate passkey registration options for an unauthenticated user accepting an invite.\nValidates the invite, creates a new subject, and returns WebAuthn registration options.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_InviteOptions",
         "requestBody": {
           "x-name": "request",
@@ -22328,7 +21919,6 @@
           "Passkey"
         ],
         "summary": "Complete passkey registration for an invite acceptance.\nVerifies attestation, accepts the invite, generates recovery codes, and issues a session.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Passkey_InviteComplete",
         "requestBody": {
           "x-name": "request",
@@ -22383,7 +21973,7 @@
           "Totp"
         ],
         "summary": "Generate TOTP setup data including provisioning URI and secret.",
-        "description": "[ConsumesProcessor] Requires at least one primary auth factor (passkey or OIDC link) to be configured.\nThe returned ChallengeToken must be passed to\nVerifySetup along with a valid 6-digit code to complete setup.",
+        "description": "Requires at least one primary auth factor (passkey or OIDC link) to be configured.\nThe returned ChallengeToken must be passed to\nVerifySetup along with a valid 6-digit code to complete setup.",
         "operationId": "Totp_Setup",
         "responses": {
           "200": {
@@ -22416,7 +22006,6 @@
           "Totp"
         ],
         "summary": "Verify a TOTP code to complete authenticator setup.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Totp_VerifySetup",
         "requestBody": {
           "x-name": "request",
@@ -22475,7 +22064,6 @@
           "Totp"
         ],
         "summary": "List all TOTP credentials for the authenticated user.",
-        "description": "[ConsumesProcessor] ",
         "operationId": "Totp_ListCredentials",
         "responses": {
           "200": {
@@ -22511,7 +22099,7 @@
           "Totp"
         ],
         "summary": "Remove a TOTP credential by ID.",
-        "description": "[ConsumesProcessor] No factor-count guard: TOTP is a second factor, so removing it can never\nlock a user out of their primary sign-in method.",
+        "description": "No factor-count guard: TOTP is a second factor, so removing it can never\nlock a user out of their primary sign-in method.",
         "operationId": "Totp_RemoveCredential",
         "parameters": [
           {
@@ -22563,7 +22151,7 @@
           "Totp"
         ],
         "summary": "Authenticate using a TOTP code and username.",
-        "description": "[ConsumesProcessor] Rate-limited via the \"totp-login\" policy.\nOn success: issues session cookies, updates last login time, and logs\nLogin. On failure: logs FailedAuth.",
+        "description": "Rate-limited via the \"totp-login\" policy.\nOn success: issues session cookies, updates last login time, and logs\nLogin. On failure: logs FailedAuth.",
         "operationId": "Totp_Login",
         "requestBody": {
           "x-name": "request",
@@ -30617,6 +30205,36 @@
         "properties": {
           "url": {
             "type": "string"
+          }
+        }
+      },
+      "SupportConfigResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "accountBilling": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SupportChannelConfig"
+              }
+            ]
+          }
+        }
+      },
+      "SupportChannelConfig": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "mode": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string",
+            "nullable": true
           }
         }
       },

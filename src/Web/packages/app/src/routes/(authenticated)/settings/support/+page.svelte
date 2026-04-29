@@ -32,7 +32,8 @@
     CreditCard,
   } from "lucide-svelte";
   import { getServicesOverview } from "$api";
-  import type { ServicesOverview } from "$api";
+  import type { ServicesOverview, SupportConfigResponse } from "$api";
+  import { getSupportConfig } from "$lib/api/support.remote";
   import IssueCreatorDialog from "$lib/components/support/IssueCreatorDialog.svelte";
 
   let includeDeviceInfo = $state(true);
@@ -47,8 +48,12 @@
   let apiBaseUrl = $state<string | null>(null);
 
   const servicesOverviewQuery = $derived(getServicesOverview());
+  const supportConfigQuery = $derived(getSupportConfig());
 
   const services = $derived(servicesOverviewQuery.current as ServicesOverview | undefined);
+  const supportConfig = $derived(supportConfigQuery.current as SupportConfigResponse | undefined);
+
+  let operatorApiUrl = $state<string | undefined>(undefined);
 
   $effect(() => {
     if (services?.apiEndpoint) {
@@ -153,6 +158,10 @@
 
   function handleSupportAction(template: string) {
     selectedTemplate = template;
+    operatorApiUrl =
+      template === "account" && supportConfig?.accountBilling?.mode === "api"
+        ? supportConfig.accountBilling.url
+        : undefined;
     dialogOpen = true;
   }
 </script>
@@ -228,20 +237,39 @@
     <CardContent class="space-y-4">
       <div class="grid gap-4 sm:grid-cols-2">
         {#each supportOptions as option}
-          <button
-            class="flex flex-col items-center text-center p-4 rounded-lg border hover:border-primary/50 hover:bg-accent/50 transition-colors"
-            onclick={() => handleSupportAction(option.template)}
-          >
-            <div
-              class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-3"
+          {#if option.template === "account" && supportConfig?.accountBilling?.mode === "redirect"}
+            <a
+              href={supportConfig.accountBilling.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex flex-col items-center text-center p-4 rounded-lg border hover:border-primary/50 hover:bg-accent/50 transition-colors"
             >
-              <option.icon class="h-6 w-6 text-primary" />
-            </div>
-            <span class="font-medium">{option.name}</span>
-            <p class="text-sm text-muted-foreground mt-1">
-              {option.description}
-            </p>
-          </button>
+              <div
+                class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-3"
+              >
+                <ExternalLink class="h-6 w-6 text-primary" />
+              </div>
+              <span class="font-medium">{supportConfig.accountBilling.label ?? option.name}</span>
+              <p class="text-sm text-muted-foreground mt-1">
+                {option.description}
+              </p>
+            </a>
+          {:else}
+            <button
+              class="flex flex-col items-center text-center p-4 rounded-lg border hover:border-primary/50 hover:bg-accent/50 transition-colors"
+              onclick={() => handleSupportAction(option.template)}
+            >
+              <div
+                class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-3"
+              >
+                <option.icon class="h-6 w-6 text-primary" />
+              </div>
+              <span class="font-medium">{option.name}</span>
+              <p class="text-sm text-muted-foreground mt-1">
+                {option.description}
+              </p>
+            </button>
+          {/if}
         {/each}
       </div>
 
@@ -411,4 +439,4 @@
   </Card>
 </div>
 
-<IssueCreatorDialog bind:open={dialogOpen} template={selectedTemplate} />
+<IssueCreatorDialog bind:open={dialogOpen} template={selectedTemplate} {operatorApiUrl} />

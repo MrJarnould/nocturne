@@ -1,7 +1,7 @@
 import { getRequestEvent, command } from '$app/server';
 import { error, redirect } from '@sveltejs/kit';
 
-export { getFallbackUrl } from '$api/generated/supports.generated.remote';
+export { getFallbackUrl, getSupportConfig } from '$api/generated/supports.generated.remote';
 
 export const createIssue = command(async (params: {
   template: string;
