@@ -30278,8 +30278,10 @@
         "x-enumNames": [
           "Glucose",
           "ManualBG",
+          "Calibrations",
           "Boluses",
           "CarbIntake",
+          "BGChecks",
           "BolusCalculations",
           "Notes",
           "DeviceEvents",
@@ -30292,8 +30294,10 @@
         "enum": [
           "Glucose",
           "ManualBG",
+          "Calibrations",
           "Boluses",
           "CarbIntake",
+          "BGChecks",
           "BolusCalculations",
           "Notes",
           "DeviceEvents",
