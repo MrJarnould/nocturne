@@ -29,6 +29,7 @@
 			type="button"
 			class="star-btn"
 			class:is-favorite={favorite}
+			aria-label={favorite ? 'Remove from favorites' : 'Add to favorites'}
 			onclick={(e) => {
 				e.stopPropagation();
 				onfavorite();
@@ -121,7 +122,7 @@
 	}
 
 	.star-btn.is-favorite {
-		color: oklch(0.85 0.18 75);
+		color: var(--carbs-strong);
 	}
 
 	.name-cell {

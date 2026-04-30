@@ -93,8 +93,8 @@
 
 		<!-- Carbs -->
 		<div class="flex flex-col gap-1.5">
-			<span class="font-semibold" style="font-size: 11px; color: oklch(0.769 0.188 70.08)">Carbs *</span>
-			<div class="flex items-center rounded-md px-3 py-2" style="border: 1px solid oklch(0.769 0.188 70.08 / 0.45); background: oklch(0.769 0.188 70.08 / 0.06)">
+			<span class="font-semibold" style="font-size: 11px; color: var(--carbs)">Carbs *</span>
+			<div class="flex items-center rounded-md px-3 py-2" style="border: 1px solid var(--carbs-border-strong); background: var(--carbs-bg)">
 				<input
 					type="number"
 					class="w-full bg-transparent text-sm outline-none"
@@ -102,7 +102,7 @@
 					min="0"
 					step="0.1"
 				/>
-				<span class="ml-2 shrink-0 text-xs" style="color: oklch(0.769 0.188 70.08)">g</span>
+				<span class="ml-2 shrink-0 text-xs" style="color: var(--carbs)">g</span>
 			</div>
 			<span class="text-muted-foreground" style="font-size: 10px">per {draft.portion ?? 100} {draft.unit ?? 'g'}</span>
 		</div>
@@ -229,7 +229,7 @@
 				style="width: 180px; border: 1px solid oklch(1 0 0 / 0.18); background: oklch(1 0 0 / 0.04); color: inherit"
 				bind:value={draft.category}
 			>
-				<option value={undefined}>No category</option>
+				<option value="">No category</option>
 				{#each foodState.categories as cat (cat)}
 					<option value={cat}>{cat}</option>
 				{/each}
@@ -241,7 +241,7 @@
 				style="width: 180px; border: 1px solid oklch(1 0 0 / 0.18); background: oklch(1 0 0 / 0.04); color: inherit"
 				bind:value={draft.subcategory}
 			>
-				<option value={undefined}>No subcategory</option>
+				<option value="">No subcategory</option>
 				{#each subcategories as sub (sub)}
 					<option value={sub}>{sub}</option>
 				{/each}

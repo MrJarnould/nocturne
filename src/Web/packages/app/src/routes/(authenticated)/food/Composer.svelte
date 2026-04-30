@@ -91,13 +91,13 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	class="mx-4 my-3 rounded-[10px] p-3.5"
-	style="border: 1px solid oklch(0.769 0.188 70.08 / 0.22); background: oklch(0.769 0.188 70.08 / 0.04)"
+	style="border: 1px solid var(--carbs-border); background: var(--carbs-bg-subtle)"
 	onkeydown={handleKeydown}
 >
 	<!-- Header -->
 	<div class="mb-3 flex items-center gap-3">
-		<div class="flex items-center justify-center rounded-[7px]" style="width: 26px; height: 26px; background: oklch(0.769 0.188 70.08 / 0.15)">
-			<Plus size={14} style="color: oklch(0.769 0.188 70.08)" />
+		<div class="flex items-center justify-center rounded-[7px]" style="width: 26px; height: 26px; background: var(--carbs-soft)">
+			<Plus size={14} style="color: var(--carbs)" />
 		</div>
 		<span class="font-semibold" style="font-size: 13px">Add food</span>
 		<span class="text-muted-foreground" style="font-size: 11px">
@@ -130,8 +130,8 @@
 
 		<!-- Carbs -->
 		<div class="flex h-full flex-col gap-1">
-			<span class="font-medium uppercase" style="font-size: 10px; color: oklch(0.769 0.188 70.08)">Carbs</span>
-			<div class="flex flex-1 items-center rounded-md px-3" style="border: 1px solid oklch(0.769 0.188 70.08 / 0.45); background: oklch(0.769 0.188 70.08 / 0.06)">
+			<span class="font-medium uppercase" style="font-size: 10px; color: var(--carbs)">Carbs</span>
+			<div class="flex flex-1 items-center rounded-md px-3" style="border: 1px solid var(--carbs-border-strong); background: var(--carbs-bg)">
 				<input
 					type="number"
 					class="w-full bg-transparent text-sm outline-none"
@@ -139,7 +139,7 @@
 					min="0"
 					step="0.1"
 				/>
-				<span class="ml-1 shrink-0 text-xs" style="color: oklch(0.769 0.188 70.08)">g</span>
+				<span class="ml-1 shrink-0 text-xs" style="color: var(--carbs)">g</span>
 			</div>
 		</div>
 
@@ -255,7 +255,7 @@
 						style="border: 1px solid oklch(1 0 0 / 0.18); background: oklch(1 0 0 / 0.04); color: inherit"
 						bind:value={draft.category}
 					>
-						<option value={undefined}>None</option>
+						<option value="">None</option>
 						{#each foodState.categories as cat (cat)}
 							<option value={cat}>{cat}</option>
 						{/each}
@@ -270,7 +270,7 @@
 						style="border: 1px solid oklch(1 0 0 / 0.18); background: oklch(1 0 0 / 0.04); color: inherit"
 						bind:value={draft.subcategory}
 					>
-						<option value={undefined}>None</option>
+						<option value="">None</option>
 						{#each subcategories as sub (sub)}
 							<option value={sub}>{sub}</option>
 						{/each}

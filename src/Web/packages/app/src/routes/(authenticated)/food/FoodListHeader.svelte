@@ -24,7 +24,7 @@
 		type="button"
 		class="col-btn"
 		class:active={sort === 'carbs'}
-		style:color={sort === 'carbs' ? 'oklch(0.85 0.18 75)' : undefined}
+		style:color={sort === 'carbs' ? 'var(--carbs-strong)' : undefined}
 		onclick={() => onsort('carbs')}
 	>
 		Carbs

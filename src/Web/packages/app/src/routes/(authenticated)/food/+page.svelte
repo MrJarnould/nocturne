@@ -28,7 +28,7 @@
   <title>Food Editor - Nocturne</title>
 </svelte:head>
 
-<div class="flex-1 overflow-auto p-5">
+<div class="food-editor flex-1 overflow-auto p-5">
   <!-- Header -->
   <div class="mb-5 flex items-center justify-between">
     <div>
@@ -69,7 +69,7 @@
           bind:value={state.query}
         />
         {#if state.query}
-          <button class="grid h-7 w-7 place-items-center rounded-md border-0 bg-transparent text-muted-foreground cursor-pointer hover:bg-white/[0.06]" onclick={() => (state.query = '')}>
+          <button class="grid h-7 w-7 place-items-center rounded-md border-0 bg-transparent text-muted-foreground cursor-pointer hover:bg-white/[0.06]" aria-label="Clear search" onclick={() => (state.query = '')}>
             <X class="h-3 w-3" />
           </button>
         {/if}
@@ -95,7 +95,7 @@
       >
         <option value="name">Sort: A → Z</option>
         <option value="carbs">Sort: Carbs (high)</option>
-        <option value="recent">Sort: Recently updated</option>
+        <option value="recent">Sort: Recently added</option>
       </select>
     </div>
 
@@ -156,7 +156,7 @@
       <div class="py-16 text-center text-muted-foreground">Loading food database...</div>
     {:else if state.foods.length === 0}
       <div class="flex flex-col items-center justify-center gap-3 px-6 py-16 text-center text-muted-foreground">
-        <div class="grid h-14 w-14 place-items-center rounded-2xl" style="background: oklch(0.769 0.188 70.08 / 0.12); color: oklch(0.85 0.18 75);">
+        <div class="grid h-14 w-14 place-items-center rounded-2xl" style="background: var(--carbs-soft); color: var(--carbs-strong);">
           <Apple class="h-7 w-7" />
         </div>
         <div class="text-lg font-semibold text-foreground">Build your food database</div>
@@ -192,3 +192,14 @@
     {/if}
   </div>
 </div>
+
+<style>
+  .food-editor {
+    --carbs-soft: color-mix(in oklch, var(--carbs) 12%, transparent);
+    --carbs-strong: color-mix(in oklch, var(--carbs), white 15%);
+    --carbs-border: color-mix(in oklch, var(--carbs) 22%, transparent);
+    --carbs-border-strong: color-mix(in oklch, var(--carbs) 45%, transparent);
+    --carbs-bg: color-mix(in oklch, var(--carbs) 6%, transparent);
+    --carbs-bg-subtle: color-mix(in oklch, var(--carbs) 4%, transparent);
+  }
+</style>
