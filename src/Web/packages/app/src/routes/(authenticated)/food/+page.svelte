@@ -10,6 +10,7 @@
   import GiIcon from './GiIcon.svelte';
 
   import { Plus, Download, Upload, Search, Star, X, Apple } from 'lucide-svelte';
+  import * as Select from '$lib/components/ui/select';
 
   const state = new FoodState();
   setFoodState(state);
@@ -89,14 +90,16 @@
 
       <div class="h-5 w-px bg-border"></div>
 
-      <select
-        class="h-8 rounded-lg border border-border bg-white/[0.04] px-2.5 text-xs text-foreground outline-0 cursor-pointer"
-        bind:value={state.sort}
-      >
-        <option value="name">Sort: A → Z</option>
-        <option value="carbs">Sort: Carbs (high)</option>
-        <option value="recent">Sort: Recently added</option>
-      </select>
+      <Select.Root type="single" bind:value={state.sort}>
+        <Select.Trigger class="h-8 rounded-lg border border-border bg-white/4 px-2.5 text-xs">
+          {state.sort === 'name' ? 'Sort: A → Z' : state.sort === 'carbs' ? 'Sort: Carbs (high)' : 'Sort: Recently added'}
+        </Select.Trigger>
+        <Select.Content>
+          <Select.Item value="name" label="Sort: A → Z" />
+          <Select.Item value="carbs" label="Sort: Carbs (high)" />
+          <Select.Item value="recent" label="Sort: Recently added" />
+        </Select.Content>
+      </Select.Root>
     </div>
 
     <!-- Filter chips -->

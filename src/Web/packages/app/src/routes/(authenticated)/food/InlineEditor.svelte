@@ -6,6 +6,7 @@
 	import { giFromInt, giToInt } from './types.js';
 	import type { GiLevel } from './types.js';
 	import { FOOD_UNITS } from '$lib/components/food';
+	import * as Select from '$lib/components/ui/select';
 
 	interface Props {
 		food: Food;
@@ -224,28 +225,30 @@
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-3">
 			<!-- Category -->
-			<select
-				class="rounded-md px-3 py-2 text-sm outline-none"
-				style="width: 180px; border: 1px solid oklch(1 0 0 / 0.18); background: oklch(1 0 0 / 0.04); color: inherit"
-				bind:value={draft.category}
-			>
-				<option value="">No category</option>
-				{#each foodState.categories as cat (cat)}
-					<option value={cat}>{cat}</option>
-				{/each}
-			</select>
+			<Select.Root type="single" value={draft.category ?? ''} onValueChange={(v) => { draft.category = v; }}>
+				<Select.Trigger class="h-9 w-45">
+					{draft.category || 'No category'}
+				</Select.Trigger>
+				<Select.Content>
+					<Select.Item value="" label="No category" />
+					{#each foodState.categories as cat (cat)}
+						<Select.Item value={cat} label={cat} />
+					{/each}
+				</Select.Content>
+			</Select.Root>
 
 			<!-- Subcategory -->
-			<select
-				class="rounded-md px-3 py-2 text-sm outline-none"
-				style="width: 180px; border: 1px solid oklch(1 0 0 / 0.18); background: oklch(1 0 0 / 0.04); color: inherit"
-				bind:value={draft.subcategory}
-			>
-				<option value="">No subcategory</option>
-				{#each subcategories as sub (sub)}
-					<option value={sub}>{sub}</option>
-				{/each}
-			</select>
+			<Select.Root type="single" value={draft.subcategory ?? ''} onValueChange={(v) => { draft.subcategory = v; }}>
+				<Select.Trigger class="h-9 w-45">
+					{draft.subcategory || 'No subcategory'}
+				</Select.Trigger>
+				<Select.Content>
+					<Select.Item value="" label="No subcategory" />
+					{#each subcategories as sub (sub)}
+						<Select.Item value={sub} label={sub} />
+					{/each}
+				</Select.Content>
+			</Select.Root>
 		</div>
 
 		<div class="flex items-center gap-2">

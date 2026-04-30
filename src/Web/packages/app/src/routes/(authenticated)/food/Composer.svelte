@@ -6,6 +6,7 @@
 	import { giFromInt, giToInt } from './types.js';
 	import type { GiLevel } from './types.js';
 	import { FOOD_UNITS, DEFAULT_PORTION, DEFAULT_GI } from '$lib/components/food';
+	import * as Select from '$lib/components/ui/select';
 
 	interface Props {
 		onadd: (food: Food) => void;
@@ -250,31 +251,33 @@
 				<!-- Category -->
 				<div class="flex flex-col gap-1">
 					<span class="text-muted-foreground font-medium uppercase" style="font-size: 10px">Category</span>
-					<select
-						class="rounded-md px-3 py-2 text-sm outline-none"
-						style="border: 1px solid oklch(1 0 0 / 0.18); background: oklch(1 0 0 / 0.04); color: inherit"
-						bind:value={draft.category}
-					>
-						<option value="">None</option>
-						{#each foodState.categories as cat (cat)}
-							<option value={cat}>{cat}</option>
-						{/each}
-					</select>
+					<Select.Root type="single" value={draft.category ?? ''} onValueChange={(v) => { draft = { ...draft, category: v }; }}>
+						<Select.Trigger class="h-9 w-full text-xs">
+							{draft.category || 'Category'}
+						</Select.Trigger>
+						<Select.Content>
+							<Select.Item value="" label="None" />
+							{#each foodState.categories as cat (cat)}
+								<Select.Item value={cat} label={cat} />
+							{/each}
+						</Select.Content>
+					</Select.Root>
 				</div>
 
 				<!-- Subcategory -->
 				<div class="flex flex-col gap-1">
 					<span class="text-muted-foreground font-medium uppercase" style="font-size: 10px">Subcategory</span>
-					<select
-						class="rounded-md px-3 py-2 text-sm outline-none"
-						style="border: 1px solid oklch(1 0 0 / 0.18); background: oklch(1 0 0 / 0.04); color: inherit"
-						bind:value={draft.subcategory}
-					>
-						<option value="">None</option>
-						{#each subcategories as sub (sub)}
-							<option value={sub}>{sub}</option>
-						{/each}
-					</select>
+					<Select.Root type="single" value={draft.subcategory ?? ''} onValueChange={(v) => { draft = { ...draft, subcategory: v }; }}>
+						<Select.Trigger class="h-9 w-full text-xs">
+							{draft.subcategory || 'Subcategory'}
+						</Select.Trigger>
+						<Select.Content>
+							<Select.Item value="" label="None" />
+							{#each subcategories as sub (sub)}
+								<Select.Item value={sub} label={sub} />
+							{/each}
+						</Select.Content>
+					</Select.Root>
 				</div>
 			</div>
 		</details>
