@@ -3,6 +3,7 @@ using OpenApi.Remote.Attributes;
 using Nocturne.API.Models;
 using Nocturne.API.Services.Connectors;
 using Nocturne.Core.Contracts.Connectors;
+using Nocturne.Core.Contracts.Multitenancy;
 using Nocturne.Core.Models.Services;
 
 namespace Nocturne.API.Controllers.V4.Platform;
@@ -538,11 +539,21 @@ public class ServicesController : ControllerBase
         // Try to get configured base URL first
         var configuredUrl = _configuration["BaseUrl"];
         if (!string.IsNullOrEmpty(configuredUrl))
-        {
             return configuredUrl.TrimEnd('/');
+
+        // In production the API runs as plain HTTP behind a TLS-terminating reverse proxy,
+        // so request.Scheme is always "http" for internal calls from the web container.
+        // Build the correct https:// URL from Multitenancy:BaseDomain + the tenant slug instead.
+        var baseDomain = _configuration["Multitenancy:BaseDomain"];
+        if (!string.IsNullOrEmpty(baseDomain) &&
+            !baseDomain.StartsWith("localhost", StringComparison.OrdinalIgnoreCase))
+        {
+            var slug = (HttpContext.Items["TenantContext"] as TenantContext)?.Slug;
+            if (!string.IsNullOrEmpty(slug))
+                return $"https://{slug}.{baseDomain.Split(':')[0]}";
         }
 
-        // Fall back to request URL
+        // Development fallback: derive from the incoming request
         var request = HttpContext.Request;
         return $"{request.Scheme}://{request.Host}";
     }
