@@ -28754,6 +28754,8 @@ export interface DashboardChartData {
     basalDeliverySpans?: BasalDeliverySpanDto[];
     systemEventMarkers?: SystemEventMarkerDto[];
     trackerMarkers?: TrackerMarkerDto[];
+    heartRateSeries?: HeartRatePointDto[];
+    stepSeries?: StepBubbleDto[];
 }
 
 export interface TimeSeriesPoint {
@@ -28813,6 +28815,8 @@ export enum ChartColor {
     TrackerAppointment = "tracker-appointment",
     TrackerReminder = "tracker-reminder",
     TrackerCustom = "tracker-custom",
+    HeartRate = "heart-rate",
+    Steps = "steps",
     Profile = "chart-1",
     Override = "chart-2",
     MutedForeground = "muted-foreground",
@@ -28917,6 +28921,16 @@ export interface TrackerMarkerDto {
     time?: number;
     icon?: string | undefined;
     color?: ChartColor;
+}
+
+export interface HeartRatePointDto {
+    time?: number;
+    bpm?: number;
+}
+
+export interface StepBubbleDto {
+    time?: number;
+    steps?: number;
 }
 
 export interface DataOverviewYearsResponse {

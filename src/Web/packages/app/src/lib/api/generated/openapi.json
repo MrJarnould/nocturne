@@ -36965,6 +36965,18 @@
             "items": {
               "$ref": "#/components/schemas/TrackerMarkerDto"
             }
+          },
+          "heartRateSeries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HeartRatePointDto"
+            }
+          },
+          "stepSeries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StepBubbleDto"
+            }
           }
         }
       },
@@ -37065,6 +37077,8 @@
           "TrackerAppointment",
           "TrackerReminder",
           "TrackerCustom",
+          "HeartRate",
+          "Steps",
           "Profile",
           "Override",
           "MutedForeground",
@@ -37105,6 +37119,8 @@
           "tracker-appointment",
           "tracker-reminder",
           "tracker-custom",
+          "heart-rate",
+          "steps",
           "chart-1",
           "chart-2",
           "muted-foreground",
@@ -37409,6 +37425,34 @@
           },
           "color": {
             "$ref": "#/components/schemas/ChartColor"
+          }
+        }
+      },
+      "HeartRatePointDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "time": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "bpm": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "StepBubbleDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "time": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "steps": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
