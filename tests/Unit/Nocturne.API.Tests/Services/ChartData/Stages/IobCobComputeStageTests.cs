@@ -153,4 +153,86 @@ public class IobCobComputeStageTests
         result.IobSeries[0].Value.Should().Be(0);
         result.CobSeries[0].Value.Should().Be(0);
     }
+
+    [Fact]
+    public async Task ExecuteAsync_OnlyPassesActiveWindowToInsulinAndCarbServices()
+    {
+        // Arrange — DIA = 3h (default when HasDataAsync returns false), COB window = 6h
+        var startTime = TestMills;
+        var endTime = TestMills + 60 * 60 * 1000; // 1 hour window
+        const int intervalMinutes = 5;
+        const long oneHour = 60 * 60 * 1000;
+
+        // Insulin: one well outside DIA, one inside
+        var staleInsulin = new Treatment { Mills = TestMills - 10 * oneHour, Insulin = 1.0 };
+        var freshInsulin = new Treatment { Mills = TestMills - 30 * 60 * 1000, Insulin = 2.0 };
+        // Carbs: one well outside COB absorption, one inside
+        var staleCarbs = new Treatment { Mills = TestMills - 12 * oneHour, Carbs = 30.0 };
+        var freshCarbs = new Treatment { Mills = TestMills - 30 * 60 * 1000, Carbs = 45.0 };
+        // Temp basals: one outside DIA, one inside
+        var staleTempBasal = new TempBasal
+        {
+            StartTimestamp = DateTimeOffset.FromUnixTimeMilliseconds(TestMills - 10 * oneHour).UtcDateTime,
+            EndTimestamp = DateTimeOffset.FromUnixTimeMilliseconds(TestMills - 9 * oneHour).UtcDateTime,
+            Rate = 1.0,
+            Origin = TempBasalOrigin.Algorithm,
+        };
+        var freshTempBasal = new TempBasal
+        {
+            StartTimestamp = DateTimeOffset.FromUnixTimeMilliseconds(TestMills - 30 * 60 * 1000).UtcDateTime,
+            EndTimestamp = DateTimeOffset.FromUnixTimeMilliseconds(TestMills + 30 * 60 * 1000).UtcDateTime,
+            Rate = 1.5,
+            Origin = TempBasalOrigin.Algorithm,
+        };
+
+        var insulinCalls = new List<List<Treatment>>();
+        var carbCalls = new List<List<Treatment>>();
+        var tempBasalCalls = new List<List<TempBasal>>();
+
+        _mockIobService
+            .Setup(s => s.FromTreatments(It.IsAny<List<Treatment>>(), It.IsAny<long>(), It.IsAny<string?>()))
+            .Callback<List<Treatment>, long?, string?>((list, _, _) => insulinCalls.Add(new List<Treatment>(list)))
+            .Returns(new IobResult { Iob = 0 });
+        _mockIobService
+            .Setup(s => s.FromTempBasals(It.IsAny<List<TempBasal>>(), It.IsAny<long>(), It.IsAny<string?>()))
+            .Callback<List<TempBasal>, long?, string?>((list, _, _) => tempBasalCalls.Add(new List<TempBasal>(list)))
+            .Returns(new IobResult { BasalIob = 0 });
+        _mockCobService
+            .Setup(s => s.CobTotalAsync(It.IsAny<List<Treatment>>(), It.IsAny<long?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
+            .Callback<List<Treatment>, long?, string?, CancellationToken>((list, _, _, _) => carbCalls.Add(new List<Treatment>(list)))
+            .ReturnsAsync(new CobResult { Cob = 0 });
+
+        var context = new ChartDataContext
+        {
+            StartTime = startTime,
+            EndTime = endTime,
+            IntervalMinutes = intervalMinutes,
+            DefaultBasalRate = 1.0,
+            SyntheticTreatments = [staleInsulin, freshInsulin, staleCarbs, freshCarbs],
+            TempBasalList = [staleTempBasal, freshTempBasal],
+        };
+
+        // Act
+        await _stage.ExecuteAsync(context, CancellationToken.None);
+
+        // Assert — every call to the per-tick services receives only the in-window entries
+        insulinCalls.Should().NotBeEmpty();
+        insulinCalls.Should().AllSatisfy(call =>
+        {
+            call.Should().NotContain(staleInsulin);
+            call.Should().Contain(freshInsulin);
+        });
+        carbCalls.Should().NotBeEmpty();
+        carbCalls.Should().AllSatisfy(call =>
+        {
+            call.Should().NotContain(staleCarbs);
+            call.Should().Contain(freshCarbs);
+        });
+        tempBasalCalls.Should().NotBeEmpty();
+        tempBasalCalls.Should().AllSatisfy(call =>
+        {
+            call.Should().NotContain(staleTempBasal);
+            call.Should().Contain(freshTempBasal);
+        });
+    }
 }
