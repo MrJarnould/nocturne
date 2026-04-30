@@ -33,6 +33,7 @@ public sealed class TherapySnapshot
     public const double DefaultBasalRate = 1.0;
     public const double DefaultDia = 3.0;
     public const int DefaultPeakMinutes = 75;
+    public const double DefaultCarbsPerHour = 30.0;
 
     private readonly IReadOnlyList<ScheduleEntry>? _sensitivityEntries;
     private readonly IReadOnlyList<ScheduleEntry>? _carbRatioEntries;
@@ -41,6 +42,7 @@ public sealed class TherapySnapshot
     public TherapySnapshot(
         double dia,
         int peakMinutes,
+        double carbsPerHour,
         TimeZoneInfo? timezone,
         double? ccpPercentage,
         long ccpTimeshiftMs,
@@ -51,6 +53,7 @@ public sealed class TherapySnapshot
     {
         Dia = dia;
         PeakMinutes = peakMinutes;
+        CarbsPerHour = carbsPerHour;
         Timezone = timezone;
         CcpPercentage = ccpPercentage;
         CcpTimeshiftMs = ccpTimeshiftMs;
@@ -64,6 +67,9 @@ public sealed class TherapySnapshot
 
     /// <summary>Insulin peak time (minutes).</summary>
     public int PeakMinutes { get; }
+
+    /// <summary>Carb absorption rate (g/hr). Profile-level constant; no schedule variation.</summary>
+    public double CarbsPerHour { get; }
 
     /// <summary>Resolved IANA timezone for time-of-day lookup, or <c>null</c> for UTC.</summary>
     public TimeZoneInfo? Timezone { get; }
@@ -187,4 +193,4 @@ public sealed class TherapyTimeline
 /// but the freshness check is against wall-clock <c>now</c>, so the answer is constant
 /// across all ticks in a request.
 /// </summary>
-public sealed record DeviceCobSnapshot(double Cob, long Mills, string? Source);
+public sealed record DeviceCobSnapshot(double Cob, long Mills, string? Source, string? Device = null);

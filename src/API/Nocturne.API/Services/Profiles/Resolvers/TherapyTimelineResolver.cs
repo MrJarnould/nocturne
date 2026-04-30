@@ -150,6 +150,7 @@ internal sealed class TherapyTimelineResolver : ITherapyTimelineResolver
             return new TherapySnapshot(
                 dia: TherapySnapshot.DefaultDia,
                 peakMinutes: TherapySnapshot.DefaultPeakMinutes,
+                carbsPerHour: TherapySnapshot.DefaultCarbsPerHour,
                 timezone: null,
                 ccpPercentage: null,
                 ccpTimeshiftMs: 0,
@@ -164,13 +165,14 @@ internal sealed class TherapyTimelineResolver : ITherapyTimelineResolver
 
         // Resolve all profile-segment-anchored values in parallel.
         var diaTask = _therapySettings.GetDIAAsync(anchorMills, resolvedProfile, ct);
+        var carbsHrTask = _therapySettings.GetCarbAbsorptionRateAsync(anchorMills, resolvedProfile, ct);
         var timezoneTask = _therapySettings.GetTimezoneAsync(resolvedProfile, ct);
         var sensTask = _sensitivityRepo.GetActiveAtAsync(resolvedProfile, anchorDt, ct);
         var carbRatioTask = _carbRatioRepo.GetActiveAtAsync(resolvedProfile, anchorDt, ct);
         var basalTask = _basalRepo.GetActiveAtAsync(resolvedProfile, anchorDt, ct);
         var ccpTask = _activeProfileResolver.GetCircadianAdjustmentAsync(anchorMills, ct);
 
-        await Task.WhenAll(diaTask, timezoneTask, sensTask, carbRatioTask, basalTask, ccpTask);
+        await Task.WhenAll(diaTask, carbsHrTask, timezoneTask, sensTask, carbRatioTask, basalTask, ccpTask);
 
         var timezone = ResolveTimezone(await timezoneTask);
         var ccp = await ccpTask;
@@ -181,6 +183,7 @@ internal sealed class TherapyTimelineResolver : ITherapyTimelineResolver
         return new TherapySnapshot(
             dia: await diaTask,
             peakMinutes: TherapySnapshot.DefaultPeakMinutes,
+            carbsPerHour: await carbsHrTask,
             timezone: timezone,
             ccpPercentage: ccp?.Percentage,
             ccpTimeshiftMs: ccp?.TimeshiftMs ?? 0,
