@@ -26684,8 +26684,10 @@ export interface SyncResult {
 export enum SyncDataType {
     Glucose = "Glucose",
     ManualBG = "ManualBG",
+    Calibrations = "Calibrations",
     Boluses = "Boluses",
     CarbIntake = "CarbIntake",
+    BGChecks = "BGChecks",
     BolusCalculations = "BolusCalculations",
     Notes = "Notes",
     DeviceEvents = "DeviceEvents",
