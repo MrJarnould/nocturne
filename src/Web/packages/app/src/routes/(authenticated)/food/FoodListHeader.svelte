@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { ChevronDown } from 'lucide-svelte';
 	import type { SortMode } from './types';
+	import { Button } from '$lib/components/ui/button';
 
 	interface Props {
 		sort: SortMode;
@@ -13,25 +14,25 @@
 <div class="header-row">
 	<span></span>
 
-	<button type="button" class="col-btn" class:active={sort === 'name'} onclick={() => onsort('name')}>
+	<Button variant="ghost" size="sm" class="h-auto p-0 text-[11px] font-semibold uppercase tracking-wider hover:bg-transparent {sort === 'name' ? 'text-foreground' : ''}" onclick={() => onsort('name')}>
 		Name
 		{#if sort === 'name'}
-			<ChevronDown size={12} />
+			<ChevronDown class="h-2.5 w-2.5" />
 		{/if}
-	</button>
+	</Button>
 
-	<button
-		type="button"
-		class="col-btn"
-		class:active={sort === 'carbs'}
-		style:color={sort === 'carbs' ? 'var(--carbs-strong)' : undefined}
+	<Button
+		variant="ghost"
+		size="sm"
+		class="h-auto p-0 text-[11px] font-semibold uppercase tracking-wider hover:bg-transparent"
+		style={sort === 'carbs' ? 'color: var(--carbs-strong)' : undefined}
 		onclick={() => onsort('carbs')}
 	>
 		Carbs
 		{#if sort === 'carbs'}
-			<ChevronDown size={12} />
+			<ChevronDown class="h-2.5 w-2.5" />
 		{/if}
-	</button>
+	</Button>
 
 	<span class="col-label">Portion</span>
 
@@ -56,32 +57,11 @@
 		border-bottom: 1px solid var(--border);
 	}
 
-	.col-label,
-	.col-btn {
+	.col-label {
 		font-size: 11px;
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		color: oklch(from var(--muted-foreground) l c h / 0.7);
-	}
-
-	.col-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 3px;
-		padding: 0;
-		border: none;
-		background: none;
-		cursor: pointer;
-		font: inherit;
-		font-size: 11px;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		color: oklch(from var(--muted-foreground) l c h / 0.7);
-	}
-
-	.col-btn.active {
-		color: var(--foreground);
 	}
 </style>

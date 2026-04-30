@@ -11,6 +11,8 @@
 
   import { Plus, Download, Upload, Search, Star, X, Apple } from 'lucide-svelte';
   import * as Select from '$lib/components/ui/select';
+  import { Button } from '$lib/components/ui/button';
+  import { Separator } from '$lib/components/ui/separator';
 
   const state = new FoodState();
   setFoodState(state);
@@ -43,18 +45,9 @@
       </div>
     </div>
     <div class="flex gap-2">
-      <button class="flex h-[34px] items-center gap-1.5 rounded-lg border border-border bg-white/[0.04] px-3 text-[13px] text-foreground cursor-pointer hover:bg-white/[0.08]">
-        <Download class="h-3.5 w-3.5" /> Export
-      </button>
-      <button class="flex h-[34px] items-center gap-1.5 rounded-lg border border-border bg-white/[0.04] px-3 text-[13px] text-foreground cursor-pointer hover:bg-white/[0.08]">
-        <Upload class="h-3.5 w-3.5" /> Import CSV
-      </button>
-      <button
-        class="flex h-[34px] items-center gap-1.5 rounded-lg border-0 bg-foreground px-3 text-[13px] font-semibold text-background cursor-pointer hover:bg-foreground/90"
-        onclick={() => (state.composerOpen = true)}
-      >
-        <Plus class="h-3.5 w-3.5" /> Add food
-      </button>
+      <Button variant="outline" size="sm"><Download class="h-3.5 w-3.5" /> Export</Button>
+      <Button variant="outline" size="sm"><Upload class="h-3.5 w-3.5" /> Import CSV</Button>
+      <Button size="sm" onclick={() => (state.composerOpen = true)}><Plus class="h-3.5 w-3.5" /> Add food</Button>
     </div>
   </div>
 
@@ -70,9 +63,7 @@
           bind:value={state.query}
         />
         {#if state.query}
-          <button class="grid h-7 w-7 place-items-center rounded-md border-0 bg-transparent text-muted-foreground cursor-pointer hover:bg-white/[0.06]" aria-label="Clear search" onclick={() => (state.query = '')}>
-            <X class="h-3 w-3" />
-          </button>
+          <Button variant="ghost" size="icon" class="h-7 w-7" aria-label="Clear search" onclick={() => (state.query = '')}><X class="h-3 w-3" /></Button>
         {/if}
       </div>
 
@@ -88,7 +79,7 @@
         <Star class="h-3 w-3" /> Favorites
       </button>
 
-      <div class="h-5 w-px bg-border"></div>
+      <Separator orientation="vertical" class="h-5" />
 
       <Select.Root type="single" bind:value={state.sort}>
         <Select.Trigger class="h-8 rounded-lg border border-border bg-white/4 px-2.5 text-xs">
@@ -126,7 +117,7 @@
         >{cat}</button>
       {/each}
 
-      <div class="mx-1 h-4 w-px bg-border"></div>
+      <Separator orientation="vertical" class="mx-1 h-4" />
 
       <span class="mr-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60">GI</span>
       {#each giLevels as g (g)}
@@ -168,12 +159,8 @@
           logging a meal takes a couple of taps anywhere in Nocturne.
         </div>
         <div class="mt-1.5 flex gap-2">
-          <button class="flex h-[34px] items-center gap-1.5 rounded-lg border-0 bg-foreground px-3 text-[13px] font-semibold text-background cursor-pointer hover:bg-foreground/90" onclick={() => (state.composerOpen = true)}>
-            <Plus class="h-3.5 w-3.5" /> Add your first food
-          </button>
-          <button class="flex h-[34px] items-center gap-1.5 rounded-lg border border-border bg-white/[0.04] px-3 text-[13px] text-foreground cursor-pointer hover:bg-white/[0.08]">
-            <Upload class="h-3.5 w-3.5" /> Import CSV
-          </button>
+          <Button size="sm" onclick={() => (state.composerOpen = true)}><Plus class="h-3.5 w-3.5" /> Add your first food</Button>
+          <Button variant="outline" size="sm"><Upload class="h-3.5 w-3.5" /> Import CSV</Button>
         </div>
         <div class="mt-4 text-[11px] text-muted-foreground/60">
           Or browse the Nocturne food bank →
@@ -185,10 +172,7 @@
           <Search class="h-6 w-6" />
         </div>
         <div class="text-[15px] font-semibold text-foreground">No matches for "{state.query}"</div>
-        <button
-          class="flex h-[34px] items-center gap-1.5 rounded-lg border border-border bg-white/[0.04] px-3 text-[13px] text-foreground cursor-pointer hover:bg-white/[0.08]"
-          onclick={() => state.clearFilters()}
-        >Clear filters</button>
+        <Button variant="outline" size="sm" onclick={() => state.clearFilters()}>Clear filters</Button>
       </div>
     {:else}
       <FoodList />

@@ -4,6 +4,7 @@
 	import CarbPill from './CarbPill.svelte';
 	import GiChip from './GiChip.svelte';
 	import { giFromInt } from './types';
+	import { Toggle } from '$lib/components/ui/toggle';
 
 	interface Props {
 		food: Food;
@@ -25,18 +26,17 @@
 	onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ontoggle(); } }}
 >
 	<span class="star-cell">
-		<button
-			type="button"
-			class="star-btn"
-			class:is-favorite={favorite}
+		<Toggle
+			pressed={favorite}
+			onPressedChange={() => onfavorite()}
+			variant="default"
+			size="sm"
+			class="h-6 w-6 p-0"
 			aria-label={favorite ? 'Remove from favorites' : 'Add to favorites'}
-			onclick={(e) => {
-				e.stopPropagation();
-				onfavorite();
-			}}
+			onclick={(e) => e.stopPropagation()}
 		>
-			<Star size={16} fill={favorite ? 'currentColor' : 'none'} />
-		</button>
+			<Star class="h-3.5 w-3.5" fill={favorite ? 'currentColor' : 'none'} style={favorite ? 'color: var(--carbs-strong)' : undefined} />
+		</Toggle>
 	</span>
 
 	<span class="name-cell">
@@ -107,22 +107,6 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-	}
-
-	.star-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0;
-		border: none;
-		background: none;
-		cursor: pointer;
-		color: var(--muted-foreground);
-		transition: color 150ms ease;
-	}
-
-	.star-btn.is-favorite {
-		color: var(--carbs-strong);
 	}
 
 	.name-cell {

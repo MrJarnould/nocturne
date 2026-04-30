@@ -7,6 +7,9 @@
 	import type { GiLevel } from './types.js';
 	import { FOOD_UNITS } from '$lib/components/food';
 	import * as Select from '$lib/components/ui/select';
+	import { Button } from '$lib/components/ui/button';
+	import * as ToggleGroup from '$lib/components/ui/toggle-group';
+	import { Separator } from '$lib/components/ui/separator';
 
 	interface Props {
 		food: Food;
@@ -59,20 +62,8 @@
 				{/if}
 			</span>
 			<div class="ml-auto flex items-center gap-2">
-				<button
-					type="button"
-					class="rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-					onclick={() => { confirming = false; }}
-				>
-					Cancel
-				</button>
-				<button
-					type="button"
-					class="rounded-md px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-500/20 transition-colors"
-					onclick={confirmDelete}
-				>
-					Delete
-				</button>
+				<Button variant="ghost" size="sm" onclick={() => { confirming = false; }}>Cancel</Button>
+				<Button variant="destructive" size="sm" onclick={confirmDelete}><Trash2 class="h-3 w-3" /> Delete</Button>
 			</div>
 		</div>
 	{/if}
@@ -126,42 +117,28 @@
 		<!-- Unit -->
 		<div class="flex flex-col gap-1.5">
 			<span class="text-muted-foreground font-semibold" style="font-size: 11px">Unit</span>
-			<div class="flex items-center gap-0.5 rounded-md p-1" style="border: 1px solid oklch(1 0 0 / 0.18); background: oklch(1 0 0 / 0.04)">
-				{#each FOOD_UNITS as unit (unit)}
-					<button
-						type="button"
-						class="flex-1 rounded px-1.5 py-1.5 text-xs font-medium transition-colors {draft.unit === unit ? 'text-foreground' : 'text-muted-foreground'}"
-						style:background={draft.unit === unit ? 'oklch(1 0 0 / 0.12)' : 'transparent'}
-						onclick={() => { draft.unit = unit; }}
-					>
-						{unit}
-					</button>
+			<ToggleGroup.Root type="single" value={draft.unit ?? 'g'} onValueChange={(v) => { if (v) draft.unit = v; }} variant="outline" size="sm" class="w-full">
+				{#each FOOD_UNITS as u (u)}
+					<ToggleGroup.Item value={u} class="flex-1">{u}</ToggleGroup.Item>
 				{/each}
-			</div>
+			</ToggleGroup.Root>
 		</div>
 	</div>
 
-	<hr class="my-4 border-border" />
+	<Separator class="my-4" />
 
 	<!-- Section 2: GI, Fat, Protein, Energy -->
 	<div class="grid gap-4" style="grid-template-columns: 1.4fr 1fr 1fr 1fr">
 		<!-- GI -->
 		<div class="flex flex-col gap-1.5">
 			<span class="text-muted-foreground font-semibold" style="font-size: 11px">Glycemic Index</span>
-			<div class="flex items-center gap-0.5 rounded-md p-1" style="border: 1px solid oklch(1 0 0 / 0.18); background: oklch(1 0 0 / 0.04)">
-				{#each giLevels as level (level)}
-					{@const selected = giFromInt(draft.gi) === level}
-					<button
-						type="button"
-						class="flex flex-1 items-center justify-center gap-1.5 rounded px-2 py-1.5 text-xs font-medium transition-colors {selected ? 'text-foreground' : 'text-muted-foreground'}"
-						style:background={selected ? 'oklch(1 0 0 / 0.12)' : 'transparent'}
-						onclick={() => { draft.gi = giToInt(level); }}
-					>
-						<GiIcon {level} size={10} />
-						<span class="capitalize">{level}</span>
-					</button>
+			<ToggleGroup.Root type="single" value={giFromInt(draft.gi)} onValueChange={(v) => { if (v) draft.gi = giToInt(v as GiLevel); }} variant="outline" size="sm" class="w-full">
+				{#each giLevels as g (g)}
+					<ToggleGroup.Item value={g} class="flex-1 capitalize gap-1.5">
+						<GiIcon level={g} size={7} />{g}
+					</ToggleGroup.Item>
 				{/each}
-			</div>
+			</ToggleGroup.Root>
 		</div>
 
 		<!-- Fat -->
@@ -219,7 +196,7 @@
 		</div>
 	</div>
 
-	<hr class="my-4 border-border" />
+	<Separator class="my-4" />
 
 	<!-- Section 3: Category, Subcategory, Actions -->
 	<div class="flex items-center justify-between">
@@ -252,34 +229,9 @@
 		</div>
 
 		<div class="flex items-center gap-2">
-			<!-- Delete -->
-			<button
-				type="button"
-				class="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
-				onclick={handleDeleteClick}
-			>
-				<Trash2 size={14} />
-				Delete
-			</button>
-
-			<!-- Cancel -->
-			<button
-				type="button"
-				class="rounded-md border border-border px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-				onclick={oncancel}
-			>
-				Cancel
-			</button>
-
-			<!-- Save -->
-			<button
-				type="button"
-				class="flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-				onclick={() => onsave(draft)}
-			>
-				<Check size={14} />
-				Save changes
-			</button>
+			<Button variant="ghost" size="sm" class="text-destructive hover:text-destructive" onclick={handleDeleteClick}><Trash2 class="h-3.5 w-3.5" /> Delete</Button>
+			<Button variant="outline" size="sm" onclick={oncancel}>Cancel</Button>
+			<Button size="sm" onclick={() => onsave(draft)}><Check class="h-3.5 w-3.5" /> Save changes</Button>
 		</div>
 	</div>
 </div>

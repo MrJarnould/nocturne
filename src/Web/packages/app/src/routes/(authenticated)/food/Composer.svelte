@@ -1,12 +1,15 @@
 <script lang="ts">
 	import type { Food } from '$api';
-	import { Plus, X } from 'lucide-svelte';
+	import { Plus, X, ChevronRight } from 'lucide-svelte';
 	import GiIcon from './GiIcon.svelte';
 	import { getFoodState } from './food-context.js';
 	import { giFromInt, giToInt } from './types.js';
 	import type { GiLevel } from './types.js';
 	import { FOOD_UNITS, DEFAULT_PORTION, DEFAULT_GI } from '$lib/components/food';
 	import * as Select from '$lib/components/ui/select';
+	import { Button } from '$lib/components/ui/button';
+	import * as ToggleGroup from '$lib/components/ui/toggle-group';
+	import * as Collapsible from '$lib/components/ui/collapsible';
 
 	interface Props {
 		onadd: (food: Food) => void;
@@ -104,13 +107,7 @@
 		<span class="text-muted-foreground" style="font-size: 11px">
 			Tab through fields · ⌘+Enter to save and add another · Esc to close
 		</span>
-		<button
-			type="button"
-			class="ml-auto flex items-center justify-center rounded-md p-1 text-muted-foreground hover:text-foreground transition-colors"
-			onclick={onclose}
-		>
-			<X size={16} />
-		</button>
+		<Button variant="ghost" size="icon" class="ml-auto h-8 w-8" onclick={onclose}><X class="h-3.5 w-3.5" /></Button>
 	</div>
 
 	<!-- Single-row form -->
@@ -161,47 +158,34 @@
 		<!-- Unit -->
 		<div class="flex h-full flex-col gap-1">
 			<span class="text-muted-foreground font-medium uppercase" style="font-size: 10px">Unit</span>
-			<div class="flex flex-1 items-center gap-0.5 rounded-md p-1" style="border: 1px solid oklch(1 0 0 / 0.18); background: oklch(1 0 0 / 0.04)">
-				{#each FOOD_UNITS as unit (unit)}
-					<button
-						type="button"
-						class="flex-1 rounded px-1 py-1 text-xs font-medium transition-colors {draft.unit === unit ? 'text-foreground' : 'text-muted-foreground'}"
-						style:background={draft.unit === unit ? 'oklch(1 0 0 / 0.12)' : 'transparent'}
-						onclick={() => { draft.unit = unit; }}
-					>
-						{unit}
-					</button>
+			<ToggleGroup.Root type="single" value={draft.unit ?? 'g'} onValueChange={(v) => { if (v) draft = { ...draft, unit: v }; }} variant="outline" size="sm" class="w-full flex-1">
+				{#each FOOD_UNITS as u (u)}
+					<ToggleGroup.Item value={u} class="flex-1">{u}</ToggleGroup.Item>
 				{/each}
-			</div>
+			</ToggleGroup.Root>
 		</div>
 
 		<!-- GI -->
 		<div class="flex h-full flex-col gap-1">
 			<span class="text-muted-foreground font-medium uppercase" style="font-size: 10px">GI</span>
-			<div class="flex flex-1 items-center gap-0.5 rounded-md p-1" style="border: 1px solid oklch(1 0 0 / 0.18); background: oklch(1 0 0 / 0.04)">
-				{#each giLevels as level (level)}
-					{@const selected = giFromInt(draft.gi) === level}
-					<button
-						type="button"
-						class="flex flex-1 items-center justify-center gap-1 rounded px-1 py-1 text-xs font-medium transition-colors {selected ? 'text-foreground' : 'text-muted-foreground'}"
-						style:background={selected ? 'oklch(1 0 0 / 0.12)' : 'transparent'}
-						onclick={() => { draft.gi = giToInt(level); }}
-					>
-						<GiIcon {level} size={9} />
-						<span class="capitalize">{level}</span>
-					</button>
+			<ToggleGroup.Root type="single" value={giFromInt(draft.gi)} onValueChange={(v) => { if (v) draft = { ...draft, gi: giToInt(v as GiLevel) }; }} variant="outline" size="sm" class="w-full flex-1">
+				{#each giLevels as g (g)}
+					<ToggleGroup.Item value={g} class="flex-1 capitalize gap-1.5">
+						<GiIcon level={g} size={7} />{g}
+					</ToggleGroup.Item>
 				{/each}
-			</div>
+			</ToggleGroup.Root>
 		</div>
 	</div>
 
 	<!-- Footer -->
 	<div class="mt-3 flex items-center justify-between">
 		<!-- Details toggle -->
-		<details bind:open={showDetails}>
-			<summary class="cursor-pointer text-xs text-muted-foreground hover:text-foreground transition-colors select-none">
-				Add fat, protein, category...
-			</summary>
+		<Collapsible.Root bind:open={showDetails}>
+			<Collapsible.Trigger class="inline-flex cursor-pointer select-none items-center gap-1.5 text-xs text-muted-foreground">
+				<span class="inline-flex transition-transform" style:transform={showDetails ? 'rotate(90deg)' : ''}><ChevronRight class="h-3 w-3" /></span> {showDetails ? 'Hide' : 'Add'} fat, protein, category...
+			</Collapsible.Trigger>
+			<Collapsible.Content>
 			<div class="mt-3 grid gap-3" style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr">
 				<!-- Fat -->
 				<div class="flex flex-col gap-1">
@@ -280,27 +264,13 @@
 					</Select.Root>
 				</div>
 			</div>
-		</details>
+			</Collapsible.Content>
+		</Collapsible.Root>
 
 		<!-- Action buttons -->
 		<div class="flex items-center gap-2">
-			<button
-				type="button"
-				class="rounded-md border border-border px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-40"
-				disabled={!canSave}
-				onclick={() => submit(false)}
-			>
-				Save
-			</button>
-			<button
-				type="button"
-				class="flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40"
-				disabled={!canSave}
-				onclick={() => submit(true)}
-			>
-				Save and add another
-				<kbd class="ml-1 rounded border border-white/20 px-1 py-0.5 text-[10px] font-normal opacity-60">⌘+Enter</kbd>
-			</button>
+			<Button variant="outline" size="sm" disabled={!canSave} onclick={() => submit(false)}>Save</Button>
+			<Button size="sm" disabled={!canSave} onclick={() => submit(true)}>Save & add another <span class="ml-1 text-[11px] opacity-60">⌘+Enter</span></Button>
 		</div>
 	</div>
 </div>
