@@ -263,6 +263,12 @@ export class RealtimeStore {
           // Snap now immediately so time-since displays don't lag
           this.now = Date.now();
           this.stopBackgroundPolling();
+          // Reconnect if the socket dropped while backgrounded — Socket.io
+          // exhausts its retry budget (~4 min) well before long idle periods.
+          if (!this.websocketClient.isConnected) {
+            console.log('[RealtimeStore] WebSocket disconnected, reconnecting...');
+            this.reconnect();
+          }
           console.log('[RealtimeStore] Page became visible, backfilling missed data...');
           // Always backfill on return — timers are unreliable in hidden tabs
           // so we can't trust lastDataReceived to be meaningful
@@ -401,8 +407,6 @@ export class RealtimeStore {
   /** Setup WebSocket event handlers */
   private setupEventHandlers(): void {
     this.websocketClient.on("connect", () => {
-      toast.success("Connected to real-time data");
-      // Backfill any missed data on reconnection
       this.performBackfillIfNeeded();
     });
 
