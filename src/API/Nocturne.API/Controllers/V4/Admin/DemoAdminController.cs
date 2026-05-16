@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Nocturne.Core.Constants;
 using Nocturne.Core.Contracts.Multitenancy;
+using Nocturne.Core.Models.Authorization;
 using Nocturne.Infrastructure.Data;
 using Nocturne.Infrastructure.Data.Entities;
 using Nocturne.Infrastructure.Data.Entities.V4;
@@ -55,6 +56,10 @@ public class DemoAdminController : ControllerBase
         db.Set<TenantDemoConfigEntity>().Add(config);
 
         await db.SaveChangesAsync(ct);
+
+        // Grant the Public subject write access so the demo service can write
+        // entries/treatments without auth and visitors can use the API playground.
+        await GrantPublicWriteAccessAsync(db, created.Id, ct);
 
         tenant.DemoConfig = config;
         return Ok(ToDto(tenant, alreadyExisted: false));
@@ -248,6 +253,47 @@ public class DemoAdminController : ControllerBase
         await db.SaveChangesAsync(ct);
 
         return Ok(new { created = true });
+    }
+
+    /// <summary>
+    /// Assigns the Admin role to the Public system subject's membership on the demo tenant,
+    /// granting unauthenticated read/write access to glucose, treatments, and devices.
+    /// </summary>
+    private static async Task GrantPublicWriteAccessAsync(NocturneDbContext db, Guid tenantId, CancellationToken ct)
+    {
+        db.TenantId = tenantId;
+
+        var publicMember = await db.TenantMembers
+            .Include(m => m.Subject)
+            .FirstOrDefaultAsync(m => m.TenantId == tenantId && m.Subject!.IsSystemSubject && m.Subject.Name == "Public", ct);
+
+        if (publicMember is null)
+            return;
+
+        var adminRole = await db.TenantRoles
+            .FirstOrDefaultAsync(r => r.TenantId == tenantId && r.Slug == TenantPermissions.SeedRoles.Admin, ct);
+
+        if (adminRole is null)
+            return;
+
+        var alreadyAssigned = await db.TenantMemberRoles
+            .AnyAsync(mr => mr.TenantMemberId == publicMember.Id && mr.TenantRoleId == adminRole.Id, ct);
+
+        if (alreadyAssigned)
+            return;
+
+        db.TenantMemberRoles.Add(new TenantMemberRoleEntity
+        {
+            Id = Guid.CreateVersion7(),
+            TenantMemberId = publicMember.Id,
+            TenantRoleId = adminRole.Id,
+            SysCreatedAt = DateTime.UtcNow,
+        });
+
+        // Also remove the 24-hour limit so the full history is visible
+        publicMember.LimitTo24Hours = false;
+
+        await db.SaveChangesAsync(ct);
     }
 
     private static DemoStateDto ToDto(TenantEntity tenant, bool alreadyExisted) => new(
