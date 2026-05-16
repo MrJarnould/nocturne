@@ -209,7 +209,7 @@ public static class ConnectorServiceCollectionExtensions
         public IServiceCollection AddConnectorTokenProvider<TTokenProvider>()
             where TTokenProvider : class
         {
-            services.AddSingleton(sp =>
+            services.AddScoped(sp =>
             {
                 var factory = sp.GetRequiredService<IHttpClientFactory>();
                 var httpClient = factory.CreateClient(typeof(TTokenProvider).Name);
