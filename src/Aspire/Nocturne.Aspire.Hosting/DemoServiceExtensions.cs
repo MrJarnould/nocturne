@@ -135,6 +135,8 @@ public static class DemoServiceExtensions
             options.TargetPlatform = ContainerTargetPlatform.LinuxAmd64 | ContainerTargetPlatform.LinuxArm64;
         });
 
+        demoService.WithDemoCommands();
+
         return demoService;
     }
 }
