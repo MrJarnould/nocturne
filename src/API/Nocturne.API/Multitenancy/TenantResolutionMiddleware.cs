@@ -46,6 +46,7 @@ public class TenantResolutionMiddleware
         "/health",
         "/alive",
         "/ready",
+        "/api/v4/status",
         "/api/v4/me/tenants/validate-slug",
         "/api/v4/admin/tenants/validate-slug",
         "/api/metadata",
