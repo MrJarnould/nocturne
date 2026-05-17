@@ -219,6 +219,7 @@ public class TenantResolutionMiddleware
 
         var tenants = await context.Tenants.AsNoTracking()
             .Where(t => t.IsActive)
+            .OrderBy(t => t.Id)
             .Take(2)
             .ToListAsync();
 

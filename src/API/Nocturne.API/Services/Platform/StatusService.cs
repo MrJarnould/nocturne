@@ -64,6 +64,18 @@ public class StatusService : IStatusService
     /// </summary>
     public async Task<StatusResponse> GetSystemStatusAsync()
     {
+        if (!_tenantAccessor.IsResolved)
+        {
+            return new StatusResponse
+            {
+                Status = "setup_required",
+                Name = "Nocturne",
+                Version = GetVersionString(),
+                ServerTime = DateTime.UtcNow,
+                ApiEnabled = false,
+            };
+        }
+
         // Include demo mode in cache key to ensure correct status is returned
         var demoSuffix = _demoModeService.IsEnabled ? ":demo" : "";
         var cacheKey = $"status:system:{TenantCacheId}" + demoSuffix;
