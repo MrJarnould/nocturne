@@ -1,4 +1,5 @@
 using Nocturne.Connectors.Core.Interfaces;
+using Nocturne.Core.Contracts.Inventory;
 using Nocturne.Core.Contracts.V4;
 using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Models;
@@ -15,15 +16,18 @@ internal sealed class DevicePublisher : IDevicePublisher
 {
     private readonly IDeviceStatusDecomposer _decomposer;
     private readonly IDeviceEventRepository _deviceEventRepository;
+    private readonly IInventoryService _inventory;
     private readonly ILogger<DevicePublisher> _logger;
 
     public DevicePublisher(
         IDeviceStatusDecomposer decomposer,
         IDeviceEventRepository deviceEventRepository,
+        IInventoryService inventory,
         ILogger<DevicePublisher> logger)
     {
         _decomposer = decomposer ?? throw new ArgumentNullException(nameof(decomposer));
         _deviceEventRepository = deviceEventRepository ?? throw new ArgumentNullException(nameof(deviceEventRepository));
+        _inventory = inventory ?? throw new ArgumentNullException(nameof(inventory));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -60,6 +64,29 @@ internal sealed class DevicePublisher : IDevicePublisher
 
             await _deviceEventRepository.BulkCreateAsync(recordList, cancellationToken);
             _logger.LogDebug("Published {Count} DeviceEvent records for {Source}", recordList.Count, source);
+
+            // Fire the inventory auto-consume hook for each event.
+            // BulkCreateAsync doesn't pass IDs back, but the records carry their
+            // own IDs assigned by the repository (UUIDv7 generated client-side
+            // before the bulk insert). The inventory ledger's
+            // (source_type, source_id) unique index makes this idempotent if a
+            // connector resync ever calls us twice for the same event.
+            foreach (var deviceEvent in recordList)
+            {
+                try
+                {
+                    await _inventory.AutoConsumeForDeviceEventAsync(deviceEvent, cancellationToken);
+                }
+                catch (OperationCanceledException) { throw; }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex,
+                        "Inventory auto-consume failed for DeviceEvent {Id} ({EventType}) from {Source}; "
+                        + "supply stock not updated",
+                        deviceEvent.Id, deviceEvent.EventType, source);
+                }
+            }
+
             return true;
         }
         catch (OperationCanceledException) { throw; }

@@ -87,6 +87,24 @@ public static class BuiltInNotificationTemplates
 
         registry.Register(new NotificationTemplate
         {
+            Type = "inventory.low_stock",
+            Category = NotificationCategory.ActionRequired,
+            DefaultUrgency = NotificationUrgency.Warn,
+            Icon = "package-search",
+            Source = "inventory"
+        });
+
+        registry.Register(new NotificationTemplate
+        {
+            Type = "inventory.expiring_soon",
+            Category = NotificationCategory.ActionRequired,
+            DefaultUrgency = NotificationUrgency.Warn,
+            Icon = "package-search",
+            Source = "inventory"
+        });
+
+        registry.Register(new NotificationTemplate
+        {
             Type = "glucose.compression_low_review",
             Category = NotificationCategory.ActionRequired,
             DefaultUrgency = NotificationUrgency.Info,

@@ -38,6 +38,7 @@ export * from './alerts.generated.remote';
 export * from './notifications.generated.remote';
 // './tenantAlertSettings.generated.remote' - all exports collide, import directly
 export * from './trackers.generated.remote';
+export * from './inventories.generated.remote';
 export * from './chatIdentities.generated.remote';
 // './connectedApps.generated.remote' - all exports collide, import directly
 export * from './guestLinks.generated.remote';

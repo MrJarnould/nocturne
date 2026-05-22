@@ -49,6 +49,7 @@ import {
   GuestLinkClient,
   HeartRateClient,
   InsulinCatalogClient,
+  InventoryClient,
   LinkedPlatformsClient,
   MealMatchingClient,
   MemberInviteClient,
@@ -152,6 +153,7 @@ export class ApiClient {
   public readonly guestLink: GuestLinkClient;
   public readonly heartRate: HeartRateClient;
   public readonly insulinCatalog: InsulinCatalogClient;
+  public readonly inventory: InventoryClient;
   public readonly linkedPlatforms: LinkedPlatformsClient;
   public readonly mealMatching: MealMatchingClient;
   public readonly memberInvite: MemberInviteClient;
@@ -255,6 +257,7 @@ export class ApiClient {
     this.guestLink = new GuestLinkClient(apiBaseUrl, http);
     this.heartRate = new HeartRateClient(apiBaseUrl, http);
     this.insulinCatalog = new InsulinCatalogClient(apiBaseUrl, http);
+    this.inventory = new InventoryClient(apiBaseUrl, http);
     this.linkedPlatforms = new LinkedPlatformsClient(apiBaseUrl, http);
     this.mealMatching = new MealMatchingClient(apiBaseUrl, http);
     this.memberInvite = new MemberInviteClient(apiBaseUrl, http);

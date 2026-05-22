@@ -1223,10 +1223,6 @@ export class BasalInjectionClient {
         return Promise.resolve<BasalInjection>(null as any);
     }
 
-    /**
-     * Deletes a record by ID.
-     * @param id The unique identifier of the record to delete.
-     */
     delete(id: string, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/v4/insulin/basal-injections/{id}";
         if (id === undefined || id === null)
@@ -2041,10 +2037,6 @@ export class BolusClient {
         return Promise.resolve<Bolus>(null as any);
     }
 
-    /**
-     * Deletes a record by ID.
-     * @param id The unique identifier of the record to delete.
-     */
     delete(id: string, signal?: AbortSignal): Promise<void> {
         let url_ = this.baseUrl + "/api/v4/insulin/boluses/{id}";
         if (id === undefined || id === null)
@@ -13402,6 +13394,661 @@ export class TrackersClient {
     }
 }
 
+export class InventoryClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    getItems(includeArchived?: boolean | undefined, signal?: AbortSignal): Promise<InventoryItemDto[]> {
+        let url_ = this.baseUrl + "/api/v4/inventory/items?";
+        if (includeArchived === null)
+            throw new globalThis.Error("The parameter 'includeArchived' cannot be null.");
+        else if (includeArchived !== undefined)
+            url_ += "includeArchived=" + encodeURIComponent("" + includeArchived) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetItems(_response);
+        });
+    }
+
+    protected processGetItems(response: Response): Promise<InventoryItemDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as InventoryItemDto[];
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<InventoryItemDto[]>(null as any);
+    }
+
+    createItem(request: InventoryItemRequest, signal?: AbortSignal): Promise<InventoryItemDto> {
+        let url_ = this.baseUrl + "/api/v4/inventory/items";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreateItem(_response);
+        });
+    }
+
+    protected processCreateItem(response: Response): Promise<InventoryItemDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 201) {
+            return response.text().then((_responseText) => {
+            let result201: any = null;
+            result201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as InventoryItemDto;
+            return result201;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<InventoryItemDto>(null as any);
+    }
+
+    getItem(id: string, signal?: AbortSignal): Promise<InventoryItemDetailDto> {
+        let url_ = this.baseUrl + "/api/v4/inventory/items/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetItem(_response);
+        });
+    }
+
+    protected processGetItem(response: Response): Promise<InventoryItemDetailDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as InventoryItemDetailDto;
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<InventoryItemDetailDto>(null as any);
+    }
+
+    updateItem(id: string, request: InventoryItemRequest, signal?: AbortSignal): Promise<InventoryItemDto> {
+        let url_ = this.baseUrl + "/api/v4/inventory/items/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateItem(_response);
+        });
+    }
+
+    protected processUpdateItem(response: Response): Promise<InventoryItemDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as InventoryItemDto;
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<InventoryItemDto>(null as any);
+    }
+
+    archiveItem(id: string, signal?: AbortSignal): Promise<void> {
+        let url_ = this.baseUrl + "/api/v4/inventory/items/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            signal,
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processArchiveItem(_response);
+        });
+    }
+
+    protected processArchiveItem(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * Returns the device catalog (CGMs / pumps / insulins) filtered to the
+    given therapy mode. The frontend uses this to populate the multi-step
+    seed wizard.
+     * @param mode (optional) 
+     */
+    getInventoryCatalog(mode?: TherapyMode | undefined, signal?: AbortSignal): Promise<InventoryCatalogEntry[]> {
+        let url_ = this.baseUrl + "/api/v4/inventory/catalog?";
+        if (mode === null)
+            throw new globalThis.Error("The parameter 'mode' cannot be null.");
+        else if (mode !== undefined)
+            url_ += "mode=" + encodeURIComponent("" + mode) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetInventoryCatalog(_response);
+        });
+    }
+
+    protected processGetInventoryCatalog(response: Response): Promise<InventoryCatalogEntry[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as InventoryCatalogEntry[];
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<InventoryCatalogEntry[]>(null as any);
+    }
+
+    /**
+     * Materializes inventory items based on the user's catalog selection plus
+    the generic supply defaults (test strips, lancets, glucagon, etc.).
+    Idempotent per (kind, name) — re-running is a no-op for already-seeded items.
+     */
+    seedFromSelection(request: InventorySeedRequest, signal?: AbortSignal): Promise<InventoryItemDto[]> {
+        let url_ = this.baseUrl + "/api/v4/inventory/seed";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processSeedFromSelection(_response);
+        });
+    }
+
+    protected processSeedFromSelection(response: Response): Promise<InventoryItemDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as InventoryItemDto[];
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<InventoryItemDto[]>(null as any);
+    }
+
+    getBatches(itemId: string, signal?: AbortSignal): Promise<InventoryBatchDto[]> {
+        let url_ = this.baseUrl + "/api/v4/inventory/items/{itemId}/batches";
+        if (itemId === undefined || itemId === null)
+            throw new globalThis.Error("The parameter 'itemId' must be defined.");
+        url_ = url_.replace("{itemId}", encodeURIComponent("" + itemId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetBatches(_response);
+        });
+    }
+
+    protected processGetBatches(response: Response): Promise<InventoryBatchDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as InventoryBatchDto[];
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<InventoryBatchDto[]>(null as any);
+    }
+
+    addBatch(itemId: string, request: InventoryBatchRequest, signal?: AbortSignal): Promise<InventoryBatchDto> {
+        let url_ = this.baseUrl + "/api/v4/inventory/items/{itemId}/batches";
+        if (itemId === undefined || itemId === null)
+            throw new globalThis.Error("The parameter 'itemId' must be defined.");
+        url_ = url_.replace("{itemId}", encodeURIComponent("" + itemId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAddBatch(_response);
+        });
+    }
+
+    protected processAddBatch(response: Response): Promise<InventoryBatchDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 201) {
+            return response.text().then((_responseText) => {
+            let result201: any = null;
+            result201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as InventoryBatchDto;
+            return result201;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<InventoryBatchDto>(null as any);
+    }
+
+    getTransactions(itemId: string, signal?: AbortSignal): Promise<InventoryTransactionDto[]> {
+        let url_ = this.baseUrl + "/api/v4/inventory/items/{itemId}/transactions";
+        if (itemId === undefined || itemId === null)
+            throw new globalThis.Error("The parameter 'itemId' must be defined.");
+        url_ = url_.replace("{itemId}", encodeURIComponent("" + itemId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetTransactions(_response);
+        });
+    }
+
+    protected processGetTransactions(response: Response): Promise<InventoryTransactionDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as InventoryTransactionDto[];
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<InventoryTransactionDto[]>(null as any);
+    }
+
+    updateBatchMetadata(batchId: string, request: InventoryBatchMetadataRequest, signal?: AbortSignal): Promise<InventoryBatchDto> {
+        let url_ = this.baseUrl + "/api/v4/inventory/batches/{batchId}";
+        if (batchId === undefined || batchId === null)
+            throw new globalThis.Error("The parameter 'batchId' must be defined.");
+        url_ = url_.replace("{batchId}", encodeURIComponent("" + batchId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateBatchMetadata(_response);
+        });
+    }
+
+    protected processUpdateBatchMetadata(response: Response): Promise<InventoryBatchDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as InventoryBatchDto;
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<InventoryBatchDto>(null as any);
+    }
+
+    consume(itemId: string, request: InventoryConsumeRequest, signal?: AbortSignal): Promise<InventoryItemDetailDto> {
+        let url_ = this.baseUrl + "/api/v4/inventory/items/{itemId}/consume";
+        if (itemId === undefined || itemId === null)
+            throw new globalThis.Error("The parameter 'itemId' must be defined.");
+        url_ = url_.replace("{itemId}", encodeURIComponent("" + itemId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processConsume(_response);
+        });
+    }
+
+    protected processConsume(response: Response): Promise<InventoryItemDetailDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as InventoryItemDetailDto;
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<InventoryItemDetailDto>(null as any);
+    }
+
+    adjustBatch(batchId: string, request: InventoryAdjustBatchRequest, signal?: AbortSignal): Promise<InventoryItemDetailDto> {
+        let url_ = this.baseUrl + "/api/v4/inventory/batches/{batchId}/adjust";
+        if (batchId === undefined || batchId === null)
+            throw new globalThis.Error("The parameter 'batchId' must be defined.");
+        url_ = url_.replace("{batchId}", encodeURIComponent("" + batchId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAdjustBatch(_response);
+        });
+    }
+
+    protected processAdjustBatch(response: Response): Promise<InventoryItemDetailDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as InventoryItemDetailDto;
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<InventoryItemDetailDto>(null as any);
+    }
+
+    transferBatchToExpired(batchId: string, request?: TransferBatchToExpiredRequest | undefined, signal?: AbortSignal): Promise<InventoryBatchDto> {
+        let url_ = this.baseUrl + "/api/v4/inventory/batches/{batchId}/expire";
+        if (batchId === undefined || batchId === null)
+            throw new globalThis.Error("The parameter 'batchId' must be defined.");
+        url_ = url_.replace("{batchId}", encodeURIComponent("" + batchId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processTransferBatchToExpired(_response);
+        });
+    }
+
+    protected processTransferBatchToExpired(response: Response): Promise<InventoryBatchDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as InventoryBatchDto;
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<InventoryBatchDto>(null as any);
+    }
+}
+
 export class ChatIdentityClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -19450,6 +20097,146 @@ export class DeviceEventClient {
         this.baseUrl = baseUrl ?? "";
     }
 
+    update(id: string, request: UpsertDeviceEventRequest, signal?: AbortSignal): Promise<DeviceEvent> {
+        let url_ = this.baseUrl + "/api/v4/observations/device-events/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
+        });
+    }
+
+    protected processUpdate(response: Response): Promise<DeviceEvent> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as DeviceEvent;
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<DeviceEvent>(null as any);
+    }
+
+    delete(id: string, signal?: AbortSignal): Promise<void> {
+        let url_ = this.baseUrl + "/api/v4/observations/device-events/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            signal,
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDelete(_response);
+        });
+    }
+
+    protected processDelete(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * Retrieves a single record by its unique identifier.
+     * @param id The unique identifier of the record.
+     */
+    getById(id: string, signal?: AbortSignal): Promise<DeviceEvent> {
+        let url_ = this.baseUrl + "/api/v4/observations/device-events/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetById(_response);
+        });
+    }
+
+    protected processGetById(response: Response): Promise<DeviceEvent> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as DeviceEvent;
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<DeviceEvent>(null as any);
+    }
+
     /**
      * Delete a device event by its external sync identifier (dataSource + syncIdentifier pair).
      * @param dataSource (optional) 
@@ -19622,155 +20409,6 @@ export class DeviceEventClient {
             });
         }
         return Promise.resolve<PaginatedResponseOfDeviceEvent>(null as any);
-    }
-
-    /**
-     * Updates an existing record by ID and returns the updated record.
-     * @param id The unique identifier of the record to update.
-     * @param request The data to apply to the existing record.
-     */
-    update(id: string, request: UpsertDeviceEventRequest, signal?: AbortSignal): Promise<DeviceEvent> {
-        let url_ = this.baseUrl + "/api/v4/observations/device-events/{id}";
-        if (id === undefined || id === null)
-            throw new globalThis.Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(request);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PUT",
-            signal,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdate(_response);
-        });
-    }
-
-    protected processUpdate(response: Response): Promise<DeviceEvent> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as DeviceEvent;
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            let result404: any = null;
-            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
-            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<DeviceEvent>(null as any);
-    }
-
-    /**
-     * Deletes a record by ID.
-     * @param id The unique identifier of the record to delete.
-     */
-    delete(id: string, signal?: AbortSignal): Promise<void> {
-        let url_ = this.baseUrl + "/api/v4/observations/device-events/{id}";
-        if (id === undefined || id === null)
-            throw new globalThis.Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "DELETE",
-            signal,
-            headers: {
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processDelete(_response);
-        });
-    }
-
-    protected processDelete(response: Response): Promise<void> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 204) {
-            return response.text().then((_responseText) => {
-            return;
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            let result404: any = null;
-            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
-            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<void>(null as any);
-    }
-
-    /**
-     * Retrieves a single record by its unique identifier.
-     * @param id The unique identifier of the record.
-     */
-    getById(id: string, signal?: AbortSignal): Promise<DeviceEvent> {
-        let url_ = this.baseUrl + "/api/v4/observations/device-events/{id}";
-        if (id === undefined || id === null)
-            throw new globalThis.Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetById(_response);
-        });
-    }
-
-    protected processGetById(response: Response): Promise<DeviceEvent> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as DeviceEvent;
-            return result200;
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            let result404: any = null;
-            result404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ProblemDetails;
-            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<DeviceEvent>(null as any);
     }
 
     /**
@@ -30725,6 +31363,226 @@ export interface CreateTrackerPresetRequest {
 
 export interface ApplyPresetRequest {
     overrideNotes?: string | undefined;
+}
+
+export interface InventoryItemDto {
+    id?: string;
+    name?: string;
+    category?: InventoryCategory;
+    kind?: InventoryKind;
+    unitLabel?: string;
+    lowStockThreshold?: number;
+    targetStock?: number | undefined;
+    autoConsumeEnabled?: boolean;
+    autoConsumeSource?: InventoryAutoConsumeSource;
+    patientInsulinId?: string | undefined;
+    deviceEventTypes?: string[];
+    linkedInsulinItemId?: string | undefined;
+    linkedInsulinUnitsPerUse?: number | undefined;
+    wearDays?: number | undefined;
+    isDefault?: boolean;
+    isArchived?: boolean;
+    totalStock?: number;
+    usableStock?: number;
+    expiredStock?: number;
+    expiringSoonStock?: number;
+    lowestExpiry?: Date | undefined;
+    isLow?: boolean;
+    suggestedRestockQuantity?: number;
+    estimatedRunOutAt?: Date | undefined;
+    runOutProjectionSource?: RunOutProjectionSource | undefined;
+}
+
+export enum InventoryCategory {
+    Cgm = "Cgm",
+    Pump = "Pump",
+    Insulin = "Insulin",
+    Testing = "Testing",
+    Emergency = "Emergency",
+    Other = "Other",
+}
+
+export enum InventoryKind {
+    CgmSensor = "CgmSensor",
+    CgmTransmitter = "CgmTransmitter",
+    Pod = "Pod",
+    InfusionSet = "InfusionSet",
+    Cannula = "Cannula",
+    Reservoir = "Reservoir",
+    PumpBattery = "PumpBattery",
+    Insulin = "Insulin",
+    TestStrip = "TestStrip",
+    Lancet = "Lancet",
+    AlcoholSwab = "AlcoholSwab",
+    ControlSolution = "ControlSolution",
+    Glucagon = "Glucagon",
+    FastCarbs = "FastCarbs",
+    KetoneStrip = "KetoneStrip",
+    Custom = "Custom",
+}
+
+export enum InventoryAutoConsumeSource {
+    None = "None",
+    DeviceEvent = "DeviceEvent",
+    Bolus = "Bolus",
+    BasalInjection = "BasalInjection",
+}
+
+export enum RunOutProjectionSource {
+    WearTime = "WearTime",
+    HistoricalRate = "HistoricalRate",
+    LinkedItem = "LinkedItem",
+}
+
+export interface InventoryItemDetailDto extends InventoryItemDto {
+    batches?: InventoryBatchDto[];
+    transactions?: InventoryTransactionDto[];
+}
+
+export function isInventoryItemDetailDto(object: any): object is InventoryItemDetailDto {
+    return object && object[''] === 'InventoryItemDetailDto';
+}
+
+export interface InventoryBatchDto {
+    id?: string;
+    inventoryItemId?: string;
+    receivedQuantity?: number;
+    remainingQuantity?: number;
+    receivedAt?: Date;
+    expiresAt?: Date | undefined;
+    lotNumber?: string | undefined;
+    storageState?: InventoryStorageState;
+    notes?: string | undefined;
+    isExpired?: boolean;
+    isUsable?: boolean;
+}
+
+export enum InventoryStorageState {
+    Normal = "Normal",
+    Refrigerated = "Refrigerated",
+    Opened = "Opened",
+    Frozen = "Frozen",
+    HeatExposed = "HeatExposed",
+    Discarded = "Discarded",
+}
+
+export interface InventoryTransactionDto {
+    id?: string;
+    inventoryItemId?: string;
+    inventoryBatchId?: string | undefined;
+    type?: InventoryTransactionType;
+    quantityDelta?: number;
+    quantityAfter?: number;
+    reason?: string | undefined;
+    sourceType?: string | undefined;
+    sourceId?: string | undefined;
+    sourceTimestamp?: Date | undefined;
+    notes?: string | undefined;
+    createdAt?: Date;
+}
+
+export enum InventoryTransactionType {
+    Restock = "Restock",
+    ManualConsume = "ManualConsume",
+    AutoConsume = "AutoConsume",
+    Adjustment = "Adjustment",
+    Reversal = "Reversal",
+    Expired = "Expired",
+}
+
+export interface InventoryCatalogEntry {
+    key?: string;
+    category?: InventoryCatalogCategory;
+    brand?: string;
+    name?: string;
+    items?: InventoryCatalogItemSpec[];
+    notes?: string | undefined;
+    isOtc?: boolean;
+    isDiscontinued?: boolean;
+    discontinuationDate?: Date | undefined;
+}
+
+export enum InventoryCatalogCategory {
+    Cgm = "Cgm",
+    Pump = "Pump",
+    RapidInsulin = "RapidInsulin",
+    BasalInsulin = "BasalInsulin",
+}
+
+export interface InventoryCatalogItemSpec {
+    kind?: InventoryKind;
+    name?: string;
+    unitLabel?: string;
+    lowStockThreshold?: number;
+    targetStock?: number | undefined;
+    autoConsumeSource?: InventoryAutoConsumeSource;
+    deviceEventTypes?: string[];
+    inventoryCategory?: InventoryCategory;
+    wearDays?: number | undefined;
+    linkedInsulinUnitsPerUse?: number | undefined;
+}
+
+export enum TherapyMode {
+    Mdi = "Mdi",
+    Pump = "Pump",
+}
+
+export interface InventorySeedRequest {
+    therapyMode?: TherapyMode;
+    cgmKeys?: string[];
+    pumpKey?: string | undefined;
+    rapidInsulinKey?: string | undefined;
+    basalInsulinKey?: string | undefined;
+}
+
+export interface InventoryItemRequest {
+    name?: string;
+    category?: InventoryCategory;
+    kind?: InventoryKind;
+    unitLabel?: string;
+    lowStockThreshold?: number;
+    targetStock?: number | undefined;
+    autoConsumeEnabled?: boolean;
+    autoConsumeSource?: InventoryAutoConsumeSource;
+    patientInsulinId?: string | undefined;
+    deviceEventTypes?: string[] | undefined;
+    linkedInsulinItemId?: string | undefined;
+    linkedInsulinUnitsPerUse?: number | undefined;
+    wearDays?: number | undefined;
+}
+
+export interface InventoryBatchRequest {
+    quantity?: number;
+    receivedAt?: Date | undefined;
+    expiresAt?: Date | undefined;
+    lotNumber?: string | undefined;
+    storageState?: InventoryStorageState;
+    notes?: string | undefined;
+}
+
+export interface InventoryBatchMetadataRequest {
+    receivedAt?: Date | undefined;
+    expiresAt?: Date | undefined;
+    lotNumber?: string | undefined;
+    storageState?: InventoryStorageState;
+    notes?: string | undefined;
+}
+
+export interface InventoryConsumeRequest {
+    quantity?: number;
+    reason?: string | undefined;
+    batchId?: string | undefined;
+    notes?: string | undefined;
+}
+
+export interface InventoryAdjustBatchRequest {
+    remainingQuantity?: number;
+    reason?: string | undefined;
+    notes?: string | undefined;
+}
+
+export interface TransferBatchToExpiredRequest {
+    notes?: string | undefined;
 }
 
 export interface ChatIdentityLinkResponse {

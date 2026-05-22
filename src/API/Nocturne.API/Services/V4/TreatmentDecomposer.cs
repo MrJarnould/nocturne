@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nocturne.Connectors.Core.Constants;
 using Nocturne.Core.Contracts.Devices;
+using Nocturne.Core.Contracts.Inventory;
 using Nocturne.Core.Contracts.Treatments;
 using Nocturne.Core.Contracts.Glucose;
 using Nocturne.Core.Contracts.Profiles.Resolvers;
@@ -51,6 +52,7 @@ public class TreatmentDecomposer : ITreatmentDecomposer, IDecomposer<Treatment>
     private readonly IProfileDecomposer _profileDecomposer;
     private readonly IActiveProfileResolver _activeProfileResolver;
     private readonly IPatientInsulinRepository _insulinRepo;
+    private readonly IInventoryService _inventory;
     private readonly ILogger<TreatmentDecomposer> _logger;
 
     /// <summary>
@@ -93,6 +95,7 @@ public class TreatmentDecomposer : ITreatmentDecomposer, IDecomposer<Treatment>
         IProfileDecomposer profileDecomposer,
         IActiveProfileResolver activeProfileResolver,
         IPatientInsulinRepository insulinRepo,
+        IInventoryService inventory,
         ILogger<TreatmentDecomposer> logger)
     {
         _dbContext = dbContext;
@@ -109,6 +112,7 @@ public class TreatmentDecomposer : ITreatmentDecomposer, IDecomposer<Treatment>
         _profileDecomposer = profileDecomposer;
         _activeProfileResolver = activeProfileResolver;
         _insulinRepo = insulinRepo;
+        _inventory = inventory;
         _logger = logger;
     }
 
@@ -373,6 +377,7 @@ public class TreatmentDecomposer : ITreatmentDecomposer, IDecomposer<Treatment>
             var created = await _bolusRepository.CreateAsync(model, ct);
             result.CreatedRecords.Add(created);
             _logger.LogDebug("Created Bolus from legacy treatment {LegacyId}", treatment.Id);
+            await TryAutoConsumeAsync(created, requestedPatientInsulinId: null, ct);
         }
     }
 
@@ -401,6 +406,7 @@ public class TreatmentDecomposer : ITreatmentDecomposer, IDecomposer<Treatment>
             var created = await _bolusRepository.CreateAsync(model, ct);
             result.CreatedRecords.Add(created);
             _logger.LogDebug("Created algorithm Bolus from legacy treatment {LegacyId}", treatment.Id);
+            await TryAutoConsumeAsync(created, requestedPatientInsulinId: null, ct);
         }
     }
 
@@ -512,6 +518,43 @@ public class TreatmentDecomposer : ITreatmentDecomposer, IDecomposer<Treatment>
             var created = await _deviceEventRepository.CreateAsync(model, ct);
             result.CreatedRecords.Add(created);
             _logger.LogDebug("Created DeviceEvent from legacy treatment {LegacyId}", treatment.Id);
+
+            // Fire the inventory auto-consume hook. Without this, v1
+            // Nightscout uploaders (Trio, Loop, AAPS, xDrip+) can write
+            // device events that never decrement supply stock.
+            await TryAutoConsumeAsync(created, ct);
+        }
+    }
+
+    /// <summary>
+    /// Best-effort call to <see cref="IInventoryService.AutoConsumeForDeviceEventAsync"/>.
+    /// Failures are logged but never thrown so decomposition succeeds even when
+    /// the inventory subsystem is degraded.
+    /// </summary>
+    private async Task TryAutoConsumeAsync(V4Models.DeviceEvent deviceEvent, CancellationToken ct)
+    {
+        try
+        {
+            await _inventory.AutoConsumeForDeviceEventAsync(deviceEvent, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex,
+                "Inventory auto-consume failed for DeviceEvent {Id} ({EventType}) — supply stock not updated",
+                deviceEvent.Id, deviceEvent.EventType);
+        }
+    }
+
+    private async Task TryAutoConsumeAsync(V4Models.Bolus bolus, Guid? requestedPatientInsulinId, CancellationToken ct)
+    {
+        try
+        {
+            await _inventory.AutoConsumeForBolusAsync(bolus, requestedPatientInsulinId, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex,
+                "Inventory auto-consume failed for Bolus {Id} — insulin stock not updated", bolus.Id);
         }
     }
 

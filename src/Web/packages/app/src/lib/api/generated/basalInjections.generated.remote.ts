@@ -91,7 +91,6 @@ export const update = form(formCoerce(z.object({ id: z.string(), request: Update
   }
 });
 
-/** Deletes a record by ID. */
 export const remove = command(z.string(), async (id) => {
   const apiClient = getRequestEvent().locals.apiClient;
   try {

@@ -987,15 +987,12 @@
         "tags": [
           "Basal Injection"
         ],
-        "summary": "Deletes a record by ID.",
-        "description": "Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
         "operationId": "BasalInjection_Delete",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "The unique identifier of the record to delete.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -1855,15 +1852,12 @@
         "tags": [
           "Bolus"
         ],
-        "summary": "Deletes a record by ID.",
-        "description": "Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
         "operationId": "Bolus_Delete",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "The unique identifier of the record to delete.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -12354,6 +12348,736 @@
         ]
       }
     },
+    "/api/v4/inventory/items": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "Inventory_GetItems",
+        "parameters": [
+          {
+            "name": "includeArchived",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InventoryItemDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "query"
+      },
+      "post": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "Inventory_CreateItem",
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryItemRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryItemDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "command",
+        "x-remote-invalidates": [
+          "GetItems"
+        ]
+      }
+    },
+    "/api/v4/inventory/items/{id}": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "Inventory_GetItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryItemDetailDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "query"
+      },
+      "put": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "Inventory_UpdateItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryItemRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryItemDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "command",
+        "x-remote-invalidates": [
+          "GetItems",
+          "GetItem"
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "Inventory_ArchiveItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "command",
+        "x-remote-invalidates": [
+          "GetItems"
+        ]
+      }
+    },
+    "/api/v4/inventory/catalog": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": "Returns the device catalog (CGMs / pumps / insulins) filtered to the\ngiven therapy mode. The frontend uses this to populate the multi-step\nseed wizard.",
+        "operationId": "Inventory_GetInventoryCatalog",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "query",
+            "schema": {
+              "default": "Pump",
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/TherapyMode"
+                }
+              ]
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InventoryCatalogEntry"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "query"
+      }
+    },
+    "/api/v4/inventory/seed": {
+      "post": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": "Materializes inventory items based on the user's catalog selection plus\nthe generic supply defaults (test strips, lancets, glucagon, etc.).\nIdempotent per (kind, name) — re-running is a no-op for already-seeded items.",
+        "operationId": "Inventory_SeedFromSelection",
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventorySeedRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InventoryItemDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "command",
+        "x-remote-invalidates": [
+          "GetItems",
+          "GetInventoryCatalog"
+        ]
+      }
+    },
+    "/api/v4/inventory/items/{itemId}/batches": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "Inventory_GetBatches",
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InventoryBatchDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "query"
+      },
+      "post": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "Inventory_AddBatch",
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryBatchRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryBatchDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "command",
+        "x-remote-invalidates": [
+          "GetItems",
+          "GetItem",
+          "GetBatches",
+          "GetTransactions"
+        ]
+      }
+    },
+    "/api/v4/inventory/items/{itemId}/transactions": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "Inventory_GetTransactions",
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InventoryTransactionDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "query"
+      }
+    },
+    "/api/v4/inventory/batches/{batchId}": {
+      "put": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "Inventory_UpdateBatchMetadata",
+        "parameters": [
+          {
+            "name": "batchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryBatchMetadataRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryBatchDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "command",
+        "x-remote-invalidates": [
+          "GetItems",
+          "GetItem",
+          "GetBatches"
+        ]
+      }
+    },
+    "/api/v4/inventory/items/{itemId}/consume": {
+      "post": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "Inventory_Consume",
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryConsumeRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryItemDetailDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "command",
+        "x-remote-invalidates": [
+          "GetItems",
+          "GetItem",
+          "GetBatches",
+          "GetTransactions"
+        ]
+      }
+    },
+    "/api/v4/inventory/batches/{batchId}/adjust": {
+      "post": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "Inventory_AdjustBatch",
+        "parameters": [
+          {
+            "name": "batchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryAdjustBatchRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryItemDetailDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "command",
+        "x-remote-invalidates": [
+          "GetItems",
+          "GetItem",
+          "GetBatches",
+          "GetTransactions"
+        ]
+      }
+    },
+    "/api/v4/inventory/batches/{batchId}/expire": {
+      "post": {
+        "tags": [
+          "Inventory"
+        ],
+        "operationId": "Inventory_TransferBatchToExpired",
+        "parameters": [
+          {
+            "name": "batchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransferBatchToExpiredRequest"
+              }
+            }
+          },
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryBatchDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "command",
+        "x-remote-invalidates": [
+          "GetItems",
+          "GetItem",
+          "GetBatches",
+          "GetTransactions"
+        ]
+      }
+    },
     "/api/v4/chat-identity": {
       "get": {
         "tags": [
@@ -18055,6 +18779,149 @@
         }
       }
     },
+    "/api/v4/observations/device-events/{id}": {
+      "put": {
+        "tags": [
+          "Device Event"
+        ],
+        "operationId": "DeviceEvent_Update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertDeviceEventRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceEvent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "form"
+      },
+      "delete": {
+        "tags": [
+          "Device Event"
+        ],
+        "operationId": "DeviceEvent_Delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "command"
+      },
+      "get": {
+        "tags": [
+          "Device Event"
+        ],
+        "summary": "Retrieves a single record by its unique identifier.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.",
+        "operationId": "DeviceEvent_GetById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The unique identifier of the record.",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceEvent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "query"
+      }
+    },
     "/api/v4/observations/device-events/by-sync-id": {
       "delete": {
         "tags": [
@@ -18247,156 +19114,6 @@
             }
           },
           "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "x-remote-type": "query"
-      }
-    },
-    "/api/v4/observations/device-events/{id}": {
-      "put": {
-        "tags": [
-          "Device Event"
-        ],
-        "summary": "Updates an existing record by ID and returns the updated record.",
-        "description": "Returns `404 Not Found` if no record with the given id exists.\n            \n`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.",
-        "operationId": "DeviceEvent_Update",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "The unique identifier of the record to update.",
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "requestBody": {
-          "x-name": "request",
-          "description": "The data to apply to the existing record.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpsertDeviceEventRequest"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 2
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeviceEvent"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "x-remote-type": "form"
-      },
-      "delete": {
-        "tags": [
-          "Device Event"
-        ],
-        "summary": "Deletes a record by ID.",
-        "description": "Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
-        "operationId": "DeviceEvent_Delete",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "The unique identifier of the record to delete.",
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "404": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "x-remote-type": "command"
-      },
-      "get": {
-        "tags": [
-          "Device Event"
-        ],
-        "summary": "Retrieves a single record by its unique identifier.",
-        "description": "Returns `404 Not Found` if no record with the given id exists.",
-        "operationId": "DeviceEvent_GetById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "The unique identifier of the record.",
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeviceEvent"
-                }
-              }
-            }
-          },
-          "404": {
             "description": "",
             "content": {
               "application/json": {
@@ -36902,6 +37619,683 @@
         "additionalProperties": false,
         "properties": {
           "overrideNotes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "InventoryItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "$ref": "#/components/schemas/InventoryCategory"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/InventoryKind"
+          },
+          "unitLabel": {
+            "type": "string"
+          },
+          "lowStockThreshold": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "targetStock": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "autoConsumeEnabled": {
+            "type": "boolean"
+          },
+          "autoConsumeSource": {
+            "$ref": "#/components/schemas/InventoryAutoConsumeSource"
+          },
+          "patientInsulinId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "deviceEventTypes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "linkedInsulinItemId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "linkedInsulinUnitsPerUse": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "wearDays": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "isDefault": {
+            "type": "boolean"
+          },
+          "isArchived": {
+            "type": "boolean"
+          },
+          "totalStock": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "usableStock": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "expiredStock": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "expiringSoonStock": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "lowestExpiry": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "isLow": {
+            "type": "boolean"
+          },
+          "suggestedRestockQuantity": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "estimatedRunOutAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "runOutProjectionSource": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/RunOutProjectionSource"
+              }
+            ]
+          }
+        }
+      },
+      "InventoryCategory": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Cgm",
+          "Pump",
+          "Insulin",
+          "Testing",
+          "Emergency",
+          "Other"
+        ],
+        "enum": [
+          "Cgm",
+          "Pump",
+          "Insulin",
+          "Testing",
+          "Emergency",
+          "Other"
+        ]
+      },
+      "InventoryKind": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "CgmSensor",
+          "CgmTransmitter",
+          "Pod",
+          "InfusionSet",
+          "Cannula",
+          "Reservoir",
+          "PumpBattery",
+          "Insulin",
+          "TestStrip",
+          "Lancet",
+          "AlcoholSwab",
+          "ControlSolution",
+          "Glucagon",
+          "FastCarbs",
+          "KetoneStrip",
+          "Custom"
+        ],
+        "enum": [
+          "CgmSensor",
+          "CgmTransmitter",
+          "Pod",
+          "InfusionSet",
+          "Cannula",
+          "Reservoir",
+          "PumpBattery",
+          "Insulin",
+          "TestStrip",
+          "Lancet",
+          "AlcoholSwab",
+          "ControlSolution",
+          "Glucagon",
+          "FastCarbs",
+          "KetoneStrip",
+          "Custom"
+        ]
+      },
+      "InventoryAutoConsumeSource": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "None",
+          "DeviceEvent",
+          "Bolus",
+          "BasalInjection"
+        ],
+        "enum": [
+          "None",
+          "DeviceEvent",
+          "Bolus",
+          "BasalInjection"
+        ]
+      },
+      "RunOutProjectionSource": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "WearTime",
+          "HistoricalRate",
+          "LinkedItem"
+        ],
+        "enum": [
+          "WearTime",
+          "HistoricalRate",
+          "LinkedItem"
+        ]
+      },
+      "InventoryItemDetailDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/InventoryItemDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "batches": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/InventoryBatchDto"
+                }
+              },
+              "transactions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/InventoryTransactionDto"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "InventoryBatchDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "inventoryItemId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "receivedQuantity": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "remainingQuantity": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "receivedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lotNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "storageState": {
+            "$ref": "#/components/schemas/InventoryStorageState"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "isExpired": {
+            "type": "boolean"
+          },
+          "isUsable": {
+            "type": "boolean"
+          }
+        }
+      },
+      "InventoryStorageState": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Normal",
+          "Refrigerated",
+          "Opened",
+          "Frozen",
+          "HeatExposed",
+          "Discarded"
+        ],
+        "enum": [
+          "Normal",
+          "Refrigerated",
+          "Opened",
+          "Frozen",
+          "HeatExposed",
+          "Discarded"
+        ]
+      },
+      "InventoryTransactionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "inventoryItemId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "inventoryBatchId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/InventoryTransactionType"
+          },
+          "quantityDelta": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "quantityAfter": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceType": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceTimestamp": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "InventoryTransactionType": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Restock",
+          "ManualConsume",
+          "AutoConsume",
+          "Adjustment",
+          "Reversal",
+          "Expired"
+        ],
+        "enum": [
+          "Restock",
+          "ManualConsume",
+          "AutoConsume",
+          "Adjustment",
+          "Reversal",
+          "Expired"
+        ]
+      },
+      "InventoryCatalogEntry": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "category": {
+            "$ref": "#/components/schemas/InventoryCatalogCategory"
+          },
+          "brand": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InventoryCatalogItemSpec"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "isOtc": {
+            "type": "boolean"
+          },
+          "isDiscontinued": {
+            "type": "boolean"
+          },
+          "discontinuationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "InventoryCatalogCategory": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Cgm",
+          "Pump",
+          "RapidInsulin",
+          "BasalInsulin"
+        ],
+        "enum": [
+          "Cgm",
+          "Pump",
+          "RapidInsulin",
+          "BasalInsulin"
+        ]
+      },
+      "InventoryCatalogItemSpec": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/InventoryKind"
+          },
+          "name": {
+            "type": "string"
+          },
+          "unitLabel": {
+            "type": "string"
+          },
+          "lowStockThreshold": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "targetStock": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "autoConsumeSource": {
+            "$ref": "#/components/schemas/InventoryAutoConsumeSource"
+          },
+          "deviceEventTypes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "inventoryCategory": {
+            "$ref": "#/components/schemas/InventoryCategory"
+          },
+          "wearDays": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "linkedInsulinUnitsPerUse": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          }
+        }
+      },
+      "TherapyMode": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Mdi",
+          "Pump"
+        ],
+        "enum": [
+          "Mdi",
+          "Pump"
+        ]
+      },
+      "InventorySeedRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "therapyMode": {
+            "$ref": "#/components/schemas/TherapyMode"
+          },
+          "cgmKeys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "pumpKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "rapidInsulinKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "basalInsulinKey": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "InventoryItemRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "$ref": "#/components/schemas/InventoryCategory"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/InventoryKind"
+          },
+          "unitLabel": {
+            "type": "string"
+          },
+          "lowStockThreshold": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "targetStock": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "autoConsumeEnabled": {
+            "type": "boolean"
+          },
+          "autoConsumeSource": {
+            "$ref": "#/components/schemas/InventoryAutoConsumeSource"
+          },
+          "patientInsulinId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "deviceEventTypes": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "linkedInsulinItemId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "linkedInsulinUnitsPerUse": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "wearDays": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "InventoryBatchRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "quantity": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "receivedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lotNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "storageState": {
+            "$ref": "#/components/schemas/InventoryStorageState"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "InventoryBatchMetadataRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "receivedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lotNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "storageState": {
+            "$ref": "#/components/schemas/InventoryStorageState"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "InventoryConsumeRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "quantity": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "batchId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "InventoryAdjustBatchRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "remainingQuantity": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "TransferBatchToExpiredRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "notes": {
             "type": "string",
             "nullable": true
           }
