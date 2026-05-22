@@ -22,6 +22,7 @@ using Nocturne.API.Services.Entries;
 using Nocturne.API.Services.Glucose;
 using Nocturne.API.Services.Health;
 using Nocturne.API.Services.Identity;
+using Nocturne.API.Services.Inventory;
 using Nocturne.API.Services.Legacy;
 using Nocturne.API.Services.Monitoring;
 using Nocturne.API.Services.NotificationActionHandlers;
@@ -49,6 +50,7 @@ using Nocturne.Core.Contracts.Events;
 using Nocturne.Core.Contracts.Glucose;
 using Nocturne.Core.Contracts.Health;
 using Nocturne.Core.Contracts.Identity;
+using Nocturne.Core.Contracts.Inventory;
 using Nocturne.Core.Contracts.Legacy;
 using Nocturne.Core.Contracts.Monitoring;
 using Nocturne.Core.Contracts.Multitenancy;
@@ -649,6 +651,10 @@ public static class ServiceRegistrationExtensions
         // In-app notifications
         services.AddScoped<IInAppNotificationRepository, InAppNotificationRepository>();
         services.AddScoped<IInAppNotificationService, InAppNotificationService>();
+        services.Configure<InventoryOptions>(configuration.GetSection(InventoryOptions.SectionName));
+        services.AddScoped<ITenantOwnerResolver, Nocturne.API.Services.Multitenancy.TenantOwnerResolver>();
+        services.AddScoped<IInventoryRepository, InventoryRepository>();
+        services.AddScoped<IInventoryService, InventoryService>();
         services.AddHostedService<NotificationResolutionService>();
         services.AddHostedService<NotificationCleanupService>();
 

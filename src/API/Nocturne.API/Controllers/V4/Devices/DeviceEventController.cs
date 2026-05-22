@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nocturne.API.Controllers.V4.Base;
 using Nocturne.API.Models.Requests.V4;
+using Nocturne.Core.Contracts.Inventory;
 using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Models.V4;
 
@@ -30,7 +31,7 @@ namespace Nocturne.API.Controllers.V4.Devices;
 [Route("api/v4/observations/device-events")]
 [Authorize]
 [Produces("application/json")]
-public class DeviceEventController(IDeviceEventRepository repo)
+public class DeviceEventController(IDeviceEventRepository repo, IInventoryService inventory)
     : V4CrudControllerBase<DeviceEvent, UpsertDeviceEventRequest, UpsertDeviceEventRequest, IDeviceEventRepository>(repo)
 {
     protected override DeviceEvent MapCreateToModel(UpsertDeviceEventRequest request) => new()
@@ -61,6 +62,39 @@ public class DeviceEventController(IDeviceEventRepository repo)
         SyncIdentifier = existing.SyncIdentifier,
         AdditionalProperties = existing.AdditionalProperties,
     };
+
+    public override async Task<ActionResult<DeviceEvent>> Update(
+        Guid id,
+        [FromBody] UpsertDeviceEventRequest request,
+        CancellationToken ct = default)
+    {
+        var existing = await Repository.GetByIdAsync(id, ct);
+        if (existing is null)
+            return NotFound();
+
+        var result = await base.Update(id, request, ct);
+        if (result.Result is OkObjectResult { Value: DeviceEvent updated })
+        {
+            await inventory.ReverseSourceAsync("device-event", id.ToString(), ct);
+            await inventory.AutoConsumeForDeviceEventAsync(updated, ct);
+        }
+
+        return result;
+    }
+
+    public override async Task<ActionResult> Delete(Guid id, CancellationToken ct = default)
+    {
+        var result = await base.Delete(id, ct);
+        if (result is NoContentResult)
+            await inventory.ReverseSourceAsync("device-event", id.ToString(), ct);
+        return result;
+    }
+
+    protected override async Task<DeviceEvent> OnAfterCreateAsync(DeviceEvent created, CancellationToken ct)
+    {
+        await inventory.AutoConsumeForDeviceEventAsync(created, ct);
+        return created;
+    }
 
     /// <summary>
     /// Delete a device event by its external sync identifier (dataSource + syncIdentifier pair).

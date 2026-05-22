@@ -171,6 +171,21 @@ public class NocturneDbContext : DbContext
     /// </summary>
     public DbSet<TrackerNotificationThresholdEntity> TrackerNotificationThresholds { get; set; }
 
+    /// <summary>
+    /// Gets or sets the InventoryItems table for diabetes supply inventory definitions.
+    /// </summary>
+    public DbSet<InventoryItemEntity> InventoryItems { get; set; }
+
+    /// <summary>
+    /// Gets or sets the InventoryBatches table for stock batches and expiry tracking.
+    /// </summary>
+    public DbSet<InventoryBatchEntity> InventoryBatches { get; set; }
+
+    /// <summary>
+    /// Gets or sets the InventoryTransactions table for immutable inventory stock movements.
+    /// </summary>
+    public DbSet<InventoryTransactionEntity> InventoryTransactions { get; set; }
+
     // StateSpan entities
 
     /// <summary>
@@ -932,6 +947,86 @@ public class NocturneDbContext : DbContext
             .Entity<TrackerNotificationThresholdEntity>()
             .HasIndex(t => new { t.TrackerDefinitionId, t.DisplayOrder })
             .HasDatabaseName("ix_tracker_notification_thresholds_def_order");
+
+        // Inventory indexes - optimized for tenant stock lists, FEFO consumption, and idempotent source hooks.
+        // Tenant scoping is enforced by RLS; indexes are tenant-prefixed to keep them selective.
+        modelBuilder
+            .Entity<InventoryItemEntity>()
+            .HasIndex(i => new { i.TenantId, i.IsArchived })
+            .HasDatabaseName("ix_inventory_items_tenant_archived");
+
+        modelBuilder
+            .Entity<InventoryItemEntity>()
+            .HasIndex(i => new { i.TenantId, i.Kind, i.IsArchived })
+            .HasDatabaseName("ix_inventory_items_tenant_kind_archived");
+
+        modelBuilder
+            .Entity<InventoryItemEntity>()
+            .HasIndex(i => new { i.TenantId, i.Category })
+            .HasDatabaseName("ix_inventory_items_tenant_category");
+
+        modelBuilder
+            .Entity<InventoryItemEntity>()
+            .HasIndex(i => i.PatientInsulinId)
+            .HasDatabaseName("ix_inventory_items_patient_insulin_id")
+            .HasFilter("patient_insulin_id IS NOT NULL");
+
+        modelBuilder
+            .Entity<InventoryItemEntity>()
+            .HasIndex(i => i.LinkedInsulinItemId)
+            .HasDatabaseName("ix_inventory_items_linked_insulin_id")
+            .HasFilter("linked_insulin_item_id IS NOT NULL");
+
+        modelBuilder
+            .Entity<InventoryBatchEntity>()
+            .HasIndex(b => b.InventoryItemId)
+            .HasDatabaseName("ix_inventory_batches_item_id");
+
+        modelBuilder
+            .Entity<InventoryBatchEntity>()
+            .HasIndex(b => new { b.InventoryItemId, b.ExpiresAt, b.ReceivedAt })
+            .HasDatabaseName("ix_inventory_batches_item_expiry_received");
+
+        modelBuilder
+            .Entity<InventoryBatchEntity>()
+            .HasIndex(b => b.ExpiresAt)
+            .HasDatabaseName("ix_inventory_batches_expires_at")
+            .HasFilter("expires_at IS NOT NULL");
+
+        modelBuilder
+            .Entity<InventoryTransactionEntity>()
+            .HasIndex(t => t.InventoryItemId)
+            .HasDatabaseName("ix_inventory_transactions_item_id");
+
+        modelBuilder
+            .Entity<InventoryTransactionEntity>()
+            .HasIndex(t => t.InventoryBatchId)
+            .HasDatabaseName("ix_inventory_transactions_batch_id")
+            .HasFilter("inventory_batch_id IS NOT NULL");
+
+        modelBuilder
+            .Entity<InventoryTransactionEntity>()
+            .HasIndex(t => new { t.TenantId, t.InventoryItemId, t.SourceType, t.SourceId })
+            .HasDatabaseName("ix_inventory_transactions_source")
+            .HasFilter("source_type IS NOT NULL AND source_id IS NOT NULL")
+            .IsUnique();
+
+        modelBuilder.Entity<InventoryItemEntity>(entity =>
+        {
+            entity.Property(e => e.Category).HasConversion<string>();
+            entity.Property(e => e.Kind).HasConversion<string>();
+            entity.Property(e => e.AutoConsumeSource).HasConversion<string>();
+        });
+
+        modelBuilder.Entity<InventoryBatchEntity>(entity =>
+        {
+            entity.Property(e => e.StorageState).HasConversion<string>();
+        });
+
+        modelBuilder.Entity<InventoryTransactionEntity>(entity =>
+        {
+            entity.Property(e => e.Type).HasConversion<string>();
+        });
 
         // StateSpan indexes - optimized for time range and category queries
         modelBuilder
@@ -1961,6 +2056,48 @@ public class NocturneDbContext : DbContext
             .Entity<TrackerNotificationThresholdEntity>()
             .Property(t => t.Id)
             .HasValueGenerator<GuidV7ValueGenerator>();
+        modelBuilder
+            .Entity<InventoryItemEntity>()
+            .Property(i => i.Id)
+            .HasValueGenerator<GuidV7ValueGenerator>();
+        modelBuilder
+            .Entity<InventoryBatchEntity>()
+            .Property(b => b.Id)
+            .HasValueGenerator<GuidV7ValueGenerator>();
+        modelBuilder
+            .Entity<InventoryTransactionEntity>()
+            .Property(t => t.Id)
+            .HasValueGenerator<GuidV7ValueGenerator>();
+
+        modelBuilder
+            .Entity<InventoryBatchEntity>()
+            .HasOne(b => b.Item)
+            .WithMany(i => i.Batches)
+            .HasForeignKey(b => b.InventoryItemId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<InventoryTransactionEntity>()
+            .HasOne(t => t.Item)
+            .WithMany(i => i.Transactions)
+            .HasForeignKey(t => t.InventoryItemId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<InventoryTransactionEntity>()
+            .HasOne(t => t.Batch)
+            .WithMany()
+            .HasForeignKey(t => t.InventoryBatchId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Self-FK on InventoryItem for the Pod/Reservoir → Insulin link.
+        // SetNull on delete so removing the insulin item doesn't cascade-delete the pod.
+        modelBuilder
+            .Entity<InventoryItemEntity>()
+            .HasOne<InventoryItemEntity>()
+            .WithMany()
+            .HasForeignKey(i => i.LinkedInsulinItemId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         modelBuilder
             .Entity<StateSpanEntity>()
@@ -3149,6 +3286,29 @@ public class NocturneDbContext : DbContext
                 }
                 clockFaceEntity.UpdatedAt = utcNow;
                 clockFaceEntity.SysUpdatedAt = utcNow;
+            }
+            else if (entry.Entity is InventoryItemEntity inventoryItemEntity)
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    inventoryItemEntity.CreatedAt = utcNow;
+                }
+                inventoryItemEntity.UpdatedAt = utcNow;
+            }
+            else if (entry.Entity is InventoryBatchEntity inventoryBatchEntity)
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    inventoryBatchEntity.CreatedAt = utcNow;
+                }
+                inventoryBatchEntity.UpdatedAt = utcNow;
+            }
+            else if (entry.Entity is InventoryTransactionEntity inventoryTransactionEntity)
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    inventoryTransactionEntity.CreatedAt = utcNow;
+                }
             }
             // V4 Granular Model entities
             else if (entry.Entity is SensorGlucoseEntity sensorGlucoseEntity)

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Nocturne.API.Controllers.V4.Treatments;
 using Nocturne.API.Models.Requests.V4;
+using Nocturne.Core.Contracts.Inventory;
 using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Models.V4;
 using Xunit;
@@ -15,10 +16,11 @@ public class BolusControllerTests
 {
     private readonly Mock<IBolusRepository> _repoMock = new();
     private readonly Mock<IPatientInsulinRepository> _insulinRepoMock = new();
+    private readonly Mock<IInventoryService> _inventoryMock = new();
 
     private BolusController CreateController()
     {
-        var controller = new BolusController(_repoMock.Object, _insulinRepoMock.Object);
+        var controller = new BolusController(_repoMock.Object, _insulinRepoMock.Object, _inventoryMock.Object);
         controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext()

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nocturne.Core.Contracts.Infrastructure;
+using Nocturne.Core.Contracts.Inventory;
 using Nocturne.Core.Models;
 using Nocturne.Infrastructure.Data.Entities;
 using Nocturne.Infrastructure.Data.Mappers;
@@ -18,7 +19,20 @@ public class DeduplicationService : IDeduplicationService
 {
     private readonly NocturneDbContext _context;
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IInventoryService _inventory;
     private readonly ILogger<DeduplicationService> _logger;
+
+    /// <summary>
+    /// Maps dedup record types to the inventory source-type strings used in
+    /// the inventory transactions ledger. Only record types that have
+    /// auto-consume hooks need an entry; others are left alone.
+    /// </summary>
+    private static readonly Dictionary<string, string> InventorySourceTypeByRecordType = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["bolus"] = "bolus",
+        ["deviceevent"] = "device-event",
+        ["basalinjection"] = "basal-injection"
+    };
 
     private static readonly TimeSpan MatchingWindow = TimeSpan.FromSeconds(30);
     private static readonly long MatchingWindowMillis = (long)MatchingWindow.TotalMilliseconds;
@@ -51,11 +65,41 @@ public class DeduplicationService : IDeduplicationService
     public DeduplicationService(
         NocturneDbContext context,
         IServiceScopeFactory scopeFactory,
+        IInventoryService inventory,
         ILogger<DeduplicationService> logger)
     {
         _context = context;
         _scopeFactory = scopeFactory;
+        _inventory = inventory;
         _logger = logger;
+    }
+
+    /// <summary>
+    /// If a record type has inventory auto-consume hooks, reverse the
+    /// inventory consumption for the given record. Called when the dedup
+    /// pipeline marks a record as non-primary (duplicate), so the duplicate
+    /// stops counting against tenant stock. Failures are swallowed and logged
+    /// so dedup never fails because of inventory side effects.
+    /// </summary>
+    private async Task TryReverseInventoryConsumptionAsync(
+        string recordType,
+        Guid recordId,
+        CancellationToken ct)
+    {
+        if (!InventorySourceTypeByRecordType.TryGetValue(recordType, out var inventorySourceType))
+            return;
+
+        try
+        {
+            await _inventory.ReverseSourceAsync(inventorySourceType, recordId.ToString(), ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex,
+                "Inventory reversal for {RecordType} {RecordId} (dedup non-primary) failed; "
+                + "tenant stock may be over-depleted until manually adjusted",
+                recordType, recordId);
+        }
     }
 
     /// <inheritdoc />
@@ -364,10 +408,14 @@ public class DeduplicationService : IDeduplicationService
             }
         }
 
-        // If this is the new primary, demote the old primary
+        // If this is the new primary, demote the old primary and reverse any
+        // inventory consumption it triggered (so the duplicate stops counting
+        // against stock).
+        Guid? demotedRecordId = null;
         if (isPrimary && existingInGroup != null && _context.Entry(existingInGroup).State != Microsoft.EntityFrameworkCore.EntityState.Deleted)
         {
             existingInGroup.IsPrimary = false;
+            demotedRecordId = existingInGroup.RecordId;
         }
 
         var linkedRecord = new LinkedRecordEntity
@@ -386,6 +434,14 @@ public class DeduplicationService : IDeduplicationService
         _logger.LogDebug(
             "Linked {RecordType} {RecordId} to canonical {CanonicalId} (primary: {IsPrimary})",
             recordType, recordId, canonicalId, isPrimary);
+
+        // Reverse inventory consumption for any record that just became non-primary.
+        // The new record (this call) is non-primary when isPrimary == false;
+        // the previously-primary record was demoted above.
+        if (!isPrimary)
+            await TryReverseInventoryConsumptionAsync(recordTypeStr, recordId, cancellationToken);
+        if (demotedRecordId.HasValue)
+            await TryReverseInventoryConsumptionAsync(recordTypeStr, demotedRecordId.Value, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -521,6 +577,17 @@ public class DeduplicationService : IDeduplicationService
             _context.LinkedRecords.AddRange(newLinks);
             await _context.SaveChangesAsync(ct);
             _context.ChangeTracker.Clear();
+        }
+
+        // 7. Reverse inventory consumption for every non-primary link this batch
+        //    just created. These are duplicates of an existing canonical primary
+        //    and shouldn't count against tenant stock.
+        if (InventorySourceTypeByRecordType.ContainsKey(recordTypeStr))
+        {
+            foreach (var link in newLinks.Where(l => !l.IsPrimary))
+            {
+                await TryReverseInventoryConsumptionAsync(recordTypeStr, link.RecordId, ct);
+            }
         }
 
         return new DeduplicationBatchResult(

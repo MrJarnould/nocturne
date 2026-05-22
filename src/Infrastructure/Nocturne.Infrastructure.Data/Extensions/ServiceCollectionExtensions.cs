@@ -325,6 +325,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IAlertTrackerRepository, AlertTrackerRepository>();
         services.AddScoped<ITrackerRepository, TrackerRepository>();
+        services.AddScoped<IInventoryRepository, InventoryRepository>();
         services.AddScoped<IStateSpanRepository, StateSpanRepository>();
         services.AddScoped<ISystemEventRepository, SystemEventRepository>();
         services.AddScoped<IUserFoodFavoriteRepository, UserFoodFavoriteRepository>();

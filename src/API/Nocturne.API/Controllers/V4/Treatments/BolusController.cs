@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nocturne.API.Controllers.V4.Base;
 using Nocturne.API.Models.Requests.V4;
+using Nocturne.Core.Contracts.Inventory;
 using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Models.V4;
 
@@ -29,7 +30,10 @@ namespace Nocturne.API.Controllers.V4.Treatments;
 [Route("api/v4/insulin/boluses")]
 [Authorize]
 [Produces("application/json")]
-public class BolusController(IBolusRepository repo, IPatientInsulinRepository insulinRepo)
+public class BolusController(
+    IBolusRepository repo,
+    IPatientInsulinRepository insulinRepo,
+    IInventoryService inventory)
     : V4CrudControllerBase<Bolus, CreateBolusRequest, UpdateBolusRequest, IBolusRepository>(repo)
 {
     /// <inheritdoc/>
@@ -55,6 +59,7 @@ public class BolusController(IBolusRepository repo, IPatientInsulinRepository in
 
         var created = await Repository.CreateAsync(model, ct);
         created = await OnAfterCreateAsync(created, ct);
+        await inventory.AutoConsumeForBolusAsync(created, request.PatientInsulinId, ct);
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
@@ -75,12 +80,22 @@ public class BolusController(IBolusRepository repo, IPatientInsulinRepository in
         try
         {
             var updated = await Repository.UpdateAsync(id, model, ct);
+            await inventory.ReverseSourceAsync("bolus", id.ToString(), ct);
+            await inventory.AutoConsumeForBolusAsync(updated, request.PatientInsulinId, ct);
             return Ok(updated);
         }
         catch (KeyNotFoundException)
         {
             return NotFound();
         }
+    }
+
+    public override async Task<ActionResult> Delete(Guid id, CancellationToken ct = default)
+    {
+        var result = await base.Delete(id, ct);
+        if (result is NoContentResult)
+            await inventory.ReverseSourceAsync("bolus", id.ToString(), ct);
+        return result;
     }
 
     /// <summary>Maps a <see cref="CreateBolusRequest"/> to a new <see cref="Bolus"/> domain model.</summary>
