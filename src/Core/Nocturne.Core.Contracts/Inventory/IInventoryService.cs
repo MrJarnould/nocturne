@@ -38,6 +38,21 @@ public interface IInventoryService
     Task AutoConsumeForBolusAsync(Bolus bolus, Guid? requestedPatientInsulinId, CancellationToken ct = default);
     Task AutoConsumeForBasalInjectionAsync(BasalInjection basalInjection, CancellationToken ct = default);
     Task ReverseSourceAsync(string sourceType, string sourceId, CancellationToken ct = default);
+
+    /// <summary>
+    /// All transactions across the tenant, optionally filtered by type.
+    /// Used by the global History view.
+    /// </summary>
+    Task<IReadOnlyList<InventoryTransactionWithItemDto>> GetAllTransactionsAsync(
+        InventoryTransactionType? type = null,
+        DateTime? since = null,
+        int limit = 200,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Batches across the tenant expiring within the given threshold.
+    /// </summary>
+    Task<IReadOnlyList<InventoryExpiringBatchDto>> GetExpiringBatchesAsync(int thresholdDays = 30, CancellationToken ct = default);
 }
 
 /// <summary>
@@ -176,4 +191,21 @@ public class InventoryTransactionDto
     public DateTime? SourceTimestamp { get; set; }
     public string? Notes { get; set; }
     public DateTime CreatedAt { get; set; }
+}
+
+/// <summary>
+/// Transaction DTO enriched with the parent item's name — used in the global History view.
+/// </summary>
+public class InventoryTransactionWithItemDto : InventoryTransactionDto
+{
+    public string ItemName { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// A batch that is expiring soon, enriched with its parent item's name and id.
+/// Used in the global History / upcoming-expirations view.
+/// </summary>
+public class InventoryExpiringBatchDto : InventoryBatchDto
+{
+    public string ItemName { get; set; } = string.Empty;
 }

@@ -19,6 +19,38 @@ namespace Nocturne.API.Controllers.V4.Inventory;
 [Produces("application/json")]
 public class InventoryController(IInventoryService inventory) : ControllerBase
 {
+    /// <summary>
+    /// All transactions across the tenant, newest-first. Optionally filtered by
+    /// transaction type. Used by the global Inventory History view.
+    /// </summary>
+    [HttpGet("transactions")]
+    [RemoteQuery]
+    [ProducesResponseType(typeof(InventoryTransactionWithItemDto[]), StatusCodes.Status200OK)]
+    public async Task<ActionResult<InventoryTransactionWithItemDto[]>> GetAllTransactions(
+        [FromQuery] InventoryTransactionType? type = null,
+        [FromQuery] DateTime? since = null,
+        [FromQuery] int limit = 200,
+        CancellationToken ct = default)
+    {
+        var transactions = await inventory.GetAllTransactionsAsync(type, since, limit, ct);
+        return Ok(transactions.ToArray());
+    }
+
+    /// <summary>
+    /// Batches across the tenant expiring within the given threshold (default 30 days).
+    /// Used by the global Inventory History "upcoming expirations" section.
+    /// </summary>
+    [HttpGet("expirations")]
+    [RemoteQuery]
+    [ProducesResponseType(typeof(InventoryExpiringBatchDto[]), StatusCodes.Status200OK)]
+    public async Task<ActionResult<InventoryExpiringBatchDto[]>> GetExpiringBatches(
+        [FromQuery] int thresholdDays = 30,
+        CancellationToken ct = default)
+    {
+        var batches = await inventory.GetExpiringBatchesAsync(thresholdDays, ct);
+        return Ok(batches.ToArray());
+    }
+
     [HttpGet("items")]
     [RemoteQuery]
     [ProducesResponseType(typeof(InventoryItemDto[]), StatusCodes.Status200OK)]

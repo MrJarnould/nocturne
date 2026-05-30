@@ -233,10 +233,12 @@
       icon: Utensils,
     },
     {
-      title: "Tools",
-      icon: Wrench,
+      title: "Inventory",
+      icon: PackageSearch,
       children: [
-        { title: "Packing", href: "/tools/packing", icon: Wrench },
+        { title: "Overview", href: "/inventory/overview", icon: PackageSearch },
+        { title: "History", href: "/inventory/history", icon: HistoryIcon },
+        { title: "Packing Calculator", href: "/inventory/packing", icon: Wrench },
       ],
     },
     );
@@ -299,11 +301,6 @@
           title: "Notifications & Trackers",
           href: "/settings/trackers",
           icon: Timer,
-        },
-        {
-          title: "Inventory",
-          href: "/settings/inventory",
-          icon: PackageSearch,
         },
         { title: "Connectors & Apps", href: "/settings/connectors", icon: Plug },
         { title: "Members", href: "/settings/members", icon: Users },

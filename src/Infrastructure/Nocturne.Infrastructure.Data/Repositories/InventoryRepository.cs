@@ -164,6 +164,46 @@ public class InventoryRepository : IInventoryRepository
         return transaction;
     }
 
+    public async Task<List<InventoryTransactionEntity>> GetAllTransactionsAsync(
+        InventoryTransactionType? type = null,
+        DateTime? since = null,
+        int limit = 200,
+        CancellationToken ct = default)
+    {
+        var query = _context.InventoryTransactions
+            .AsNoTracking()
+            .Include(t => t.Item)
+            .AsQueryable();
+
+        if (type.HasValue)
+            query = query.Where(t => t.Type == type.Value);
+
+        if (since.HasValue)
+            query = query.Where(t => t.CreatedAt >= since.Value);
+
+        return await query
+            .OrderByDescending(t => t.CreatedAt)
+            .Take(limit)
+            .ToListAsync(ct);
+    }
+
+    public async Task<List<InventoryBatchEntity>> GetExpiringBatchesAsync(
+        int thresholdDays = 30,
+        CancellationToken ct = default)
+    {
+        var cutoff = DateTime.UtcNow.AddDays(thresholdDays);
+        return await _context.InventoryBatches
+            .AsNoTracking()
+            .Include(b => b.Item)
+            .Where(b => !b.Item.IsArchived
+                        && b.RemainingQuantity > 0
+                        && b.ExpiresAt.HasValue
+                        && b.ExpiresAt.Value <= cutoff
+                        && b.StorageState != InventoryStorageState.Discarded)
+            .OrderBy(b => b.ExpiresAt)
+            .ToListAsync(ct);
+    }
+
     public async Task<List<InventoryTransactionEntity>> GetSourceTransactionsAsync(
         string sourceType,
         string sourceId,

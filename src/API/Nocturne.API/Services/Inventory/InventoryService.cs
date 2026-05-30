@@ -1081,6 +1081,53 @@ public class InventoryService : IInventoryService
         CreatedAt = transaction.CreatedAt
     };
 
+    public async Task<IReadOnlyList<InventoryTransactionWithItemDto>> GetAllTransactionsAsync(
+        InventoryTransactionType? type = null,
+        DateTime? since = null,
+        int limit = 200,
+        CancellationToken ct = default)
+    {
+        var transactions = await _repository.GetAllTransactionsAsync(type, since, limit, ct);
+        return transactions.Select(t => new InventoryTransactionWithItemDto
+        {
+            Id = t.Id,
+            InventoryItemId = t.InventoryItemId,
+            InventoryBatchId = t.InventoryBatchId,
+            Type = t.Type,
+            QuantityDelta = t.QuantityDelta,
+            QuantityAfter = t.QuantityAfter,
+            Reason = t.Reason,
+            SourceType = t.SourceType,
+            SourceId = t.SourceId,
+            SourceTimestamp = t.SourceTimestamp,
+            Notes = t.Notes,
+            CreatedAt = t.CreatedAt,
+            ItemName = t.Item?.Name ?? string.Empty,
+        }).ToList();
+    }
+
+    public async Task<IReadOnlyList<InventoryExpiringBatchDto>> GetExpiringBatchesAsync(
+        int thresholdDays = 30,
+        CancellationToken ct = default)
+    {
+        var batches = await _repository.GetExpiringBatchesAsync(thresholdDays, ct);
+        return batches.Select(b => new InventoryExpiringBatchDto
+        {
+            Id = b.Id,
+            InventoryItemId = b.InventoryItemId,
+            ReceivedQuantity = b.ReceivedQuantity,
+            RemainingQuantity = b.RemainingQuantity,
+            ReceivedAt = b.ReceivedAt,
+            ExpiresAt = b.ExpiresAt,
+            LotNumber = b.LotNumber,
+            StorageState = b.StorageState,
+            Notes = b.Notes,
+            IsExpired = b.ExpiresAt.HasValue && b.ExpiresAt.Value.Date < DateTime.UtcNow.Date,
+            IsUsable = IsUsableBatch(b),
+            ItemName = b.Item?.Name ?? string.Empty,
+        }).ToList();
+    }
+
     private static string[] DeserializeEventTypes(string? json)
     {
         if (string.IsNullOrWhiteSpace(json))
