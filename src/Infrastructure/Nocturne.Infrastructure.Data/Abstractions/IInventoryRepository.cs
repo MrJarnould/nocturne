@@ -26,6 +26,23 @@ public interface IInventoryRepository
     Task<InventoryBatchEntity> AddBatchAsync(InventoryBatchEntity batch, CancellationToken ct = default);
     Task<InventoryBatchEntity?> UpdateBatchAsync(InventoryBatchEntity batch, CancellationToken ct = default);
     Task<InventoryTransactionEntity> AddTransactionAsync(InventoryTransactionEntity transaction, CancellationToken ct = default);
+    /// <summary>
+    /// All transactions across the tenant, optionally filtered by type.
+    /// Ordered newest-first. Used by the global History view.
+    /// </summary>
+    Task<List<InventoryTransactionEntity>> GetAllTransactionsAsync(
+        InventoryTransactionType? type = null,
+        DateTime? since = null,
+        int limit = 200,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Batches across the tenant whose ExpiresAt is within the given threshold
+    /// and still have usable remaining quantity. Includes the parent Item.
+    /// Ordered by soonest expiry first.
+    /// </summary>
+    Task<List<InventoryBatchEntity>> GetExpiringBatchesAsync(int thresholdDays = 30, CancellationToken ct = default);
+
     Task<List<InventoryTransactionEntity>> GetSourceTransactionsAsync(string sourceType, string sourceId, CancellationToken ct = default);
     Task<bool> HasSourceTransactionAsync(Guid itemId, string sourceType, string sourceId, CancellationToken ct = default);
     Task<InventoryItemEntity?> FindAutoConsumeItemAsync(
