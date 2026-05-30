@@ -4,12 +4,15 @@
   import { Button } from "$lib/components/ui/button";
   import { Badge } from "$lib/components/ui/badge";
   import * as Card from "$lib/components/ui/card";
+  import * as Command from "$lib/components/ui/command";
   import * as Dialog from "$lib/components/ui/dialog";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
+  import * as Popover from "$lib/components/ui/popover";
   import { Textarea } from "$lib/components/ui/textarea";
   import * as inventoryRemote from "$api/generated/inventories.generated.remote";
   import {
+    DeviceEventType,
     InventoryAutoConsumeSource,
     InventoryCategory,
     InventoryKind,
@@ -19,15 +22,19 @@
     type InventoryItemDetailDto,
     type InventoryItemDto,
   } from "$api";
+  import { DEVICE_EVENT_TYPE_LABELS, DEVICE_EVENT_TYPES } from "$lib/constants/device-event-types";
   import {
     Archive,
     ArrowLeft,
+    Check,
+    ChevronsUpDown,
     Loader2,
     PackagePlus,
     RotateCcw,
     Settings2,
     Trash2,
   } from "lucide-svelte";
+  import { cn } from "$lib/utils";
 
   const itemId = $derived(page.params.id as string);
   const itemQuery = $derived(inventoryRemote.getItem(itemId));
@@ -49,7 +56,8 @@
   let itemThreshold = $state(1);
   let itemTarget = $state<number | undefined>(undefined);
   let itemAutoSource = $state<InventoryAutoConsumeSource>(InventoryAutoConsumeSource.None);
-  let itemDeviceEvents = $state("");
+  let itemDeviceEvents = $state<DeviceEventType[]>([]);
+  let eventPickerOpen = $state(false);
   let itemLinkedInsulinId = $state<string | undefined>(undefined);
   let itemLinkedUnitsPerUse = $state<number | undefined>(undefined);
   const showLinkedInsulin = $derived(itemKind === InventoryKind.Pod || itemKind === InventoryKind.Reservoir);
@@ -138,7 +146,7 @@
     itemThreshold = item.lowStockThreshold ?? 1;
     itemTarget = item.targetStock ?? undefined;
     itemAutoSource = item.autoConsumeSource ?? InventoryAutoConsumeSource.None;
-    itemDeviceEvents = (item.deviceEventTypes ?? []).join(", ");
+    itemDeviceEvents = (item.deviceEventTypes ?? []) as DeviceEventType[];
     itemLinkedInsulinId = item.linkedInsulinItemId ?? undefined;
     itemLinkedUnitsPerUse = item.linkedInsulinUnitsPerUse ?? undefined;
     editDialogOpen = true;
@@ -185,7 +193,7 @@
           targetStock: itemTarget,
           autoConsumeEnabled: itemAutoSource !== InventoryAutoConsumeSource.None,
           autoConsumeSource: itemAutoSource,
-          deviceEventTypes: eventTypes(),
+          deviceEventTypes: itemDeviceEvents,
           linkedInsulinItemId: showLinkedInsulin ? itemLinkedInsulinId : undefined,
           linkedInsulinUnitsPerUse: showLinkedInsulin ? itemLinkedUnitsPerUse : undefined,
         },
@@ -299,8 +307,12 @@
     return ms > 0 && ms < EXPIRING_SOON_MS;
   }
 
-  function eventTypes(): string[] {
-    return itemDeviceEvents.split(",").map((v) => v.trim()).filter(Boolean);
+  function toggleDeviceEvent(type: DeviceEventType) {
+    if (itemDeviceEvents.includes(type)) {
+      itemDeviceEvents = itemDeviceEvents.filter((t) => t !== type);
+    } else {
+      itemDeviceEvents = [...itemDeviceEvents, type];
+    }
   }
 </script>
 
@@ -481,8 +493,46 @@
         </select>
       </div>
       <div class="space-y-2 md:col-span-2">
-        <Label for="item-events">Device event mappings</Label>
-        <Input id="item-events" bind:value={itemDeviceEvents} placeholder="SensorStart, SensorChange" />
+        <Label>Device event mappings</Label>
+        <Popover.Root bind:open={eventPickerOpen}>
+          <Popover.Trigger class="w-full">
+            {#snippet child({ props })}
+              <Button
+                variant="outline"
+                class="w-full justify-between font-normal"
+                {...props}
+                role="combobox"
+                aria-expanded={eventPickerOpen}
+              >
+                <span class={itemDeviceEvents.length === 0 ? "text-muted-foreground" : ""}>
+                  {itemDeviceEvents.length === 0
+                    ? "Select event types…"
+                    : itemDeviceEvents.map((t) => DEVICE_EVENT_TYPE_LABELS[t]).join(", ")}
+                </span>
+                <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            {/snippet}
+          </Popover.Trigger>
+          <Popover.Content class="w-(--bits-popover-anchor-width) p-0">
+            <Command.Root>
+              <Command.Input placeholder="Search event types…" />
+              <Command.List>
+                <Command.Empty>No event types found.</Command.Empty>
+                <Command.Group>
+                  {#each DEVICE_EVENT_TYPES as eventType}
+                    <Command.Item
+                      value={eventType}
+                      onSelect={() => toggleDeviceEvent(eventType)}
+                    >
+                      <Check class={cn("mr-2 h-4 w-4", !itemDeviceEvents.includes(eventType) && "text-transparent")} />
+                      {DEVICE_EVENT_TYPE_LABELS[eventType]}
+                    </Command.Item>
+                  {/each}
+                </Command.Group>
+              </Command.List>
+            </Command.Root>
+          </Popover.Content>
+        </Popover.Root>
       </div>
       {#if showLinkedInsulin}
         <div class="space-y-2 md:col-span-2 rounded-md border border-dashed p-3">
