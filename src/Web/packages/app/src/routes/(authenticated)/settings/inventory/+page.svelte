@@ -1,9 +1,9 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import { Button } from "$lib/components/ui/button";
   import { Badge } from "$lib/components/ui/badge";
   import * as Card from "$lib/components/ui/card";
   import * as Dialog from "$lib/components/ui/dialog";
-  import * as Tabs from "$lib/components/ui/tabs";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import { Textarea } from "$lib/components/ui/textarea";
@@ -14,25 +14,21 @@
     InventoryCategory,
     InventoryKind,
     InventoryStorageState,
-    InventoryTransactionType,
     TherapyMode,
-    type InventoryBatchDto,
     type InventoryCatalogEntry,
     type InventoryItemDetailDto,
     type InventoryItemDto,
   } from "$api";
   import {
+    ArrowUpRight,
     Archive,
     ClipboardList,
     Loader2,
     PackagePlus,
     PackageSearch,
-    Pencil,
     Plus,
     RefreshCw,
     RotateCcw,
-    Settings2,
-    SlidersHorizontal,
     Trash2,
   } from "lucide-svelte";
 
@@ -44,11 +40,8 @@
   let itemDialogOpen = $state(false);
   let restockDialogOpen = $state(false);
   let consumeDialogOpen = $state(false);
-  let adjustDialogOpen = $state(false);
-  let detailDialogOpen = $state(false);
   let editingItem = $state<InventoryItemDto | null>(null);
   let selectedItem = $state<InventoryItemDetailDto | null>(null);
-  let selectedBatch = $state<InventoryBatchDto | null>(null);
   let busyAction = $state<string | null>(null);
 
   let itemName = $state("");
@@ -83,10 +76,6 @@
   let consumeQuantity = $state(1);
   let consumeReason = $state("Manual use");
   let consumeNotes = $state("");
-
-  let adjustQuantity = $state(0);
-  let adjustReason = $state("Stock correction");
-  let adjustNotes = $state("");
 
   let batchQuantity = $state(1);
   let batchReceived = $state("");
@@ -139,15 +128,6 @@
     [InventoryStorageState.Discarded]: "Discarded",
   };
 
-  const transactionLabels: Record<InventoryTransactionType, string> = {
-    [InventoryTransactionType.Restock]: "Restock",
-    [InventoryTransactionType.ManualConsume]: "Manual use",
-    [InventoryTransactionType.AutoConsume]: "Automatic use",
-    [InventoryTransactionType.Adjustment]: "Adjustment",
-    [InventoryTransactionType.Reversal]: "Reversal",
-    [InventoryTransactionType.Expired]: "Expired",
-  };
-
   const groupedItems = $derived.by(() => {
     const groups = new Map<InventoryCategory, InventoryItemDto[]>();
     for (const item of items) {
@@ -175,33 +155,9 @@
     itemDialogOpen = true;
   }
 
-  function openEditItem(item: InventoryItemDto) {
-    editingItem = item;
-    itemName = item.name ?? "";
-    itemCategory = item.category ?? InventoryCategory.Other;
-    itemKind = item.kind ?? InventoryKind.Custom;
-    itemUnit = item.unitLabel ?? "each";
-    itemThreshold = item.lowStockThreshold ?? 1;
-    itemTarget = item.targetStock ?? undefined;
-    itemAutoConsume = !!item.autoConsumeEnabled;
-    itemAutoSource = item.autoConsumeSource ?? InventoryAutoConsumeSource.None;
-    itemDeviceEvents = (item.deviceEventTypes ?? []).join(", ");
-    itemLinkedInsulinId = item.linkedInsulinItemId ?? undefined;
-    itemLinkedUnitsPerUse = item.linkedInsulinUnitsPerUse ?? undefined;
-    // Close the Detail dialog first so we don't end up with two stacked overlays.
-    detailDialogOpen = false;
-    itemDialogOpen = true;
-  }
-
   // Items eligible to be linked from a Pod/Reservoir as the insulin source.
   const insulinItems = $derived(items.filter((i) => i.kind === InventoryKind.Insulin && !i.isArchived));
   const showLinkedInsulin = $derived(itemKind === InventoryKind.Pod || itemKind === InventoryKind.Reservoir);
-
-  async function openDetail(item: InventoryItemDto) {
-    if (!item.id) return;
-    selectedItem = await inventoryRemote.getItem(item.id).run();
-    detailDialogOpen = true;
-  }
 
   async function reloadSelected() {
     await itemsQuery.refresh();
@@ -276,14 +232,6 @@
     consumeReason = "Manual use";
     consumeNotes = "";
     consumeDialogOpen = true;
-  }
-
-  function openAdjust(batch: InventoryBatchDto) {
-    selectedBatch = batch;
-    adjustQuantity = batch.remainingQuantity ?? 0;
-    adjustReason = "Stock correction";
-    adjustNotes = "";
-    adjustDialogOpen = true;
   }
 
   async function openWizard() {
@@ -484,7 +432,6 @@
       await inventoryRemote.archiveItem(editingItem.id);
       await itemsQuery.refresh();
       itemDialogOpen = false;
-      detailDialogOpen = false;
     } finally {
       busyAction = null;
     }
@@ -509,39 +456,6 @@
     }
   }
 
-  async function submitAdjust() {
-    if (!selectedItem?.id || !selectedBatch?.id) return;
-    busyAction = "adjust";
-    try {
-      await inventoryRemote.adjustBatch({
-        batchId: selectedBatch.id,
-        request: {
-          remainingQuantity: adjustQuantity,
-          reason: adjustReason || undefined,
-          notes: adjustNotes || undefined,
-        },
-      });
-      adjustDialogOpen = false;
-      await reloadSelected();
-    } finally {
-      busyAction = null;
-    }
-  }
-
-  async function expireBatch(batch: InventoryBatchDto) {
-    if (!selectedItem?.id || !batch.id) return;
-    busyAction = `expire-${batch.id}`;
-    try {
-      await inventoryRemote.transferBatchToExpired({
-        batchId: batch.id,
-        request: { notes: "Marked expired from inventory settings" },
-      });
-      await reloadSelected();
-    } finally {
-      busyAction = null;
-    }
-  }
-
   function displayNumber(value: number | undefined): string {
     return (value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
   }
@@ -554,13 +468,6 @@
   function dateInputValue(value: Date | string | undefined): string {
     if (!value) return "";
     return new Date(value).toISOString().slice(0, 10);
-  }
-
-  const EXPIRING_SOON_MS = 30 * 24 * 60 * 60 * 1000;
-  function isExpiringSoon(value: Date | string | null | undefined): boolean {
-    if (!value) return false;
-    const ms = new Date(value).getTime() - Date.now();
-    return ms > 0 && ms < EXPIRING_SOON_MS;
   }
 
   function formatRunOut(item: InventoryItemDto): string {
@@ -649,21 +556,34 @@
               <Card.Root class="overflow-hidden">
                 <Card.Header class="space-y-3">
                   <div class="flex items-start justify-between gap-3">
-                    <div class="min-w-0">
-                      <Card.Title class="truncate text-base">{item.name}</Card.Title>
-                      <p class="text-sm text-muted-foreground">{kindLabels[item.kind ?? InventoryKind.Custom]}</p>
+                    <div class="min-w-0 flex-1">
+                      <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                          <Card.Title class="truncate text-base">{item.name}</Card.Title>
+                          <p class="text-sm text-muted-foreground">{kindLabels[item.kind ?? InventoryKind.Custom]}</p>
+                        </div>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          class="h-7 w-7 shrink-0 text-muted-foreground"
+                          onclick={() => item.id && goto(`/settings/inventory/${item.id}`)}
+                          title="Open full detail view"
+                        >
+                          <ArrowUpRight class="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <div class="flex flex-wrap justify-end gap-1">
-                      {#if item.isLow}
-                        <Badge variant="destructive">Low</Badge>
-                      {/if}
-                      {#if (item.expiredStock ?? 0) > 0}
-                        <Badge variant="secondary">Expired</Badge>
-                      {/if}
-                      {#if (item.expiringSoonStock ?? 0) > 0}
-                        <Badge variant="outline">Expiring soon</Badge>
-                      {/if}
-                    </div>
+                  </div>
+                  <div class="flex flex-wrap gap-1">
+                    {#if item.isLow}
+                      <Badge variant="destructive">Low</Badge>
+                    {/if}
+                    {#if (item.expiredStock ?? 0) > 0}
+                      <Badge variant="secondary">Expired</Badge>
+                    {/if}
+                    {#if (item.expiringSoonStock ?? 0) > 0}
+                      <Badge variant="outline">Expiring soon</Badge>
+                    {/if}
                   </div>
                 </Card.Header>
                 <Card.Content class="space-y-4">
@@ -718,11 +638,6 @@
                         Use
                       </Button>
                     {/if}
-                    <Button size="sm" variant="ghost" onclick={() => openDetail(item)} class="gap-2"
-                      title="Open the detail view to see all batches, the transaction ledger, and auto-consume settings">
-                      <SlidersHorizontal class="h-4 w-4" />
-                      Details
-                    </Button>
                     {#if changeEventTypeFor(item.kind)}
                       <Button size="sm" variant="ghost" onclick={() => openConsume(item)} class="ml-auto gap-2 text-muted-foreground" title="Log a unit removed from stock without wearing it (e.g. damaged, discarded)">
                         <Trash2 class="h-4 w-4" />
@@ -921,137 +836,6 @@
     <Dialog.Footer>
       <Button variant="outline" onclick={() => (consumeDialogOpen = false)}>Cancel</Button>
       <Button onclick={submitConsume} disabled={busyAction === "consume" || consumeQuantity <= 0}>Record use</Button>
-    </Dialog.Footer>
-  </Dialog.Content>
-</Dialog.Root>
-
-<Dialog.Root bind:open={detailDialogOpen}>
-  <Dialog.Content class="max-h-[90vh] sm:max-w-5xl overflow-y-auto top-16 translate-y-0">
-    <Dialog.Header>
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <Dialog.Title>{selectedItem?.name}</Dialog.Title>
-          <Dialog.Description>{selectedItem ? kindLabels[selectedItem.kind ?? InventoryKind.Custom] : ""}</Dialog.Description>
-        </div>
-        {#if selectedItem}
-          <Button size="sm" variant="outline" onclick={() => selectedItem && openEditItem(selectedItem)} class="gap-2"
-            title="Edit this item's name, thresholds, auto-consume rules, and linked-insulin settings">
-            <Pencil class="h-4 w-4" />
-            Edit
-          </Button>
-        {/if}
-      </div>
-    </Dialog.Header>
-    {#if selectedItem}
-      <Tabs.Root value="batches" class="py-2">
-        <Tabs.List>
-          <Tabs.Trigger value="batches">Batches</Tabs.Trigger>
-          <Tabs.Trigger value="ledger">Ledger</Tabs.Trigger>
-          <Tabs.Trigger value="settings">Settings</Tabs.Trigger>
-        </Tabs.List>
-        <Tabs.Content value="batches" class="space-y-3 pt-4">
-          <div class="grid gap-3 md:grid-cols-4">
-            <Card.Root><Card.Content class="p-4"><p class="text-sm text-muted-foreground">Available</p><p class="text-2xl font-semibold">{displayNumber(selectedItem.usableStock)}</p></Card.Content></Card.Root>
-            <Card.Root><Card.Content class="p-4"><p class="text-sm text-muted-foreground">Expired</p><p class="text-2xl font-semibold">{displayNumber(selectedItem.expiredStock)}</p></Card.Content></Card.Root>
-            <Card.Root><Card.Content class="p-4"><p class="text-sm text-muted-foreground">Threshold</p><p class="text-2xl font-semibold">{displayNumber(selectedItem.lowStockThreshold)}</p></Card.Content></Card.Root>
-            <Card.Root><Card.Content class="p-4"><p class="text-sm text-muted-foreground">Restock</p><p class="text-2xl font-semibold">{displayNumber(selectedItem.suggestedRestockQuantity)}</p></Card.Content></Card.Root>
-          </div>
-          <div class="flex gap-2">
-            <Button size="sm" onclick={() => selectedItem && openRestock(selectedItem)} class="gap-2"
-              title="Add a newly-received batch"><PackagePlus class="h-4 w-4" />Restock</Button>
-            <Button size="sm" variant="outline" onclick={() => selectedItem && openConsume(selectedItem)} class="gap-2"
-              title="Manually log consumption (FEFO)"><RotateCcw class="h-4 w-4" />Use</Button>
-          </div>
-          <div class="overflow-x-auto rounded-md border">
-            <table class="w-full min-w-160 text-sm">
-              <thead class="bg-muted/50 text-left">
-                <tr>
-                  <th class="p-3">Remaining</th>
-                  <th class="p-3">Received</th>
-                  <th class="p-3">Expiry</th>
-                  <th class="p-3">Lot</th>
-                  <th class="p-3">Storage</th>
-                  <th class="p-3"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {#each selectedItem.batches ?? [] as batch}
-                  <tr class="border-t">
-                    <td class="p-3 font-medium">{displayNumber(batch.remainingQuantity)} / {displayNumber(batch.receivedQuantity)}</td>
-                    <td class="p-3">{formatDate(batch.receivedAt)}</td>
-                    <td class="p-3">
-                      <span>{formatDate(batch.expiresAt)}</span>
-                      {#if batch.isExpired}<Badge variant="destructive" class="ml-2">Expired</Badge>{:else if isExpiringSoon(batch.expiresAt)}<Badge variant="outline" class="ml-2">Soon</Badge>{/if}
-                    </td>
-                    <td class="p-3">{batch.lotNumber ?? ""}</td>
-                    <td class="p-3">{storageLabels[batch.storageState ?? InventoryStorageState.Normal]}</td>
-                    <td class="p-3 text-right">
-                      <Button size="sm" variant="ghost" onclick={() => openAdjust(batch)} class="gap-2"
-                        title="Override this batch's remaining quantity (e.g. fix a miscount). Writes an Adjustment row to the ledger."><Settings2 class="h-4 w-4" />Adjust</Button>
-                      <Button size="sm" variant="ghost" onclick={() => expireBatch(batch)} disabled={busyAction === `expire-${batch.id}`}
-                        title="Transition this batch out of usable stock. Useful when a batch expires or gets damaged.">Expire</Button>
-                    </td>
-                  </tr>
-                {/each}
-              </tbody>
-            </table>
-          </div>
-        </Tabs.Content>
-        <Tabs.Content value="ledger" class="pt-4">
-          <div class="overflow-x-auto rounded-md border">
-            <table class="w-full min-w-180 text-sm">
-              <thead class="bg-muted/50 text-left">
-                <tr><th class="p-3">Date</th><th class="p-3">Type</th><th class="p-3">Change</th><th class="p-3">After</th><th class="p-3">Reason</th><th class="p-3">Source</th></tr>
-              </thead>
-              <tbody>
-                {#each selectedItem.transactions ?? [] as transaction}
-                  <tr class="border-t">
-                    <td class="p-3">{formatDate(transaction.createdAt)}</td>
-                    <td class="p-3">{transactionLabels[transaction.type ?? InventoryTransactionType.Adjustment]}</td>
-                    <td class="p-3">{displayNumber(transaction.quantityDelta)}</td>
-                    <td class="p-3">{displayNumber(transaction.quantityAfter)}</td>
-                    <td class="p-3">{transaction.reason ?? ""}</td>
-                    <td class="p-3">{transaction.sourceType ?? ""}</td>
-                  </tr>
-                {/each}
-              </tbody>
-            </table>
-          </div>
-        </Tabs.Content>
-        <Tabs.Content value="settings" class="space-y-3 pt-4 text-sm">
-          <div class="grid gap-3 md:grid-cols-2">
-            <div class="rounded-md border p-3"><p class="text-muted-foreground">Auto-consume</p><p class="font-medium">{selectedItem.autoConsumeEnabled ? autoSourceLabels[selectedItem.autoConsumeSource ?? InventoryAutoConsumeSource.None] : "Off"}</p></div>
-            <div class="rounded-md border p-3"><p class="text-muted-foreground">Device mappings</p><p class="font-medium">{(selectedItem.deviceEventTypes ?? []).join(", ") || "None"}</p></div>
-          </div>
-        </Tabs.Content>
-      </Tabs.Root>
-    {/if}
-  </Dialog.Content>
-</Dialog.Root>
-
-<Dialog.Root bind:open={adjustDialogOpen}>
-  <Dialog.Content class="max-w-md">
-    <Dialog.Header>
-      <Dialog.Title>Adjust batch</Dialog.Title>
-      <Dialog.Description>Correct the remaining stock and keep an audit note.</Dialog.Description>
-    </Dialog.Header>
-    <div class="space-y-4 py-4">
-      <div class="space-y-2">
-        <Label for="adjust-qty">New remaining quantity</Label>
-        <Input id="adjust-qty" type="number" min="0" step="0.01" bind:value={adjustQuantity} />
-      </div>
-      <div class="space-y-2">
-        <Label for="adjust-reason">Reason</Label>
-        <Input id="adjust-reason" bind:value={adjustReason} />
-      </div>
-      <div class="space-y-2">
-        <Label for="adjust-notes">Notes</Label>
-        <Textarea id="adjust-notes" rows={3} bind:value={adjustNotes} />
-      </div>
-    </div>
-    <Dialog.Footer>
-      <Button variant="outline" onclick={() => (adjustDialogOpen = false)}>Cancel</Button>
-      <Button onclick={submitAdjust} disabled={busyAction === "adjust" || adjustQuantity < 0}>Save adjustment</Button>
     </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>
