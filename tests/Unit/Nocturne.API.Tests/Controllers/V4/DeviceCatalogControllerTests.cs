@@ -26,6 +26,6 @@ public class DeviceCatalogControllerTests
         var result = controller.GetCatalogByCategory(DeviceCategory.CGM);
         var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
         var entries = okResult.Value.Should().BeAssignableTo<IReadOnlyList<DeviceCatalogEntry>>().Subject;
-        entries.Should().OnlyContain(e => e.Category == DeviceCategory.CGM);
+        entries.Should().OnlyContain(e => e.PrimaryCategory == DeviceCategory.CGM);
     }
 }

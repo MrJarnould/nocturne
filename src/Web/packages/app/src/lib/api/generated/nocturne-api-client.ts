@@ -27344,8 +27344,10 @@ export interface DeviceCatalogEntry {
     id?: string;
     name?: string;
     manufacturer?: string;
-    category?: DeviceCategory;
-    cgm?: CgmProperties | undefined;
+    primaryCategory?: DeviceCategory;
+    cgm?: CgmCapability | undefined;
+    pump?: PumpCapability | undefined;
+    aid?: AidCapability | undefined;
 }
 
 export enum DeviceCategory {
@@ -27357,12 +27359,38 @@ export enum DeviceCategory {
     Uploader = "Uploader",
 }
 
-export interface CgmProperties {
+export interface CgmCapability {
     sensorDurationDays?: number;
     warmupMinutes?: number;
     updateIntervalMinutes?: number;
     hasSeparateTransmitter?: boolean;
+    transmitterIsRechargeable?: boolean;
     transmitterDurationDays?: number | undefined;
+}
+
+export interface PumpCapability {
+    isTubeless?: boolean;
+    reservoirCapacityUnits?: number;
+    primingUnits?: number;
+}
+
+export interface AidCapability {
+    algorithm?: AidAlgorithm;
+    isCommercial?: boolean;
+}
+
+export enum AidAlgorithm {
+    OpenAps = "OpenAps",
+    AndroidAps = "AndroidAps",
+    Loop = "Loop",
+    Trio = "Trio",
+    IAPS = "IAPS",
+    ControlIQ = "ControlIQ",
+    CamAPSFX = "CamAPSFX",
+    Omnipod5Algorithm = "Omnipod5Algorithm",
+    MedtronicSmartGuard = "MedtronicSmartGuard",
+    None = "None",
+    Unknown = "Unknown",
 }
 
 export interface InsulinFormulation {
@@ -31088,20 +31116,6 @@ export interface PatientDevice {
     notes?: string | undefined;
     createdAt?: Date;
     modifiedAt?: Date;
-}
-
-export enum AidAlgorithm {
-    OpenAps = "OpenAps",
-    AndroidAps = "AndroidAps",
-    Loop = "Loop",
-    Trio = "Trio",
-    IAPS = "IAPS",
-    ControlIQ = "ControlIQ",
-    CamAPSFX = "CamAPSFX",
-    Omnipod5Algorithm = "Omnipod5Algorithm",
-    MedtronicSmartGuard = "MedtronicSmartGuard",
-    None = "None",
-    Unknown = "Unknown",
 }
 
 export interface PatientInsulin {
