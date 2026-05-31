@@ -26260,14 +26260,30 @@
           "manufacturer": {
             "type": "string"
           },
-          "category": {
+          "primaryCategory": {
             "$ref": "#/components/schemas/DeviceCategory"
           },
           "cgm": {
             "nullable": true,
             "oneOf": [
               {
-                "$ref": "#/components/schemas/CgmProperties"
+                "$ref": "#/components/schemas/CgmCapability"
+              }
+            ]
+          },
+          "pump": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PumpCapability"
+              }
+            ]
+          },
+          "aid": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AidCapability"
               }
             ]
           }
@@ -26293,7 +26309,7 @@
           "Uploader"
         ]
       },
-      "CgmProperties": {
+      "CgmCapability": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -26312,12 +26328,74 @@
           "hasSeparateTransmitter": {
             "type": "boolean"
           },
+          "transmitterIsRechargeable": {
+            "type": "boolean"
+          },
           "transmitterDurationDays": {
             "type": "integer",
             "format": "int32",
             "nullable": true
           }
         }
+      },
+      "PumpCapability": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "isTubeless": {
+            "type": "boolean"
+          },
+          "reservoirCapacityUnits": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "primingUnits": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "AidCapability": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "algorithm": {
+            "$ref": "#/components/schemas/AidAlgorithm"
+          },
+          "isCommercial": {
+            "type": "boolean"
+          }
+        }
+      },
+      "AidAlgorithm": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "OpenAps",
+          "AndroidAps",
+          "Loop",
+          "Trio",
+          "IAPS",
+          "ControlIQ",
+          "CamAPSFX",
+          "Omnipod5Algorithm",
+          "MedtronicSmartGuard",
+          "None",
+          "Unknown"
+        ],
+        "enum": [
+          "OpenAps",
+          "AndroidAps",
+          "Loop",
+          "Trio",
+          "IAPS",
+          "ControlIQ",
+          "CamAPSFX",
+          "Omnipod5Algorithm",
+          "MedtronicSmartGuard",
+          "None",
+          "Unknown"
+        ]
       },
       "InsulinFormulation": {
         "type": "object",
@@ -37985,36 +38063,6 @@
             "format": "date-time"
           }
         }
-      },
-      "AidAlgorithm": {
-        "type": "string",
-        "description": "",
-        "x-enumNames": [
-          "OpenAps",
-          "AndroidAps",
-          "Loop",
-          "Trio",
-          "IAPS",
-          "ControlIQ",
-          "CamAPSFX",
-          "Omnipod5Algorithm",
-          "MedtronicSmartGuard",
-          "None",
-          "Unknown"
-        ],
-        "enum": [
-          "OpenAps",
-          "AndroidAps",
-          "Loop",
-          "Trio",
-          "IAPS",
-          "ControlIQ",
-          "CamAPSFX",
-          "Omnipod5Algorithm",
-          "MedtronicSmartGuard",
-          "None",
-          "Unknown"
-        ]
       },
       "PatientInsulin": {
         "type": "object",
