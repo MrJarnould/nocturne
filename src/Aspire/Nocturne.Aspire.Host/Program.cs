@@ -623,8 +623,17 @@ class Program
                 .PublishAsDockerComposeService((_, _) => { });
         }
 
-        builder.AddMermaidDiagramPublisher();
-        builder.AddPortainerComposePublisher();
+        // Mermaid + Portainer publishers add pipeline steps that depend on
+        // `publish-compose`, which is registered only in publish mode by
+        // AddDockerComposeEnvironment. Registering them in run mode leaves
+        // their dependency dangling and crashes `aspire start` /
+        // `aspire run` with "Step 'mermaid-publish' depends on unknown step
+        // 'publish-compose'".
+        if (!builder.ExecutionContext.IsRunMode)
+        {
+            builder.AddMermaidDiagramPublisher();
+            builder.AddPortainerComposePublisher();
+        }
 
         var app = builder.Build();
         await app.RunAsync();
