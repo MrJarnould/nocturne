@@ -411,6 +411,12 @@ public class NocturneDbContext : DbContext, IDataProtectionKeyContext
     /// </summary>
     public DbSet<PatientInsulinEntity> PatientInsulins { get; set; }
 
+    /// <summary>
+    /// Gets or sets the ConsumableInstances table for per-unit wear sessions
+    /// (pods, infusion sets, CGM sensors, disposable transmitters).
+    /// </summary>
+    public DbSet<ConsumableInstanceEntity> ConsumableInstances { get; set; } = null!;
+
     // Multitenancy entities
 
     /// <summary>

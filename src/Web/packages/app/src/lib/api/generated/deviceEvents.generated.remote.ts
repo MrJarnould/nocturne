@@ -9,47 +9,6 @@ import { formCoerce } from './form-utils.generated.js';
 import { UpsertDeviceEventRequestSchema } from '$lib/api/generated/schemas';
 import { type UpsertDeviceEventRequest } from '$api';
 
-/** Lists records with pagination, optional date range, device, and source filtering. */
-export const getAll = query(z.object({ from: z.coerce.date().optional(), to: z.coerce.date().optional(), limit: z.number().optional(), offset: z.number().optional(), sort: z.string().optional(), device: z.string().optional(), source: z.string().optional() }).optional(), async (params) => {
-  const apiClient = getRequestEvent().locals.apiClient;
-  try {
-    return await apiClient.deviceEvent.getAll(params?.from, params?.to, params?.limit, params?.offset, params?.sort, params?.device, params?.source);
-  } catch (err) {
-    const status = (err as any)?.status;
-    if (status === 401) { const { url } = getRequestEvent(); throw redirect(302, `/auth/login?returnUrl=${encodeURIComponent(url.pathname + url.search)}`); }
-    if (status === 403) throw error(403, (err as any)?.message ?? (err as any)?.detail ?? 'Forbidden');
-    console.error('Error in deviceEvent.getAll:', err);
-    const e = err as any;
-    const body = e?.body ?? e?.response;
-    const errors = body?.errors ?? e?.errors;
-    const flat = errors ? Object.entries(errors).map(([k, v]: [string, any]) => Array.isArray(v) ? v.join(', ') : v).join('; ') : undefined;
-    const message = flat ?? body?.message ?? body?.title ?? body?.detail ?? e?.message ?? e?.title ?? e?.detail;
-    if (status === 400 || status === 409) throw error(status, message ?? 'Request rejected');
-    throw error(500, message ?? 'Failed to get all');
-  }
-});
-
-/** Creates a new record and returns it with a `Location` header pointing to the created resource. */
-export const create = form(formCoerce(UpsertDeviceEventRequestSchema) as any, async (request) => {
-  const apiClient = getRequestEvent().locals.apiClient;
-  try {
-    const result = await apiClient.deviceEvent.create(request as UpsertDeviceEventRequest);
-    return result;
-  } catch (err) {
-    const status = (err as any)?.status;
-    if (status === 401) { throw error(401, 'Unauthorized'); }
-    if (status === 403) throw error(403, (err as any)?.message ?? (err as any)?.detail ?? 'Forbidden');
-    console.error('Error in deviceEvent.create:', err);
-    const e = err as any;
-    const body = e?.body ?? e?.response;
-    const errors = body?.errors ?? e?.errors;
-    const flat = errors ? Object.entries(errors).map(([k, v]: [string, any]) => Array.isArray(v) ? v.join(', ') : v).join('; ') : undefined;
-    const message = flat ?? body?.message ?? body?.title ?? body?.detail ?? e?.message ?? e?.title ?? e?.detail;
-    if (status === 400 || status === 409) throw error(status, message ?? 'Request rejected');
-    throw error(500, message ?? 'Failed to create');
-  }
-});
-
 /** Retrieves a single record by its unique identifier. */
 export const getById = query(z.string(), async (id) => {
   const apiClient = getRequestEvent().locals.apiClient;
@@ -70,7 +29,9 @@ export const getById = query(z.string(), async (id) => {
   }
 });
 
-/** Updates an existing record by ID and returns the updated record. */
+/** Wraps the base update with the consumable-instance hook so a SensorStart/SiteChange
+that arrives via an update (e.g. an upstream sync corrected the type) still opens
+the corresponding wear session. */
 export const update = form(formCoerce(z.object({ id: z.string(), request: UpsertDeviceEventRequestSchema })) as any, async ({ id, request }) => {
   const apiClient = getRequestEvent().locals.apiClient;
   try {
@@ -109,6 +70,47 @@ export const remove = command(z.string(), async (id) => {
     const message = flat ?? body?.message ?? body?.title ?? body?.detail ?? e?.message ?? e?.title ?? e?.detail;
     if (status === 400 || status === 409) throw error(status, message ?? 'Request rejected');
     throw error(500, message ?? 'Failed to remove');
+  }
+});
+
+/** Lists records with pagination, optional date range, device, and source filtering. */
+export const getAll = query(z.object({ from: z.coerce.date().optional(), to: z.coerce.date().optional(), limit: z.number().optional(), offset: z.number().optional(), sort: z.string().optional(), device: z.string().optional(), source: z.string().optional() }).optional(), async (params) => {
+  const apiClient = getRequestEvent().locals.apiClient;
+  try {
+    return await apiClient.deviceEvent.getAll(params?.from, params?.to, params?.limit, params?.offset, params?.sort, params?.device, params?.source);
+  } catch (err) {
+    const status = (err as any)?.status;
+    if (status === 401) { const { url } = getRequestEvent(); throw redirect(302, `/auth/login?returnUrl=${encodeURIComponent(url.pathname + url.search)}`); }
+    if (status === 403) throw error(403, (err as any)?.message ?? (err as any)?.detail ?? 'Forbidden');
+    console.error('Error in deviceEvent.getAll:', err);
+    const e = err as any;
+    const body = e?.body ?? e?.response;
+    const errors = body?.errors ?? e?.errors;
+    const flat = errors ? Object.entries(errors).map(([k, v]: [string, any]) => Array.isArray(v) ? v.join(', ') : v).join('; ') : undefined;
+    const message = flat ?? body?.message ?? body?.title ?? body?.detail ?? e?.message ?? e?.title ?? e?.detail;
+    if (status === 400 || status === 409) throw error(status, message ?? 'Request rejected');
+    throw error(500, message ?? 'Failed to get all');
+  }
+});
+
+/** Creates a new record and returns it with a `Location` header pointing to the created resource. */
+export const create = form(formCoerce(UpsertDeviceEventRequestSchema) as any, async (request) => {
+  const apiClient = getRequestEvent().locals.apiClient;
+  try {
+    const result = await apiClient.deviceEvent.create(request as UpsertDeviceEventRequest);
+    return result;
+  } catch (err) {
+    const status = (err as any)?.status;
+    if (status === 401) { throw error(401, 'Unauthorized'); }
+    if (status === 403) throw error(403, (err as any)?.message ?? (err as any)?.detail ?? 'Forbidden');
+    console.error('Error in deviceEvent.create:', err);
+    const e = err as any;
+    const body = e?.body ?? e?.response;
+    const errors = body?.errors ?? e?.errors;
+    const flat = errors ? Object.entries(errors).map(([k, v]: [string, any]) => Array.isArray(v) ? v.join(', ') : v).join('; ') : undefined;
+    const message = flat ?? body?.message ?? body?.title ?? body?.detail ?? e?.message ?? e?.title ?? e?.detail;
+    if (status === 400 || status === 409) throw error(status, message ?? 'Request rejected');
+    throw error(500, message ?? 'Failed to create');
   }
 });
 

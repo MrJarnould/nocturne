@@ -14472,6 +14472,212 @@
         }
       }
     },
+    "/api/v4/consumable-instances/active": {
+      "get": {
+        "tags": [
+          "Consumable Instance"
+        ],
+        "summary": "List the currently-open consumable wear sessions for this tenant.",
+        "operationId": "ConsumableInstance_GetActive",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConsumableInstance"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "query"
+      }
+    },
+    "/api/v4/consumable-instances/recent": {
+      "get": {
+        "tags": [
+          "Consumable Instance"
+        ],
+        "summary": "List the most recently-closed wear sessions across all consumable kinds,\nnewest end-time first.",
+        "operationId": "ConsumableInstance_GetRecentClosed",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of records to return (default 25, max 200).",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 25
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConsumableInstance"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "query"
+      }
+    },
+    "/api/v4/consumable-instances/{id}": {
+      "get": {
+        "tags": [
+          "Consumable Instance"
+        ],
+        "summary": "Get one instance by id.",
+        "operationId": "ConsumableInstance_GetById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsumableInstance"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "query"
+      },
+      "patch": {
+        "tags": [
+          "Consumable Instance"
+        ],
+        "summary": "Patch the editable fields of a consumable instance (insertion site,\nserial number, notes, ended-at, end reason, residual units).",
+        "operationId": "ConsumableInstance_Update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsumableInstanceEditRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsumableInstance"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "form",
+        "x-remote-invalidates": [
+          "GetActive",
+          "GetRecentClosed",
+          "GetById"
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Consumable Instance"
+        ],
+        "summary": "Soft-delete a consumable instance.",
+        "operationId": "ConsumableInstance_Delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "command",
+        "x-remote-invalidates": [
+          "GetActive",
+          "GetRecentClosed",
+          "GetById"
+        ]
+      }
+    },
     "/api/v4/HeartRate": {
       "get": {
         "tags": [
@@ -18055,6 +18261,153 @@
         }
       }
     },
+    "/api/v4/observations/device-events/{id}": {
+      "put": {
+        "tags": [
+          "Device Event"
+        ],
+        "summary": "Wraps the base update with the consumable-instance hook so a SensorStart/SiteChange\nthat arrives via an update (e.g. an upstream sync corrected the type) still opens\nthe corresponding wear session.",
+        "operationId": "DeviceEvent_Update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertDeviceEventRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceEvent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "form"
+      },
+      "delete": {
+        "tags": [
+          "Device Event"
+        ],
+        "summary": "Deletes a record by ID.",
+        "description": "Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
+        "operationId": "DeviceEvent_Delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The unique identifier of the record to delete.",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "command"
+      },
+      "get": {
+        "tags": [
+          "Device Event"
+        ],
+        "summary": "Retrieves a single record by its unique identifier.",
+        "description": "Returns `404 Not Found` if no record with the given id exists.",
+        "operationId": "DeviceEvent_GetById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The unique identifier of the record.",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceEvent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "x-remote-type": "query"
+      }
+    },
     "/api/v4/observations/device-events/by-sync-id": {
       "delete": {
         "tags": [
@@ -18247,156 +18600,6 @@
             }
           },
           "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "x-remote-type": "query"
-      }
-    },
-    "/api/v4/observations/device-events/{id}": {
-      "put": {
-        "tags": [
-          "Device Event"
-        ],
-        "summary": "Updates an existing record by ID and returns the updated record.",
-        "description": "Returns `404 Not Found` if no record with the given id exists.\n            \n`Timestamp` must be set on the mapped model; requests that resolve to a default timestamp are rejected with `400 Bad Request`.",
-        "operationId": "DeviceEvent_Update",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "The unique identifier of the record to update.",
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "requestBody": {
-          "x-name": "request",
-          "description": "The data to apply to the existing record.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpsertDeviceEventRequest"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 2
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeviceEvent"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "x-remote-type": "form"
-      },
-      "delete": {
-        "tags": [
-          "Device Event"
-        ],
-        "summary": "Deletes a record by ID.",
-        "description": "Returns `204 No Content` on success, or `404 Not Found` if no record with the given id exists.",
-        "operationId": "DeviceEvent_Delete",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "The unique identifier of the record to delete.",
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "404": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "x-remote-type": "command"
-      },
-      "get": {
-        "tags": [
-          "Device Event"
-        ],
-        "summary": "Retrieves a single record by its unique identifier.",
-        "description": "Returns `404 Not Found` if no record with the given id exists.",
-        "operationId": "DeviceEvent_GetById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "The unique identifier of the record.",
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeviceEvent"
-                }
-              }
-            }
-          },
-          "404": {
             "description": "",
             "content": {
               "application/json": {
@@ -37829,6 +38032,178 @@
             }
           }
         ]
+      },
+      "ConsumableInstance": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "sourceDeviceEventId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "consumableCatalogId": {
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ConsumableKind"
+          },
+          "patientDeviceId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "deviceId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "inventoryItemId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "inventoryBatchId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "serialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "insertionSite": {
+            "type": "string",
+            "nullable": true
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endReason": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ConsumableInstanceEndReason"
+              }
+            ]
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "snapshotWearDays": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "snapshotReservoirCapacity": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "filledUnits": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "residualUnits": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ConsumableKind": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "CgmSensor",
+          "CgmTransmitter",
+          "Pod",
+          "Reservoir",
+          "InfusionSet",
+          "Cannula"
+        ],
+        "enum": [
+          "CgmSensor",
+          "CgmTransmitter",
+          "Pod",
+          "Reservoir",
+          "InfusionSet",
+          "Cannula"
+        ]
+      },
+      "ConsumableInstanceEndReason": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "Planned",
+          "Occlusion",
+          "Failure",
+          "FellOff",
+          "Unknown"
+        ],
+        "enum": [
+          "Planned",
+          "Occlusion",
+          "Failure",
+          "FellOff",
+          "Unknown"
+        ]
+      },
+      "ConsumableInstanceEditRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "insertionSite": {
+            "type": "string",
+            "nullable": true
+          },
+          "serialNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "endedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endReason": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ConsumableInstanceEndReason"
+              }
+            ]
+          },
+          "residualUnits": {
+            "type": "number",
+            "format": "decimal",
+            "nullable": true
+          }
+        }
       },
       "HeartRate": {
         "allOf": [

@@ -33,6 +33,7 @@ import {
   ConnectedAppsClient,
   ConnectorFoodEntriesClient,
   ConnectorStatusClient,
+  ConsumableInstanceClient,
   CorrelationClient,
   CurrentTherapyStateClient,
   DataOverviewClient,
@@ -136,6 +137,7 @@ export class ApiClient {
   public readonly connectedApps: ConnectedAppsClient;
   public readonly connectorFoodEntries: ConnectorFoodEntriesClient;
   public readonly connectorStatus: ConnectorStatusClient;
+  public readonly consumableInstance: ConsumableInstanceClient;
   public readonly correlation: CorrelationClient;
   public readonly currentTherapyState: CurrentTherapyStateClient;
   public readonly dataOverview: DataOverviewClient;
@@ -239,6 +241,7 @@ export class ApiClient {
     this.connectedApps = new ConnectedAppsClient(apiBaseUrl, http);
     this.connectorFoodEntries = new ConnectorFoodEntriesClient(apiBaseUrl, http);
     this.connectorStatus = new ConnectorStatusClient(apiBaseUrl, http);
+    this.consumableInstance = new ConsumableInstanceClient(apiBaseUrl, http);
     this.correlation = new CorrelationClient(apiBaseUrl, http);
     this.currentTherapyState = new CurrentTherapyStateClient(apiBaseUrl, http);
     this.dataOverview = new DataOverviewClient(apiBaseUrl, http);

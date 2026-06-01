@@ -49,6 +49,7 @@ export { getMyTenants, validateSlug } from './myTenants.generated.remote';
 export * from './roles.generated.remote';
 export * from './activities.generated.remote';
 export { getBodyWeights, getBodyWeight, updateBodyWeight, deleteBodyWeight } from './bodyWeights.generated.remote';
+export { getActive, getRecentClosed } from './consumableInstances.generated.remote';
 export * from './heartRates.generated.remote';
 export * from './patientRecords.generated.remote';
 export * from './stepCounts.generated.remote';

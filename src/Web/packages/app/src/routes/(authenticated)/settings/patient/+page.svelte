@@ -7,11 +7,13 @@
     Syringe,
     Save,
     Loader2,
+    History,
   } from "lucide-svelte";
   import {
     PatientClinicalForm,
     PatientDeviceManager,
     PatientInsulinManager,
+    ConsumableInstanceHistory,
   } from "$lib/components/patient";
   import type { ClinicalState } from "$lib/components/patient";
   import { coachmark } from "@nocturne/coach";
@@ -112,6 +114,23 @@
     </Card.Header>
     <Card.Content>
       <PatientInsulinManager variant="dialog" />
+    </Card.Content>
+  </Card.Root>
+
+  <!-- Wear sessions (consumables) -->
+  <Card.Root>
+    <Card.Header>
+      <div class="flex items-center gap-2">
+        <History class="h-5 w-5 text-muted-foreground" />
+        <Card.Title>Wear sessions</Card.Title>
+      </div>
+      <Card.Description>
+        Active and recent CGM sensors, pods, and infusion sets. Sessions open
+        and close automatically from sensor-start and site-change events.
+      </Card.Description>
+    </Card.Header>
+    <Card.Content>
+      <ConsumableInstanceHistory />
     </Card.Content>
   </Card.Root>
 </div>

@@ -51,6 +51,7 @@ public class TreatmentDecomposer : ITreatmentDecomposer, IDecomposer<Treatment>
     private readonly IProfileDecomposer _profileDecomposer;
     private readonly IActiveProfileResolver _activeProfileResolver;
     private readonly IPatientInsulinRepository _insulinRepo;
+    private readonly IConsumableInstanceService _consumableInstanceService;
     private readonly ILogger<TreatmentDecomposer> _logger;
 
     /// <summary>
@@ -77,6 +78,7 @@ public class TreatmentDecomposer : ITreatmentDecomposer, IDecomposer<Treatment>
     /// <param name="profileDecomposer">Decomposes inline profile JSON from profile switch treatments into V4 schedule records.</param>
     /// <param name="activeProfileResolver">Resolves insulin context from profile switches active at a given timestamp.</param>
     /// <param name="insulinRepo">Repository for patient insulin records, used as fallback for insulin context resolution.</param>
+    /// <param name="consumableInstanceService">Service that opens/closes consumable wear sessions in response to SensorStart / SiteChange events.</param>
     /// <param name="logger">Logger instance for this decomposer.</param>
     public TreatmentDecomposer(
         NocturneDbContext dbContext,
@@ -93,6 +95,7 @@ public class TreatmentDecomposer : ITreatmentDecomposer, IDecomposer<Treatment>
         IProfileDecomposer profileDecomposer,
         IActiveProfileResolver activeProfileResolver,
         IPatientInsulinRepository insulinRepo,
+        IConsumableInstanceService consumableInstanceService,
         ILogger<TreatmentDecomposer> logger)
     {
         _dbContext = dbContext;
@@ -109,6 +112,7 @@ public class TreatmentDecomposer : ITreatmentDecomposer, IDecomposer<Treatment>
         _profileDecomposer = profileDecomposer;
         _activeProfileResolver = activeProfileResolver;
         _insulinRepo = insulinRepo;
+        _consumableInstanceService = consumableInstanceService;
         _logger = logger;
     }
 
@@ -505,12 +509,14 @@ public class TreatmentDecomposer : ITreatmentDecomposer, IDecomposer<Treatment>
             model.Id = existing.Id;
             var updated = await _deviceEventRepository.UpdateAsync(existing.Id, model, ct);
             result.UpdatedRecords.Add(updated);
+            await _consumableInstanceService.HandleDeviceEventAsync(updated, ct);
             _logger.LogDebug("Updated existing DeviceEvent {Id} from legacy treatment {LegacyId}", existing.Id, treatment.Id);
         }
         else
         {
             var created = await _deviceEventRepository.CreateAsync(model, ct);
             result.CreatedRecords.Add(created);
+            await _consumableInstanceService.HandleDeviceEventAsync(created, ct);
             _logger.LogDebug("Created DeviceEvent from legacy treatment {LegacyId}", treatment.Id);
         }
     }

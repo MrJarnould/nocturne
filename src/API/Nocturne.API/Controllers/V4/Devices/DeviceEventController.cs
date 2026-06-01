@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nocturne.API.Controllers.V4.Base;
 using Nocturne.API.Models.Requests.V4;
+using Nocturne.Core.Contracts.V4;
 using Nocturne.Core.Contracts.V4.Repositories;
 using Nocturne.Core.Models.V4;
 
@@ -30,9 +31,13 @@ namespace Nocturne.API.Controllers.V4.Devices;
 [Route("api/v4/observations/device-events")]
 [Authorize]
 [Produces("application/json")]
-public class DeviceEventController(IDeviceEventRepository repo)
+public class DeviceEventController(
+    IDeviceEventRepository repo,
+    IConsumableInstanceService consumableInstanceService)
     : V4CrudControllerBase<DeviceEvent, UpsertDeviceEventRequest, UpsertDeviceEventRequest, IDeviceEventRepository>(repo)
 {
+    private readonly IConsumableInstanceService _consumableInstanceService = consumableInstanceService;
+
     protected override DeviceEvent MapCreateToModel(UpsertDeviceEventRequest request) => new()
     {
         Timestamp = request.Timestamp.UtcDateTime,
@@ -61,6 +66,33 @@ public class DeviceEventController(IDeviceEventRepository repo)
         SyncIdentifier = existing.SyncIdentifier,
         AdditionalProperties = existing.AdditionalProperties,
     };
+
+    /// <summary>
+    /// Fires the consumable-instance open/close hook after a successful create.
+    /// Idempotent — the service no-ops on repeat events.
+    /// </summary>
+    protected override async Task<DeviceEvent> OnAfterCreateAsync(DeviceEvent created, CancellationToken ct)
+    {
+        await _consumableInstanceService.HandleDeviceEventAsync(created, ct);
+        return created;
+    }
+
+    /// <summary>
+    /// Wraps the base update with the consumable-instance hook so a SensorStart/SiteChange
+    /// that arrives via an update (e.g. an upstream sync corrected the type) still opens
+    /// the corresponding wear session.
+    /// </summary>
+    [HttpPut("{id:guid}")]
+    public override async Task<ActionResult<DeviceEvent>> Update(
+        Guid id, [FromBody] UpsertDeviceEventRequest request, CancellationToken ct = default)
+    {
+        var result = await base.Update(id, request, ct);
+        if (result.Result is OkObjectResult { Value: DeviceEvent updated })
+        {
+            await _consumableInstanceService.HandleDeviceEventAsync(updated, ct);
+        }
+        return result;
+    }
 
     /// <summary>
     /// Delete a device event by its external sync identifier (dataSource + syncIdentifier pair).

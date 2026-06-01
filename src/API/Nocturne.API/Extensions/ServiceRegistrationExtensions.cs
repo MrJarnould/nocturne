@@ -572,6 +572,11 @@ public static class ServiceRegistrationExtensions
         services.AddScoped<IPatientDeviceRepository, PatientDeviceRepository>();
         services.AddScoped<IPatientInsulinRepository, PatientInsulinRepository>();
 
+        // V4 Inventory (Phase 1: consumable wear sessions)
+        services.AddScoped<IConsumableInstanceRepository, ConsumableInstanceRepository>();
+        services.AddScoped<IConsumableInstanceService, ConsumableInstanceService>();
+        services.AddHostedService<Nocturne.API.Services.BackgroundServices.ConsumableInstanceBackfillService>();
+
         // Glucose processing
         services.AddScoped<IGlucoseProcessingConfigProvider, GlucoseProcessingConfigProvider>();
         services.AddScoped<IGlucoseProcessingResolver, GlucoseProcessingResolver>();

@@ -107,6 +107,7 @@ public class TreatmentDecomposerBatchTests : IDisposable
             _profileDecomposerMock.Object,
             _activeProfileResolverMock.Object,
             _insulinRepoMock.Object,
+            Mock.Of<IConsumableInstanceService>(),
             NullLogger<TreatmentDecomposer>.Instance);
     }
 
